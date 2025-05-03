@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}About - Resumatic AI{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <style>
+        .about-container .feature-item img {
+            max-width: 30px;
+            /* Further reduce the size */
+            height: auto;
+        }
+    </style>
+    <section class="about-hero">
+        <h1>About Resumatic AI</h1>
+        <p class="tagline">Empowering Your Career Journey with AI-Driven Resume Enhancement</p>
+    </section>
+
+    <section class="about-content">
+        <div class="mission">
+            <h2>Our Mission</h2>
+            <p>At Resumatic AI, we're dedicated to helping job seekers optimize their resumes using cutting-edge
+                artificial intelligence. Our platform combines advanced language processing with industry expertise to
+                transform your resume into a powerful career tool.</p>
+        </div>
+
+        <div class="features">
+            <h2>What Sets Us Apart</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <img src="{{ url_for('static', filename='images/ai.png') }}" alt="AI Technology">
+                    <h3>Advanced AI Technology</h3>
+                    <p>Leveraging state-of-the-art AI to provide personalized resume optimization.</p>
+                </div>
+                <div class="feature-item">
+                    <img src="{{ url_for('static', filename='images/ai-enhancement.gif') }}"
+                        alt="Real-time Enhancement">
+                    <h3>Real-time Enhancement</h3>
+                    <p>Instant feedback and improvements to strengthen your professional profile.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="team">
+            <h2>Our Commitment</h2>
+            <p>We're committed to helping professionals at all career stages present their best selves to potential
+                employers. Our platform is continuously evolving to incorporate the latest best practices in resume
+                writing and AI technology.</p>
+        </div>
+    </section>
+</div>
+{% endblock %}

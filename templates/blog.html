@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Blog | Resumatic AI - Resume Enhancement Tips & Career Advice</title>
+    <meta content="Blog | Resumatic AI - Resume Enhancement Tips & Career Advice" name="title" />
+    <meta
+        content="Explore our blog for expert tips on resume writing, career development, and job search strategies. Learn how to optimize your resume with AI-powered tools and stay ahead in your career."
+        name="description" />
+    <meta
+        content="resume tips, career advice, job search strategies, resume writing, ATS optimization, career development, professional growth, resume enhancement, job application tips"
+        name="keywords" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KRPLMCR73G"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-KRPLMCR73G');
+    </script>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4F46E5',
+                        secondary: '#10B981',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+    <!-- Custom Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #4F46E5 0%, #10B981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-pattern {
+            background-color: #ffffff;
+            background-image: radial-gradient(#4F46E5 0.5px, transparent 0.5px), radial-gradient(#4F46E5 0.5px, #ffffff 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-attachment: fixed;
+            opacity: 0.05;
+        }
+
+        .blog-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .featured-post-image {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+
+        .blog-container .blog-image {
+            max-width: 150px;
+            /* Decrease the size of blog images */
+            height: auto;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <a class="flex items-center" href="/">
+                        <img alt="Resumatic AI Logo" class="h-8 w-auto"
+                            src="{{ url_for('static', filename='images/logo.jpg') }}" />
+                        <span class="sr-only">Resumatic AI</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a class="text-gray-600 hover:text-primary transition-colors" href="/#features">Features</a>
+                    <a class="text-gray-600 hover:text-primary transition-colors" href="/#how-it-works">How it Works</a>
+                    <a class="text-primary font-semibold" href="/blog">Blog</a>
+                    <a class="text-gray-600 hover:text-primary transition-colors" href="/about">About</a>
+                    <a class="text-gray-600 hover:text-primary transition-colors" href="/#faq">FAQ</a>
+                    {% if user %}
+                    <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                    {% else %}
+                    <a href="/login" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4">Resumatic AI <span class="gradient-text">Blog</span></h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Expert tips and insights for your career journey
+            </p>
+        </div>
+
+        <!-- Featured Post -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
+            <div class="md:flex">
+                <div class="md:w-1/2">
+                    <img src="{{ url_for('static', filename='images/blog.png') }}" alt="Featured Blog Post"
+                        class="featured-post-image" />
+                </div>
+                <div class="p-8 md:w-1/2">
+                    <div class="text-primary font-semibold mb-2">Featured Article</div>
+                    <h2 class="text-2xl font-bold mb-4">What Is ATS and How Can You Pass It?</h2>
+                    <p class="text-gray-600 mb-4">
+                        Master the art of creating ATS-friendly resumes with our comprehensive guide. Learn how
+                        Applicant Tracking Systems work and discover proven strategies to ensure your resume gets past
+                        automated screening.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500 mb-4">
+                        <span class="mr-4"><i class="far fa-calendar mr-1"></i> March 15, 2024</span>
+                        <span><i class="far fa-clock mr-1"></i> 8 min read</span>
+                    </div>
+                    <a href="/blog/ats-optimization"
+                        class="inline-flex items-center text-primary font-semibold hover:text-primary/80">
+                        Read More <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog Posts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Blog Post 1 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
+
+                <div class="p-6">
+                    <div class="text-primary font-semibold text-sm mb-2">Resume Writing</div>
+                    <h3 class="text-xl font-bold mb-2">Resume Summary vs. Objective: Which Should You Use in 2025?</h3>
+                    <p class="text-gray-600 mb-4">
+                        Learn the key differences between resume summaries and objectives, and discover which one will
+                        help you land more interviews in 2025.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <span class="mr-4"><i class="far fa-calendar mr-1"></i> March 10, 2024</span>
+                        <span><i class="far fa-clock mr-1"></i> 6 min read</span>
+                    </div>
+                    <a href="/blog/Resume_objective"
+                        class="mt-4 inline-flex items-center text-primary font-semibold hover:text-primary/80">
+                        Read More <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Blog Post 2 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
+                <div class="p-6">
+                    <div class="text-primary font-semibold text-sm mb-2">Resume Writing</div>
+                    <h3 class="text-xl font-bold mb-2">Power Words to Use in Your Resume (And Ones to Avoid)</h3>
+                    <p class="text-gray-600 mb-4">
+                        Discover the most impactful words to use in your resume and learn which overused phrases to
+                        avoid to make your application stand out.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <span class="mr-4"><i class="far fa-calendar mr-1"></i> March 5, 2024</span>
+                        <span><i class="far fa-clock mr-1"></i> 7 min read</span>
+                    </div>
+                    <a href="/blog/Power_words"
+                        class="mt-4 inline-flex items-center text-primary font-semibold hover:text-primary/80">
+                        Read More <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Blog Post 3 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
+                <div class="p-6">
+                    <div class="text-primary font-semibold text-sm mb-2">Career Development</div>
+                    <h3 class="text-xl font-bold mb-2">How to Write a Resume With No Work Experience</h3>
+                    <p class="text-gray-600 mb-4">
+                        Get expert tips on creating a compelling resume when you're just starting out, with strategies
+                        to highlight your skills and potential.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <span class="mr-4"><i class="far fa-calendar mr-1"></i> March 1, 2024</span>
+                        <span><i class="far fa-clock mr-1"></i> 5 min read</span>
+                    </div>
+                    <a href="/blog/no-experience"
+                        class="mt-4 inline-flex items-center text-primary font-semibold hover:text-primary/80">
+                        Read More <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Blog Post 4 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
+                <div class="p-6">
+                    <div class="text-primary font-semibold text-sm mb-2">Resume Writing</div>
+                    <h3 class="text-xl font-bold mb-2">Best Resume Formats for 2025 (With Examples)</h3>
+                    <p class="text-gray-600 mb-4">
+                        Explore the most effective resume formats for 2025, complete with real examples and guidelines
+                        for different career stages.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <span class="mr-4"><i class="far fa-calendar mr-1"></i> February 25, 2024</span>
+                        <span><i class="far fa-clock mr-1"></i> 9 min read</span>
+                    </div>
+                    <a href="/blog/resume-format-2025"
+                        class="mt-4 inline-flex items-center text-primary font-semibold hover:text-primary/80">
+                        Read More <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Newsletter Signup -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+            <div class="max-w-2xl mx-auto text-center">
+                <h2 class="text-2xl font-bold mb-4">Stay Updated with Career Tips</h2>
+                <p class="text-gray-600 mb-6">
+                    Subscribe to our newsletter for the latest resume writing tips, career advice, and industry
+                    insights.
+                </p>
+                <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <input type="email" placeholder="Enter your email"
+                        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                    <button type="submit"
+                        class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <img alt="Logo" class="h-8 w-auto mb-4" src="{{ url_for('static', filename='images/logo.jpg') }}" />
+                    <p class="text-gray-500">Empowering job seekers with AI-enhanced resumes.</p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a class="text-gray-500 hover:text-gray-900" href="/#features">Features</a></li>
+                        <li><a class="text-gray-500 hover:text-gray-900" href="/#how-it-works">How it Works</a></li>
+                        <li><a class="text-gray-500 hover:text-gray-900" href="/blog">Blog</a></li>
+                        <li><a class="text-gray-500 hover:text-gray-900" href="/#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a class="text-gray-500 hover:text-gray-900" href="/privacy">Privacy Policy</a></li>
+                        <li><a class="text-gray-500 hover:text-gray-900" href="/terms_privacy">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t">
+                <p class="text-center text-gray-500">© {{ year }} Resumatic AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
