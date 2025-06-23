@@ -2,6 +2,18 @@
 <html lang="en">
 
 <head>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KRPLMCR73G"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-KRPLMCR73G');
+    </script>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Analysis Result</title>
@@ -60,8 +72,8 @@
                 </div>
             </div>
         </div>
-
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Resume Analysis Results</h1>
+
         <div id="scoreData" data-score="{{ feedback.get('overall_score', 50) | int }}" style="display: none;"></div>
 
         <!-- Action Buttons -->
@@ -72,9 +84,17 @@
             <button onclick="copyResume()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
                 <i class="fas fa-copy mr-2"></i>Copy Resume
             </button>
-            <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-            </a>
+
+        </div>
+
+        <!-- Download Word Document -->
+        <div class="flex justify-end gap-4 mb-4">
+            <form method="post" action="/download_resume_docx" style="display:inline;">
+                <input type="hidden" name="resume" value="{{ revised_resume|e }}">
+                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                    <i class="fas fa-file-word mr-2"></i>Download Revised Resume (Word)
+                </button>
+            </form>
         </div>
 
         <!-- Score and Comparison -->
@@ -136,7 +156,7 @@
                         </div>
                         <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
                             <div style="width: {{ feedback.get('overall_score', 50) | int }}%"
-                                class="shadow-none flex flex-col text-center whitespace-nowrap text-black justify-center bg-primary transition-all duration-500">
+                                class="shadow-none flex flex-col text-center whitespace-nowrap text-black justify-center bg-[#10B981] transition-all duration-500">
                             </div>
                         </div>
                     </div>
@@ -194,6 +214,48 @@
                 </div>
                 {% endfor %}
             </div>
+        </div> <!-- Job Description Section (if provided) -->
+        {% if job_description %}
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-r-lg mt-10">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-briefcase text-blue-400 text-lg mt-1"></i>
+                </div>
+                <div class="ml-3 w-full">
+                    <h3 class="text-lg font-medium text-blue-800 mb-2">Job Description Provided</h3>
+                    <div class="text-blue-700 bg-white p-3 rounded border">
+                        {% set job_desc_length = job_description | length %}
+                        {% if job_desc_length > 500 %} <div id="shortJobDescription">
+                            <p class="whitespace-pre-line text-sm">{{ job_description[:500] }}...</p>
+                            <button onclick="toggleJobDescription()"
+                                class="text-black hover:text-gray-700 text-sm font-medium mt-2">
+                                Show more
+                            </button>
+                        </div>
+                        <div id="fullJobDescription" class="hidden">
+                            <p class="whitespace-pre-line text-sm">{{ job_description }}</p>
+                            <button onclick="toggleJobDescription()"
+                                class="text-black hover:text-gray-700 text-sm font-medium mt-2">
+                                Show less
+                            </button>
+                        </div>
+                        {% else %}
+                        <p class="whitespace-pre-line text-sm">{{ job_description }}</p>
+                        {% endif %}
+                    </div>
+                    <p class="text-blue-600 text-sm mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        Your resume has been tailored to match this job description.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Original Resume Output -->
+        <div class="bg-white rounded-lg shadow p-6 mt-10">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Original Resume</h2>
+            <pre id="originalResumeOutput" class="whitespace-pre-wrap text-gray-800">{{ original_resume }}</pre>
         </div>
 
         <!-- Revised Resume Output -->
@@ -201,6 +263,22 @@
             <h2 class="text-xl font-semibold text-gray-800 mb-4">Revised Resume</h2>
             <pre id="resumeOutput" class="whitespace-pre-wrap text-gray-800">{{ revised_resume }}</pre>
         </div>
+
+        <!-- Signup Prompt (only if not logged in) -->
+        {% if not current_user.is_authenticated %}
+        <div class="bg-white rounded-lg shadow p-6 mt-10 text-center">
+            <h2 class="text-xl font-bold mb-2">Want to save and access all your resume revisions?</h2>
+            <p class="text-gray-600 mb-4">Sign up for a free account to keep track of your enhanced resumes
+                and download
+                them anytime.</p>
+            <div class="flex justify-center gap-4">
+                <a href="/login/google" class="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-600">Sign up with
+                    Google
+                </a>
+
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <script>
@@ -234,10 +312,10 @@
         document.querySelector('.tab-btn')?.click();
 
         function exportAsPDF() {
-            const element = document.body;
+            const element = document.getElementById('resumeOutput'); // Target only the revised resume section
             html2pdf().from(element).set({
                 margin: 0.5,
-                filename: 'resume_analysis.pdf',
+                filename: 'revised_resume.pdf',
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2 },
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -253,7 +331,20 @@
 
         document.getElementById('resumeForm').addEventListener('submit', function () {
             document.getElementById('processing').classList.remove('hidden');
-        });
+        }); function toggleJobDescription() {
+            const shortDescription = document.getElementById('shortJobDescription');
+            const fullDescription = document.getElementById('fullJobDescription');
+
+            if (shortDescription && fullDescription) {
+                if (fullDescription.classList.contains('hidden')) {
+                    fullDescription.classList.remove('hidden');
+                    shortDescription.classList.add('hidden');
+                } else {
+                    fullDescription.classList.add('hidden');
+                    shortDescription.classList.remove('hidden');
+                }
+            }
+        }
     </script>
 </body>
 

@@ -2,123 +2,391 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Top 10 Resume Mistakes to Avoid</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KRPLMCR73G"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-KRPLMCR73G');
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Avoid the most common resume mistakes with this expert 2025 guide. Learn why they matter, how to fix them, and how AI can improve your resume instantly." />
+    <meta name="author" content="ResumaticAI" />
+    <meta property="og:title" content="Top 10 Resume Mistakes to Avoid (and How to Fix Them)" />
+    <meta property="og:description"
+        content="Make your resume interview-ready by learning the top mistakes candidates make and how to correct them with smart tools and clear strategies." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://resumaticai.com/blog/top-resume-mistakes" />
+    <meta property="og:image" content="https://resumaticai.com/assets/images/resume-mistakes-2025.jpg" />
+    <title>Top 10 Resume Mistakes to Avoid | ResumaticAI</title>
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://resumaticai.com/toptenmistakes">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/blog-style.css') }}">
 </head>
 
 <body>
-    <div class="container py-5">
-        <h1 class="mb-3">Top 10 Resume Mistakes to Avoid (and How to Fix Them)</h1>
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="reading-progress"></div>
 
-        <p class="lead text-secondary">
-            Your resume is your first impression. But even great candidates make small mistakes that get their
-            applications rejected. This guide walks you through the 10 most common resume errors—and exactly how to fix
-            them.
-        </p>
+    <!-- Enhanced Navigation -->
+    <nav class="blog-nav">
+        <div class="container">
 
-        <!-- Table of Contents -->
-        <nav class="mb-4">
-            <h5 class="text-primary">Jump to:</h5>
-            <ul class="list-unstyled">
-                <li><a href="#mistake1">🔡 Spelling and Grammar Errors</a></li>
-                <li><a href="#mistake2">📤 One Generic Resume</a></li>
-                <li><a href="#mistake3">🚫 Irrelevant Work Experience</a></li>
-                <li><a href="#mistake4">📊 No Quantified Achievements</a></li>
-                <li><a href="#mistake5">🎨 Poor Formatting</a></li>
-                <li><a href="#mistake6">🧱 Buzzword Overload</a></li>
-                <li><a href="#mistake7">⏳ Wrong Resume Length</a></li>
-                <li><a href="#mistake8">🤖 Ignoring ATS</a></li>
-                <li><a href="#mistake9">🧭 Missing Summary</a></li>
-                <li><a href="#mistake10">🛑 Including Personal Info</a></li>
+
+            <div class="nav-links">
+                <a href="/blog">📖 Blog</a>
+
+                <a href="/" class="home-btn">🏠 Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <article class="blog-post">
+        <!-- Article Header -->
+        <header class="article-meta">
+            <h1>🛑 Top 10 Resume Mistakes to Avoid (and How to Fix Them) — 2025 Edition</h1>
+            <div class="meta-info">
+                <span class="date">📅 January 2025</span>
+                <span class="read-time">⏱️ 8 min read</span>
+                <span class="author">👤 ResumaticAI Team</span>
+            </div>
+        </header> <!-- Table of Contents -->
+        <div class="toc">
+            <h3>📋 Table of Contents</h3>
+            <ul>
+                <li><a href="#spelling-grammar">1. Spelling & Grammar Mistakes</a></li>
+                <li><a href="#generic-resume">2. Submitting a Generic Resume</a></li>
+                <li><a href="#irrelevant-experience">3. Including Irrelevant Experience</a></li>
+                <li><a href="#no-metrics">4. No Metrics or Results</a></li>
+                <li><a href="#poor-formatting">5. Poor Formatting and Design</a></li>
+                <li><a href="#keyword-stuffing">6. Keyword Stuffing</a></li>
+                <li><a href="#wrong-file-format">7. Wrong File Format</a></li>
+                <li><a href="#outdated-info">8. Outdated or Irrelevant Information</a></li>
+                <li><a href="#missing-contact">9. Missing or Incomplete Contact Information</a></li>
+                <li><a href="#unnecessary-personal">10. Including Unnecessary Personal Info</a></li>
+                <li><a href="#final-checklist">Final Checklist</a></li>
+                <li><a href="#final-thoughts">Final Thoughts</a></li>
             </ul>
-        </nav>
-
-        <!-- Mistake Cards -->
-        <div class="card p-4 mb-4" id="mistake1">
-            <h4>1. Spelling and Grammar Errors</h4>
-            <p><strong>Why it matters:</strong> Typos suggest carelessness.</p>
-            <p><strong>Fix it:</strong> Use spellcheck, then proofread manually. Try tools like Grammarly or ask a
-                friend to review it.</p>
         </div>
 
-        <div class="card p-4 mb-4" id="mistake2">
-            <h4>2. Using One Generic Resume for All Jobs</h4>
-            <p><strong>Why it matters:</strong> Recruiters spot a one-size-fits-all resume instantly.</p>
-            <p><strong>Fix it:</strong> Tailor each resume by matching skills and experience to the job posting.</p>
-        </div>
+        <div class="content">
+            <h1>🛑 Top 10 Resume Mistakes to Avoid (and How to Fix Them) — 2025 Edition</h1>
 
-        <div class="card p-4 mb-4" id="mistake3">
-            <h4>3. Including Irrelevant Work Experience</h4>
-            <p><strong>Why it matters:</strong> It distracts from your qualifications.</p>
-            <p><strong>Fix it:</strong> Only list experience that is relevant or demonstrates transferable skills.</p>
-        </div>
+            <p>Your resume is your gateway to opportunity. But even small errors can shut the door before it opens. In
+                this
+                guide, we cover the most common—and costly—resume mistakes people make, and provide clear, actionable
+                steps
+                to correct them.</p>
+            <p>These aren’t just opinions—they’re backed by input from recruiters, hiring managers, and data from
+                applicant
+                tracking systems (ATS). Fixing these 10 mistakes can significantly improve your chances of getting
+                noticed—and getting hired.</p>
 
-        <div class="card p-4 mb-4" id="mistake4">
-            <h4>4. Not Quantifying Achievements</h4>
-            <p><strong>Why it matters:</strong> Metrics show real results.</p>
-            <p><strong>Fix it:</strong> Use numbers: “Led a team of 5 and increased delivery speed by 30%.”</p>
-        </div>
+            <hr>
 
-        <div class="card p-4 mb-4" id="mistake5">
-            <h4>5. Poor Formatting</h4>
-            <p><strong>Why it matters:</strong> A cluttered resume is hard to scan.</p>
-            <p><strong>Fix it:</strong> Use clean fonts, consistent spacing, and bold headers. Avoid visuals or tables.
+            <h2 id="spelling-grammar">1. 🔡 Spelling & Grammar Mistakes</h2>
+            <p><strong>Why it’s a dealbreaker:</strong> Typos signal sloppiness and poor attention to detail. Recruiters
+                often use this as a quick filter to eliminate candidates from a large pile.</p>
+            <p><strong>How to fix it:</strong></p>
+            <ul>
+                <li>Use spellcheck—but don’t rely on it alone.</li>
+                <li>Run your resume through <em>Grammarly</em> or <emHemingway Editor</em>.</li>
+                <li>Read it out loud or backwards to catch awkward phrasing or hidden typos.</li>
+                <li>Ask at least one other person to proofread it.</li>
+            </ul>
+
+            <blockquote>“Typos don’t just hurt clarity—they suggest a lack of professionalism. If you can’t proofread
+                one
+                page, what does that say about your work ethic?” — Hiring Manager, SaaS Company</blockquote>
+
+            <hr>
+
+            <h2 id="generic-resume">2. 📤 Submitting a Generic Resume</h2>
+            <p><strong>Why it hurts:</strong> A one-size-fits-all resume comes across as impersonal and irrelevant.
+                Hiring
+                managers expect to see alignment with their job description.</p>
+            <p><strong>How to fix it:</strong></p>
+            <ul>
+                <li>Customize your <strong>summary</strong>, <strong>skills section</strong>, and <strong>experience
+                        bullets</strong> to reflect keywords from the job ad.</li>
+                <li>Mirror their terminology—e.g., “client success” vs. “customer support.”</li>
+                <li>Use a tool like <a href="https://resumaticai.com" target="_blank">ResumaticAI</a> to instantly
+                    tailor
+                    your resume to each job.</li>
+            </ul>
+
+            <p><strong>Tip:</strong> You don’t need a full rewrite—just targeted edits based on the role’s priorities.
             </p>
+
+            <hr>
+
+            <h2 id="irrelevant-experience">3. 🚫 Including Irrelevant Experience</h2>
+            <p><strong>Why it matters:</strong> Unrelated jobs clutter your resume, distract from your strengths, and
+                dilute
+                your value.</p>
+            <p><strong>How to fix it:</strong></p>
+            <ul>
+                <li>Focus on experience that <em>relates</em> to the role, even if indirectly.</li>
+                <li>Reframe older roles by emphasizing transferable skills (e.g., leadership, communication,
+                    problem-solving).</li>
+                <li>Summarize less relevant jobs in 1-2 lines under a “Previous Roles” section.</li>
+            </ul>
+
+            <hr>
+
+            <h2 id="no-metrics">4. 📊 No Metrics or Results</h2>
+            <p><strong>Why it weakens your case:</strong> Statements like “responsible for managing a team” don’t show
+                <em>impact</em>. Metrics prove your value.
+            </p>
+            <p><strong>How to fix it:</strong></p>
+            <ul>
+                <li>Turn duties into achievements.</li>
+                <li>Use the formula: Action + Context + Outcome (e.g., “Reduced onboarding time by 35% through creation
+                    of
+                    new training materials”).</li>
+                <li>Use real numbers wherever possible—estimates are okay if accurate.</li>
+            </ul>
+
+            <p><strong>Before:</strong> Managed client accounts.<br>
+                <strong>After:</strong> Managed 12+ mid-market accounts, increasing upsell revenue by $50K over 6
+                months.
+            </p>
+
+            <hr>
+
+            <h2 id="poor-formatting">5. 🎨 Poor Formatting and Design</h2>
+            <p><strong>Why it fails:</strong> Your resume should be skimmable in 7–10 seconds. Bad formatting creates
+                friction for both humans and ATS.</p>
+            <p><strong>How to fix it:</strong></p>
+            <ul>
+                <li>Use a clean, single-column layout with consistent spacing.</li>
+                <li>Avoid text boxes, tables, or columns—they confuse ATS.</li>
+                <li>Use fonts like Arial, Calibri, or Helvetica at 10–12 pt size.</li>
+                <li>Make use of bold, bullet points, and whitespace—don't over-format.</li>
+            </ul>
+
+            <p><strong>Tools:</strong> Google Docs, Canva (ATS-safe templates), or use ResumaticAI to auto-format your
+                resume properly.</p>
+
+            <hr>
+
+            <h2 id="keyword-stuffing">6. 🧱 Keyword Stuffing</h2>
+            <p><strong>Why it’s problematic:</strong> “Synergistic team player” means little without context. Recruiters
+                want results, not jargon.</p>
+            <p><strong>How to fix it:</strong></p>
+            <ul>
+                <li>Replace vague descriptors with specific achievements.</li>
+                <li>Use strong action verbs: “led,” “created,” “improved,” “launched,” etc.</li>
+                <li>Drop clichés unless backed up with a clear example.</li>
+            </ul>
+
+            <hr>
+
+            <h2 id="wrong-file-format">7. ⏳ Wrong File Format</h2>
+            <p><strong>Why it’s a red flag:</strong> Too short, and it looks underdeveloped. Too long, and recruiters
+                won’t
+                read it all.</p>
+            <p><strong>Best practices:</strong></p>
+            <ul>
+                <li><strong>1 page:</strong> Entry-level or recent grads</li>
+                <li><strong>2 pages:</strong> Professionals with 5+ years of experience</li>
+                <li><strong>3+ pages:</strong> Academic CVs only</li>
+            </ul>
+
+            <p>Cut fluff. Every line should serve a purpose.</p>
+
+            <hr>
+
+            <h2 id="outdated-info">8. 🤖 Outdated or Irrelevant Information</h2>
+            <p><strong>Why it disqualifies you:</strong> If your resume can’t be parsed correctly, it won’t reach a
+                human
+                reviewer.</p>
+            <p><strong>How to fix it:</strong></p>
+            <ul>
+                <li>Use standard section headings: “Experience,” “Education,” “Skills”</li>
+                <li>Save as a .docx or clean .pdf</li>
+                <li>Don’t use columns, headers/footers, images, or charts</li>
+                <li>Insert relevant keywords from the job description</li>
+            </ul>
+
+            <p><strong>Test before sending:</strong> Run your file through <a href="https://resumaticai.com"
+                    target="_blank">ResumaticAI’s ATS scanner</a>.</p>
+
+            <hr>
+
+            <h2 id="missing-contact">9. 🧭 Missing or Incomplete Contact Information</h2>
+            <p><strong>Why it’s important:</strong> Your summary or objective gives recruiters a quick overview of who
+                you
+                are and what you’re seeking—crucial in fast-paced hiring environments.</p>
+            <p><strong>What to include:</strong></p>
+            <ul>
+                <li>Your role or target title</li>
+                <li>Years of experience</li>
+                <li>Key skills or results</li>
+                <li>Career goals (brief)</li>
+            </ul>
+
+            <p><strong>Example:</strong> “Operations Coordinator with 4 years of experience streamlining fulfillment
+                workflows and reducing costs. Passionate about creating scalable systems in growing logistics teams.”
+            </p>
+
+            <p>Need help writing one? Use ResumaticAI to generate a tailored summary in seconds.</p>
+
+            <hr>
+
+            <h2 id="unnecessary-personal">10. 🛑 Including Unnecessary Personal Info</h2>
+            <p><strong>Why it’s outdated:</strong> Details like age, marital status, or nationality are unnecessary—and
+                can
+                expose you to unconscious bias.</p>
+            <p><strong>What to include instead:</strong></p>
+            <ul>
+                <li>Full Name</li>
+                <li>Phone Number</li>
+                <li>Email</li>
+                <li>City/Region (optional)</li>
+                <li>LinkedIn, GitHub, or portfolio URL</li>
+            </ul>
+
+            <hr>
+
+            <h2 id="final-checklist">📋 Final Checklist: Is Your Resume Ready?</h2>
+            <ul>
+                <li>✅ Proofread for typos and errors</li>
+                <li>✅ Tailored to job description</li>
+                <li>✅ Metrics and achievements in each bullet</li>
+                <li>✅ ATS-friendly formatting</li>
+                <li>✅ Keyword optimization complete</li>
+                <li>✅ Saved in a safe file type</li>
+                <li>✅ No personal or irrelevant info</li>
+            </ul>
+
+            <hr>
+
+            <h2 id="final-thoughts">✨ Final Thoughts</h2>
+            <p>Even the most talented candidates get overlooked because of resume errors that are completely avoidable.
+                By
+                identifying and fixing these top 10 mistakes, you're putting yourself ahead of most applicants. Your
+                resume
+                isn’t just a document—it’s a demonstration of your attention to detail, your communication style, and
+                your
+                fit for the role.</p>
+
+            <p><strong>Want to skip the guesswork?</strong> <a href="https://resumaticai.com"
+                    target="_blank">ResumaticAI</a> will scan your resume for mistakes, suggest improvements, and
+                optimize
+                it for ATS—all in minutes.</p>
+
+            <p><strong>👉 Start your free resume check today.</strong> Because the right resume doesn't just get read—it
+                gets results.</p>
         </div>
 
-        <div class="card p-4 mb-4" id="mistake6">
-            <h4>6. Overusing Buzzwords</h4>
-            <p><strong>Why it matters:</strong> Phrases like “go-getter” or “synergy” lack substance.</p>
-            <p><strong>Fix it:</strong> Replace with real actions and accomplishments.</p>
+        <!-- Social Share Buttons -->
+        <div class="share-section">
+            <h3>📢 Share This Article</h3>
+            <div class="share-buttons">
+                <a href="https://twitter.com/intent/tweet?text=Top%2010%20Resume%20Mistakes%20to%20Avoid&url={{ request.url }}"
+                    class="share-btn twitter" target="_blank" rel="noopener">
+                    <i class="fab fa-twitter"></i> Twitter
+                </a>
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}"
+                    class="share-btn linkedin" target="_blank" rel="noopener">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" class="share-btn facebook"
+                    target="_blank" rel="noopener">
+                    <i class="fab fa-facebook"></i> Facebook
+                </a>
+            </div>
         </div>
 
-        <div class="card p-4 mb-4" id="mistake7">
-            <h4>7. Making It Too Long (or Too Short)</h4>
-            <p><strong>Why it matters:</strong> Recruiters spend just seconds scanning.</p>
-            <p><strong>Fix it:</strong> 1 page for early career, 2 max for experienced pros.</p>
+        <!-- Call-to-Action -->
+        <div class="cta-box">
+            <h3>✨ Ready to Fix Your Resume?</h3>
+            <p>Don't let these common mistakes cost you your dream job. Use ResumaticAI to create a resume that gets
+                noticed by both ATS systems and hiring managers.</p>
+            <a href="/" class="btn">🚀 Try ResumaticAI Free</a>
         </div>
+    </article>
 
-        <div class="card p-4 mb-4" id="mistake8">
-            <h4>8. Ignoring ATS (Applicant Tracking Systems)</h4>
-            <p><strong>Why it matters:</strong> Your resume may never reach a human.</p>
-            <p><strong>Fix it:</strong> Use standard headers, include keywords, and avoid graphics or tables.</p>
-        </div>
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-        <div class="card p-4 mb-4" id="mistake9">
-            <h4>9. Leaving Out a Summary or Objective</h4>
-            <p><strong>Why it matters:</strong> A summary gives recruiters quick context.</p>
-            <p><strong>Fix it:</strong> Write a short summary showing your value and intent.</p>
-        </div>
+    <!-- JavaScript for Enhanced UX -->
+    <script>
+        // Reading Progress Bar
+        function updateReadingProgress() {
+            const article = document.querySelector('.blog-post');
+            const progressBar = document.getElementById('reading-progress');
 
-        <div class="card p-4 mb-4" id="mistake10">
-            <h4>10. Including Personal Information</h4>
-            <p><strong>Why it matters:</strong> Unnecessary details can lead to bias.</p>
-            <p><strong>Fix it:</strong> Stick to name, email, phone, LinkedIn, and optionally a portfolio or GitHub.</p>
-        </div>
+            if (article && progressBar) {
+                const articleHeight = article.offsetHeight;
+                const windowHeight = window.innerHeight;
+                const scrollTop = window.pageYOffset;
+                const progress = (scrollTop / (articleHeight - windowHeight)) * 100;
 
-        <!-- Final Thought -->
-        <div class="alert alert-primary mt-5">
-            <h5 class="mb-3"><i class="bi bi-lightbulb-fill me-2"></i>Final Thought</h5>
-            <p>A resume isn’t just a list of jobs—it’s a marketing tool. Avoid these 10 mistakes, and you’re far more
-                likely to earn that callback.</p>
-        </div>
+                progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+            }
+        }
 
-        <!-- CTA -->
-        <div class="alert alert-success text-center mt-4">
-            <h5 class="mb-3">Want to automatically fix your resume mistakes?</h5>
-            <a href="/" class="btn btn-primary btn-lg">Let Resumatic AI Optimize It for You</a>
-        </div>
-    </div>
+        // Back to Top Button
+        function toggleBackToTop() {
+            const backToTop = document.getElementById('back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        }
 
-    <!-- Sticky Mobile CTA -->
-    <a href="/" class="btn btn-primary btn-lg fixed-bottom m-3 d-md-none">
-        Fix My Resume Now
-    </a>
+        // Smooth scroll to top
+        document.getElementById('back-to-top').addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        // Table of Contents smooth scrolling
+        document.querySelectorAll('.toc a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Event listeners
+        window.addEventListener('scroll', function () {
+            updateReadingProgress();
+            toggleBackToTop();
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateReadingProgress();
+        });
+    </script>
 </body>
 
 </html>

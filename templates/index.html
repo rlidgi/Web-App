@@ -121,7 +121,10 @@
         "Keyword optimization",
         "Professional formatting",
         "Job match analysis",
-        "No signup required"
+        "No signup required",
+        "ai resume enhancement", 
+        "resume optimization tool",
+        "ats optimization"
       ]
     }
   </script>
@@ -202,10 +205,10 @@
   </script>
 
   <!-- Canonical URL -->
-  <link href="{{ request.url }}" rel="canonical" />
+  <link rel="canonical" href="https://resumaticai.com/" />
   <!-- Alternate Language Versions -->
-  <link href="{{ request.url }}" hreflang="x-default" rel="alternate" />
-  <link href="{{ request.url }}" hreflang="en" rel="alternate" />
+  <link href="https://resumaticai.com/" hreflang="x-default" rel="alternate" />
+  <link href="https://resumaticai.com/" hreflang="en" rel="alternate" />
   <!-- Favicon and App Icons -->
   <link href="{{ url_for('static', filename='images/favicon.ico') }}" rel="icon" type="image/x-icon" />
   <link href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180" />
@@ -550,6 +553,41 @@
       }
     }
 
+    /* Resume input tabs */
+    .resume-tab-btn {
+      color: #6B7280;
+      background-color: transparent;
+    }
+
+    .resume-tab-btn.active {
+      color: #4F46E5;
+      background-color: white;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .resume-tab-btn:hover:not(.active) {
+      color: #374151;
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* File upload drag and drop */
+    .file-drop-zone {
+      transition: all 0.3s ease;
+    }
+
+    .file-drop-zone.drag-over {
+      border-color: #4F46E5;
+      background-color: rgba(79, 70, 229, 0.05);
+    }
+
+    .resume-input-section {
+      transition: opacity 0.3s ease;
+    }
+
+    .resume-input-section.hidden {
+      display: none;
+    }
+
     .animate-progress {
       animation: progress 2s ease-in-out infinite;
     }
@@ -607,6 +645,18 @@
       <a class="block text-gray-600 hover:text-primary" href="/blog">Blog</a>
       <a class="block text-gray-600 hover:text-primary" href="/about">About</a>
       <a class="block text-gray-600 hover:text-primary" href="#faq">FAQ</a>
+      {% if current_user.is_authenticated %}
+      <a class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center" href="/my_revisions">
+        <i class="fas fa-user mr-2"></i>My Account
+      </a>
+      <a class="block px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center mt-2" href="/logout">
+        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+      </a>
+      {% else %}
+      <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/login">
+        <i class="fas fa-sign-in-alt mr-2"></i>Login
+      </a>
+      {% endif %}
     </nav>
 
   </div>
@@ -629,7 +679,10 @@
             <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/blog">Blog</a>
             <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/about">About</a>
             <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="#faq">FAQ</a>
-            {% if user %}
+            {% if current_user.is_authenticated %}
+            <a href="/my_revisions" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              <i class="fas fa-user mr-2"></i>My Account
+            </a>
             <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
               <i class="fas fa-sign-out-alt mr-2"></i>Logout
             </a>
@@ -706,21 +759,7 @@
         </div>
       </div>
     </section>
-    <!-- Statistics Section -->
-    <section class="py-12 bg-primary">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
-          <div class="stat-counter">
-            <div class="text-4xl font-bold text-white mb-2" id="resumeCounter">0</div>
-            <p class="text-white/80"> </p>
-          </div>
-          <div class="stat-counter">
-            <div class="text-4xl font-bold text-white mb-2"> </div>
-            <p class="text-white/80"> </p>
-          </div>
-        </div>
-      </div>
-    </section>
+
     <!-- Features Section -->
     <section aria-labelledby="features-heading" class="py-20 bg-white" id="features">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -734,21 +773,24 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Feature Cards -->
-          <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
+          <article style="background-image:url(&quot;/static/images/bg13.png" ); background-size: cover&quot
+            class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <div class="flex items-center mb-4">
               <i aria-hidden="true" class="fas fa-magic text-primary text-2xl mr-4"></i>
               <h3 class="text-xl font-semibold text-gray-900">Smart Enhancement</h3>
             </div>
             <p class="text-gray-600">AI-powered suggestions to improve your resume's content, structure, and impact.</p>
           </article>
-          <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
+          <article style="background-image:url(&quot;/static/images/bg11.png" ); background-size: cover&quot
+            class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <div class="flex items-center mb-4">
               <i aria-hidden="true" class="fas fa-search text-primary text-2xl mr-4"></i>
               <h3 class="text-xl font-semibold text-gray-900">Keyword Optimization</h3>
             </div>
             <p class="text-gray-600">Automatically identify and add relevant keywords to match job requirements.</p>
           </article>
-          <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
+          <article style="background-image:url(&quot;/static/images/bg13.png" ); background-size: cover&quot
+            class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <div class="flex items-center mb-4">
               <i aria-hidden="true" class="fas fa-chart-line text-primary text-2xl mr-4"></i>
               <h3 class="text-xl font-semibold text-gray-900">Impact Analysis</h3>
@@ -768,8 +810,8 @@
             <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <span class="text-2xl font-bold text-primary">1</span>
             </div>
-            <h3 class="text-xl font-semibold mb-2">Paste Your Resume</h3>
-            <p class="text-gray-600">Simply paste your current resume content into our secure editor.</p>
+            <h3 class="text-xl font-semibold mb-2">Provide Your Resume</h3>
+            <p class="text-gray-600">Simply upload file or paste the text of your current resume content.</p>
             <div class="hidden md:block absolute top-1/2 right-0 w-full h-0.5 bg-gray-200"></div>
           </div>
           <div class="step-card text-center relative">
@@ -777,7 +819,7 @@
               <span class="text-2xl font-bold text-primary">2</span>
             </div>
             <h3 class="text-xl font-semibold mb-2">AI Enhancement</h3>
-            <p class="text-gray-600">Our AI analyzes and enhances your resume content.</p>
+            <p class="text-gray-600">Our expertly engineered AI analyzes and enhances your resume content.</p>
             <div class="hidden md:block absolute top-1/2 right-0 w-full h-0.5 bg-gray-200"></div>
           </div>
           <div class="step-card text-center relative">
@@ -785,7 +827,7 @@
               <span class="text-2xl font-bold text-primary">3</span>
             </div>
             <h3 class="text-xl font-semibold mb-2">Get Results</h3>
-            <p class="text-gray-600">Review and download your enhanced resume.</p>
+            <p class="text-gray-600">Review a comprehensive resume anaylsis and the enhanced resume.</p>
             <div class="hidden md:block absolute top-1/2 right-0 w-full h-0.5 bg-gray-200"></div>
           </div>
         </div>
@@ -795,7 +837,7 @@
     <!-- Enhanced Resume Form Section -->
     <section class="py-20 bg-white relative overflow-hidden" id="resume-form">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {% if not user %}
+        {# {% if not user %}
         <!-- Login Prompt -->
         <section class="py-16 bg-white text-center">
           <div class="max-w-xl mx-auto">
@@ -804,24 +846,30 @@
             <div class="flex justify-center gap-4">
               <a href="/login/google" class="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-600">Sign in with
                 Google</a>
-              <!--<a href="/login/facebook" class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Sign in with
-                Facebook</a>-->
+
+              <!-- 
+                <a href="{{ url_for('facebook.login') }}"
+                class="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Sign in with Facebook
+              </a>
+
+            -->
+
             </div>
           </div>
         </section>
-        {% endif %}
+        {% endif %} #}
 
 
 
-        {% if user %}
+        {# {% if user %} #}
         <!-- Resume Form -->
 
         <!-- Form (initially hidden) -->
-        <div class="bg-white rounded-xl shadow-xl p-8 border border-gray-200" id="resumeFormContainer"
-          data-scroll-target>
+        <div class="bg-white rounded-xl shadow-xl p-8 border border-gray-200" id="resumeFormContainer">
           <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold mb-2">Create a resume tailored to a specific job description</h2>
-            <p class="text-gray-600">Welcome back! Your enhanced resume is just a few steps away.</p>
+            <h2 class="text-2xl font-bold mb-2">Create a resume with optional job description customization.</h2>
+            <p class="text-gray-600">Your enhanced resume is just a few steps away.</p>
           </div>
           {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
@@ -840,7 +888,7 @@
           {% endfor %}
           {% endif %}
           {% endwith %}
-          <form action="/revise_resume" class="space-y-6" id="resumeForm" method="POST">
+          <form action="/revise_resume" class="space-y-6" id="resumeForm" method="POST" enctype="multipart/form-data">
             <!-- Job Description Input -->
             <div class="relative">
               <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center justify-between"
@@ -857,18 +905,66 @@
             </div>
             <!-- Resume Input -->
             <div class="relative">
-              <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center justify-between"
-                for="resume">
-                <span>Paste your resume content here</span>
-                <span class="text-sm text-gray-500">Recommended: 300-800 words</span>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <span>Submit your resume</span>
               </label>
-              <div class="relative">
-                <textarea aria-label="Resume content"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary resize-none"
-                  id="resume" name="resume" placeholder="Paste your current resume content here..."
-                  rows="12"></textarea>
-                <div aria-live="polite" class="word-count" id="wordCount"></div>
-                <div class="progress-bar absolute bottom-0 left-0 w-full" id="progressBar"></div>
+
+              <!-- Resume Input Method Tabs -->
+              <div class="mb-4">
+                <nav class="flex space-x-1 bg-gray-100 p-1 rounded-lg" role="tablist">
+                  <button type="button"
+                    class="resume-tab-btn flex-1 py-2 px-3 text-sm font-medium text-center rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    data-tab="upload" id="uploadTab">
+                    <i class="fas fa-upload mr-2"></i>Upload File
+                  </button>
+                  <button type="button"
+                    class="resume-tab-btn flex-1 py-2 px-3 text-sm font-medium text-center rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+                    data-tab="paste" id="pasteTab">
+                    <i class="fas fa-paste mr-2"></i>Paste Text
+                  </button>
+                </nav>
+              </div>
+
+              <!-- File Upload Section -->
+              <div class="resume-input-section" id="uploadSection">
+                <div
+                  class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary transition-colors">
+                  <div class="space-y-2">
+                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400"></i>
+                    <div class="text-sm text-gray-600">
+                      <label for="resumeFile" class="cursor-pointer">
+                        <span class="text-primary hover:text-primary/80 font-medium">Click to upload</span>
+                        or drag and drop your resume
+                      </label>
+                      <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.doc,.docx" class="hidden">
+                    </div>
+                    <p class="text-xs text-gray-500">PDF, DOC, or DOCX (max 10MB)</p>
+                  </div>
+                  <div id="fileInfo" class="hidden mt-4 p-3 bg-green-50 rounded-md">
+                    <div class="flex items-center text-sm text-green-700">
+                      <i class="fas fa-check-circle mr-2"></i>
+                      <span id="fileName"></span>
+                      <button type="button" id="removeFile" class="ml-auto text-red-600 hover:text-red-800">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Text Paste Section -->
+              <div class="resume-input-section hidden" id="pasteSection">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm text-gray-500">Recommended: 300-800 words</span>
+                </div>
+                <div class="relative">
+                  <textarea aria-label="Resume content"
+                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary resize-none"
+                    id="resume" name="resume" placeholder="Paste your current resume content here..."
+                    rows="12"></textarea>
+                  <div aria-live="polite" class="word-count" id="wordCount"></div>
+                  <div class="progress-bar absolute bottom-0 left-0 w-full" id="progressBar"></div>
+                </div>
               </div>
             </div>
             <!-- Live preview container -->
@@ -905,7 +1001,7 @@
         </div>
       </div>
     </section>
-    {% endif %}
+    {# {% endif %} #}
     <!-- FAQ Section -->
 
     <!-- Career Resources Section -->
@@ -954,9 +1050,10 @@
           </div>
           <div class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-lg font-semibold mb-2">How does the AI enhancement work?</h3>
-            <p class="text-gray-600">Our AI analyzes your resume content and suggests improvements in language,
+            <p class="text-gray-600">Our expertly engineered AI analyzes your resume content and suggests effective
+              improvements in language,
               structure,
-              and impact while maintaining your original information.</p>
+              and impact, while maintaining your original information.</p>
           </div>
           <div class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-lg font-semibold mb-2">Is my data secure?</h3>
@@ -1086,8 +1183,135 @@
     });
   </script>
 
+  <script>
+    // Resume input tab functionality
+    document.addEventListener('DOMContentLoaded', function () {
+      const uploadTab = document.getElementById('uploadTab');
+      const pasteTab = document.getElementById('pasteTab');
+      const uploadSection = document.getElementById('uploadSection');
+      const pasteSection = document.getElementById('pasteSection');
+      const resumeFileInput = document.getElementById('resumeFile');
+      const fileInfo = document.getElementById('fileInfo');
+      const fileName = document.getElementById('fileName');
+      const removeFileBtn = document.getElementById('removeFile');
+      const resumeTextarea = document.getElementById('resume');
 
+      // Initialize with paste tab active
+      pasteTab.classList.add('active');
+      pasteSection.classList.remove('hidden');
+      uploadSection.classList.add('hidden');
 
+      // Tab switching
+      uploadTab.addEventListener('click', function () {
+        uploadTab.classList.add('active');
+        pasteTab.classList.remove('active');
+        uploadSection.classList.remove('hidden');
+        pasteSection.classList.add('hidden');
+
+        // Clear textarea when switching to upload
+        if (resumeTextarea) {
+          resumeTextarea.value = '';
+        }
+      });
+
+      pasteTab.addEventListener('click', function () {
+        pasteTab.classList.add('active');
+        uploadTab.classList.remove('active');
+        pasteSection.classList.remove('hidden');
+        uploadSection.classList.add('hidden');
+
+        // Clear file input when switching to paste
+        if (resumeFileInput) {
+          resumeFileInput.value = '';
+          fileInfo.classList.add('hidden');
+        }
+      });
+
+      // File upload handling
+      resumeFileInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          // Validate file type
+          const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+          if (!allowedTypes.includes(file.type)) {
+            alert('Please select a PDF, DOC, or DOCX file.');
+            e.target.value = '';
+            return;
+          }
+
+          // Validate file size (10MB limit)
+          if (file.size > 10 * 1024 * 1024) {
+            alert('File size must be less than 10MB.');
+            e.target.value = '';
+            return;
+          }
+
+          // Show file info
+          fileName.textContent = file.name;
+          fileInfo.classList.remove('hidden');
+        }
+      });
+
+      // Remove file button
+      removeFileBtn.addEventListener('click', function () {
+        resumeFileInput.value = '';
+        fileInfo.classList.add('hidden');
+      });
+
+      // Drag and drop functionality
+      const dropZone = uploadSection.querySelector('.border-dashed');
+
+      dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+
+      dropZone.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+      });
+
+      dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          resumeFileInput.files = files;
+          resumeFileInput.dispatchEvent(new Event('change'));
+        }
+      });
+
+      // Form submission handling
+      const form = document.getElementById('resumeForm');
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          const isUploadMode = !uploadSection.classList.contains('hidden');
+          const isTextMode = !pasteSection.classList.contains('hidden');
+
+          if (isUploadMode && !resumeFileInput.files[0]) {
+            e.preventDefault();
+            alert('Please select a resume file to upload.');
+            return;
+          }
+
+          if (isTextMode && (!resumeTextarea.value || resumeTextarea.value.trim().length === 0)) {
+            e.preventDefault();
+            alert('Please paste your resume content.');
+            return;
+          }
+
+          // If uploading file, let the form submit normally
+          // The backend will handle the file processing
+          if (isUploadMode && resumeFileInput.files[0]) {
+            // Show loading overlay and let form submit naturally
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            return; // Allow normal form submission
+          }
+        });
+      }
+    });
+  </script>
 
 </body>
 
