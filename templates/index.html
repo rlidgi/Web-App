@@ -161,7 +161,7 @@
       "@type": "Organization",
       "name": "Resumatic AI",
       "url": "{{ request.url }}",
-      "logo": "{{ url_for('static', filename='images/lo.png', _external=True) }}",
+      "logo": "{{ url_for('static', filename='images/logo.jpg', _external=True) }}",
       "sameAs": [
         "https://twitter.com/ResumaticAI",
         "https://www.linkedin.com/company/resumatic-ai",
@@ -215,7 +215,7 @@
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@700&amp;display=swap" rel="stylesheet">
-  <link href="unique-styles.css" rel="stylesheet">
+
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="{{ url_for('static', filename='images/favicon.ico') }}" rel="icon" type="image/x-icon" />
   <!-- Tailwind CSS -->
@@ -318,11 +318,16 @@
     .mobile-menu {
       transform: translateX(100%);
       transition: transform 0.3s ease-in-out;
+      pointer-events: none;
+      opacity: 0;
     }
 
     .mobile-menu.active {
       transform: translateX(0);
+      pointer-events: auto;
+      opacity: 1;
     }
+
 
     /* Progress bar styles */
     .progress-bar {
@@ -591,7 +596,7 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6" id="mobileMenu">
     <div class="flex justify-between items-center mb-8">
-      <img alt="Logo" class="h-8 w-auto" src="{{ url_for('static', filename='images/lo.png') }}" />
+      <img alt="Logo" class="h-8 w-auto" src="{{ url_for('static', filename='images/logo.jpg') }}" />
       <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
         <i class="fas fa-times"></i>
       </button>
@@ -599,9 +604,11 @@
     <nav class="space-y-4">
       <a class="block text-gray-600 hover:text-primary" href="#features">Features</a>
       <a class="block text-gray-600 hover:text-primary" href="#how-it-works">How it Works</a>
-      <a class="block text-gray-600 hover:text-primary" href="#testimonials"> </a>
+      <a class="block text-gray-600 hover:text-primary" href="/blog">Blog</a>
+      <a class="block text-gray-600 hover:text-primary" href="/about">About</a>
       <a class="block text-gray-600 hover:text-primary" href="#faq">FAQ</a>
     </nav>
+
   </div>
   <!-- Navigation with mobile menu button -->
   <header role="banner">
@@ -644,7 +651,10 @@
   <main id="main-content" role="main">
     <!-- Hero Section -->
     <section aria-labelledby="hero-heading" class="relative overflow-hidden">
-      <div aria-hidden="true" class="absolute inset-0 hero-pattern"></div>
+      <div aria-hidden="true" class="absolute inset-0">
+        <img src="/static/images/heroimage6.jpg" alt="Resume and laptop" class="w-full h-full object-cover opacity-60">
+      </div>
+
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
         <div class="text-center">
           <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
@@ -686,70 +696,9 @@
               <!-- Replace GIF with embedded SVG -->
               <div class="relative bg-gradient-to-r from-indigo-50 to-blue-50 p-6" style="padding-bottom: 65%;">
                 <div class="absolute inset-0 flex items-center justify-center flex-col p-6">
-                  <!-- Improved Resume Entry SVG Illustration -->
-                  <svg class="w-32 h-32 mb-6 text-primary" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Base Document -->
-                    <rect fill="currentColor" height="20" opacity="0.1" rx="1" width="14" x="3" y="2"></rect>
-                    <rect fill="none" height="20" rx="1" stroke="currentColor" stroke-width="0.5" width="14" x="3"
-                      y="2"></rect>
-                    <!-- Document with folded corner -->
-                    <path
-                      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h5v7h7v9H6z"
-                      fill="currentColor"></path>
-                    <!-- Document lines with typing animation -->
-                    <line stroke="currentColor" stroke-width="0.75" x1="8" x2="12" y1="12" y2="12">
-                      <animate attributename="x2" dur="4s" repeatcount="indefinite" values="8;16;16;16;16"></animate>
-                    </line>
-                    <line stroke="currentColor" stroke-width="0.75" x1="8" x2="10" y1="14" y2="14">
-                      <animate attributename="x2" begin="0.5s" dur="4s" repeatcount="indefinite" values="8;13;14;16;16">
-                      </animate>
-                    </line>
-                    <line stroke="currentColor" stroke-width="0.75" x1="8" x2="8" y1="16" y2="16">
-                      <animate attributename="x2" begin="1s" dur="4s" repeatcount="indefinite" values="8;8;9;12;15">
-                      </animate>
-                    </line>
-                    <!-- Cursor Animation -->
-                    <rect fill="currentColor" height="1" id="cursor" opacity="0.8" width="0.5" x="8" y="11.5">
-                      <animate attributename="x" dur="4s" repeatcount="indefinite" values="8;16;16;16;16"></animate>
-                      <animate attributename="opacity" dur="0.8s" repeatcount="indefinite" values="1;0;1;0;1"></animate>
-                      <animate attributename="y" dur="4s" keytimes="0;0.25;0.5;0.75;1" repeatcount="indefinite"
-                        values="11.5;11.5;11.5;13.5;15.5"></animate>
-                    </rect>
-                    <!-- Typing Hand Animation -->
-                    <g opacity="0.9" transform="translate(18, 12)">
-                      <path
-                        d="M-2,0 C-1,0.5 -0.5,1 0,0 C0.5,-1 1.5,-1 2,-0.5 C2.5,0 2,1.5 1.5,2 C1,2.5 0,3 -1,2.5 C-2,2 -3,1 -2,0z"
-                        fill="currentColor">
-                        <animate attributename="d" dur="1s" repeatcount="indefinite"
-                          values="
-                          M-2,0 C-1,0.5 -0.5,1 0,0 C0.5,-1 1.5,-1 2,-0.5 C2.5,0 2,1.5 1.5,2 C1,2.5 0,3 -1,2.5 C-2,2 -3,1 -2,0z;
-                          M-2,0.5 C-1,1 -0.5,1.5 0,0.5 C0.5,-0.5 1.5,-0.5 2,0 C2.5,0.5 2,2 1.5,2.5 C1,3 0,3.5 -1,3 C-2,2.5 -3,1.5 -2,0.5z;
-                          M-2,0 C-1,0.5 -0.5,1 0,0 C0.5,-1 1.5,-1 2,-0.5 C2.5,0 2,1.5 1.5,2 C1,2.5 0,3 -1,2.5 C-2,2 -3,1 -2,0z"></animate>
-                        <animatetransform attributename="transform" dur="1s" repeatcount="indefinite" type="translate"
-                          values="0,0; 0,0.5; 0,-0.5; 0,0"></animatetransform>
-                      </path>
-                    </g>
-                    <!-- Processing Indicator -->
-                    <g transform="translate(18, 18)">
-                      <circle fill="#10B981" opacity="0.2" r="3"></circle>
-                      <circle fill="#10B981" opacity="0.6" r="1.5">
-                        <animate attributename="r" dur="2s" repeatcount="indefinite" values="1.5;2;1.5"></animate>
-                        <animate attributename="opacity" dur="2s" repeatcount="indefinite" values="0.6;0.8;0.6">
-                        </animate>
-                      </circle>
-                    </g>
-                    <!-- Connection Lines Animation (Resume to Processing) -->
-                    <path d="M16,10 C18,10 19,14 18,18" fill="none" stroke="currentColor" stroke-width="0.3">
-                      <animate attributename="d" dur="4s" repeatcount="indefinite"
-                        values="M16,10 C18,10 19,14 18,18; M16,14 C18,14 19,16 18,18; M16,10 C18,10 19,14 18,18">
-                      </animate>
-                    </path>
-                  </svg>
-                  <div class="text-center">
-                    <h3 class="text-xl font-semibold mb-2 text-gray-800">Step 1: Enter Your Resume</h3>
-                    <p class="text-gray-600">Paste your current resume content to get started with AI-powered
-                      enhancements</p>
-                  </div>
+                  <h2 class="text-center text-gray-800 text-xl font-bold">Comprehensive Resume Analysis</h2>
+                  <img src="/static/images/analysis.jpg" alt="Resume Entry Illustration"
+                    class="w-auto h-auto max-w-full max-h-full object-contain mt-4 hover:scale-105 transition-transform duration-500">
                 </div>
               </div>
             </div>
@@ -831,28 +780,13 @@
             <p class="text-gray-600">Our AI analyzes and enhances your resume content.</p>
             <div class="hidden md:block absolute top-1/2 right-0 w-full h-0.5 bg-gray-200"></div>
           </div>
-          <div class="step-card text-center">
+          <div class="step-card text-center relative">
             <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
               <span class="text-2xl font-bold text-primary">3</span>
             </div>
             <h3 class="text-xl font-semibold mb-2">Get Results</h3>
             <p class="text-gray-600">Review and download your enhanced resume.</p>
-          </div>
-        </div>
-        <div class="mt-16 flex justify-center">
-          <div class="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
-            <!-- Replace second GIF with embedded SVG -->
-            <div class="relative bg-gradient-to-r from-teal-50 to-emerald-50 p-6" style="padding-bottom: 65%;">
-              <div class="absolute inset-0 flex items-center justify-center flex-col p-6">
-                <!-- AI Enhancement GIF -->
-                <img src="{{ url_for('static', filename='images/ai-enhancement.gif') }}" alt="AI Enhancement Process"
-                  class="w-48 h-48 mb-6">
-                <div class="text-center">
-                  <h3 class="text-xl font-semibold mb-2 text-gray-800">Step 2: AI Enhancement</h3>
-                  <p class="text-gray-600">Our AI analyzes and optimizes your resume content for better results</p>
-                </div>
-              </div>
-            </div>
+            <div class="hidden md:block absolute top-1/2 right-0 w-full h-0.5 bg-gray-200"></div>
           </div>
         </div>
       </div>
@@ -917,7 +851,8 @@
               <textarea aria-label="Job description"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary resize-none"
                 id="jobDescription" name="jobDescription"
-                placeholder="Paste the job description here to get customized suggestions..." rows="4"></textarea>
+                placeholder="For a custom tailored resume to a specific position, paste job description..."
+                rows="4"></textarea>
               <div aria-live="polite" class="word-count" id="jobDescriptionWordCount"></div>
             </div>
             <!-- Resume Input -->
@@ -984,16 +919,22 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
+            <img src="{{ url_for('static', filename='images/topten.jpg') }}" alt="Top 10 Resume Mistakes"
+              class="w-full h-48 object-cover rounded-t-lg mb-4">
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Top 10 Resume Mistakes</h3>
             <p class="text-gray-600 mb-4">Avoid common pitfalls in 2025 and make your resume stand out.</p>
             <a href="/blog/toptenmistakes" class="text-primary font-semibold hover:underline">Read More →</a>
           </article>
           <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
+            <img src="{{ url_for('static', filename='images/tailor.jpg') }}" alt="Tailor Your Resume"
+              class="w-full h-48 object-cover rounded-t-lg mb-4">
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Tailor Your Resume</h3>
             <p class="text-gray-600 mb-4">Learn how to customize your resume for each application effectively.</p>
             <a href="/blog/tailorresumejob" class="text-primary font-semibold hover:underline">Read More →</a>
           </article>
           <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
+            <img src="{{ url_for('static', filename='images/robot.jpg') }}" alt="Pass the ATS Bots"
+              class="w-full h-48 object-cover rounded-t-lg mb-4">
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Pass the ATS Bots</h3>
             <p class="text-gray-600 mb-4">Ensure your resume clears automated filters used by most employers.</p>
             <a href="/blog/ats-optimization" class="text-primary font-semibold hover:underline">Read More →</a>
@@ -1115,6 +1056,38 @@
       document.getElementById('loadingOverlay').classList.remove('hidden');
     });
   </script>
+  <script src="/static/js/script.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const menuButton = document.getElementById('menuButton');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const closeMenuButton = document.getElementById('closeMenu');
+
+      console.log("Menu button:", menuButton);
+      console.log("Mobile menu:", mobileMenu);
+      console.log("Close button:", closeMenuButton);
+
+      if (menuButton && mobileMenu) {
+        menuButton.addEventListener('click', function () {
+          console.log("Opening mobile menu");
+          mobileMenu.classList.add('active');
+          menuButton.setAttribute('aria-expanded', 'true');
+        });
+      }
+
+      if (closeMenuButton && mobileMenu) {
+        closeMenuButton.addEventListener('click', function () {
+          console.log("Closing mobile menu");
+          mobileMenu.classList.remove('active');
+          menuButton.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  </script>
+
+
+
 
 </body>
 

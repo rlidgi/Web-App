@@ -115,6 +115,24 @@ body {
     .card-modern {
         margin-bottom: 1.5rem;
     }
+
+    .btn-modern {
+        padding: 0.5rem 1rem;
+    }
+
+    .card-modern {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-modern {
+        padding: 0.4rem 0.8rem;
+    }
+
+    .card-modern {
+        padding: 0.5rem;
+    }
 }
 
 /* Feature Icons */
