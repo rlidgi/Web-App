@@ -114,16 +114,16 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>User Management</h1>
+            <h1>👥 User Management</h1>
         </div>
 
         <div class="nav-buttons">
-            <a href="/">Home</a>
-            <a href="/my_revisions">My Revisions</a>
+            <a href="/">🏠 Home</a>
+            <a href="/my_revisions">📄 My Revisions</a>
         </div>
 
         <div class="stats">
-            <h3>User Statistics</h3>
+            <h3>📊 User Statistics</h3>
             <p><strong>Total Users:</strong> {{ users|length }}</p>
             <p><strong>Admin Users:</strong> {{ users|selectattr('is_admin')|list|length }}</p>
             <p><strong>Regular Users:</strong> {{ users|rejectattr('is_admin')|list|length }}</p>

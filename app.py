@@ -71,16 +71,71 @@ login_manager.login_view = "login"
 # Define a list of admin email addresses
 ADMIN_EMAILS = ["yaronyaronlid@gmail.com"]
 
+# User storage file
+USERS_FILE = "users_data.json"
+
 class User(UserMixin):
-    def __init__(self, id, name, email, is_new=False):
+    def __init__(self, id, name, email, is_new=False, created_at=None):
         self.id = id
         self.name = name
         self.email = email
         self.is_new = is_new
+        self.created_at = created_at or datetime.now(timezone.utc).isoformat()
         # Determine if the user is an admin based on their email
         self.is_admin = email in ADMIN_EMAILS
+    
+    def to_dict(self):
+        """Convert user to dictionary for JSON storage"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'created_at': self.created_at,
+            'is_admin': self.is_admin
+        }
+    
+    @classmethod
+    def from_dict(cls, data):
+        """Create user from dictionary"""
+        user = cls(
+            id=data['id'],
+            name=data['name'],
+            email=data['email'],
+            created_at=data.get('created_at')
+        )
+        return user
 
-users = {}
+def load_users():
+    """Load users from JSON file"""
+    try:
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, 'r', encoding='utf-8') as f:
+                users_data = json.load(f)
+                return {user_id: User.from_dict(user_data) for user_id, user_data in users_data.items()}
+        return {}
+    except Exception as e:
+        print(f"Error loading users: {e}")
+        return {}
+
+def save_users():
+    """Save users to JSON file"""
+    try:
+        users_data = {user_id: user.to_dict() for user_id, user in users.items()}
+        with open(USERS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(users_data, f, indent=2, ensure_ascii=False)
+        print(f"✅ Saved {len(users)} users to persistent storage")
+    except Exception as e:
+        print(f"Error saving users: {e}")
+
+def add_user(user):
+    """Add a user and save to persistent storage"""
+    users[user.id] = user
+    save_users()
+    print(f"✅ Added user: {user.name} ({user.email})")
+
+# Load existing users on startup
+users = load_users()
+print(f"📊 Loaded {len(users)} users from persistent storage")
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -141,7 +196,7 @@ def google_callback():
     user_id = user_info["sub"]
     is_new = user_id not in users
     user = User(user_id, user_info["name"], user_info.get("email", ""), is_new=is_new)
-    users[user.id] = user
+    add_user(user)  # Use add_user to save persistently
     login_user(user)
     # Save pending revision if it exists
     pending = session.pop('pending_revision', None)
@@ -171,7 +226,7 @@ def facebook_callback():
     user_id = f"facebook_{fb_info['id']}"
     is_new = user_id not in users
     user = User(user_id, fb_info["name"], fb_info.get("email", ""), is_new=is_new)
-    users[user.id] = user
+    add_user(user)  # Use add_user to save persistently
     login_user(user)
     return redirect(url_for("index"))
 
