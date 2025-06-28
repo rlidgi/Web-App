@@ -35,6 +35,15 @@ import os
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
+# HTTPS Redirect Middleware for Production
+@app.before_request
+def before_request():
+    # Only redirect in production (not in debug mode)
+    if not app.debug and not request.is_secure:
+        # Check if the request is coming from Azure (has X-Forwarded-Proto header)
+        if request.headers.get('X-Forwarded-Proto') == 'http':
+            url = request.url.replace('http://', 'https://', 1)
+            return redirect(url, code=301)
 
 # Only allow insecure transport for local development (debug mode)
 #if app.debug:
@@ -45,7 +54,19 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 
+# Google OAuth Configuration
 GOOGLE_CLIENT_SECRET_FILE = os.path.join(os.path.dirname(__file__), "client_secret.json")
+
+# Check if we have environment variables for Google OAuth (production)
+if os.getenv('GOOGLE_CLIENT_ID') and os.getenv('GOOGLE_CLIENT_SECRET'):
+    # Use environment variables (more secure for production)
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+    USE_ENV_CREDENTIALS = True
+else:
+    # Use file-based credentials (for development)
+    USE_ENV_CREDENTIALS = False
+
 GOOGLE_SCOPES = [
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/userinfo.profile", 
@@ -159,11 +180,33 @@ def logout():
 def google_login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    flow = Flow.from_client_secrets_file(
-        GOOGLE_CLIENT_SECRET_FILE,
-        scopes=GOOGLE_SCOPES,
-        redirect_uri=url_for("google_callback", _external=True)
-    )
+    
+    if USE_ENV_CREDENTIALS:
+        # Use environment variables for credentials
+        from google_auth_oauthlib.flow import Flow
+        client_config = {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "redirect_uris": [url_for("google_callback", _external=True)]
+            }
+        }
+        flow = Flow.from_client_config(
+            client_config,
+            scopes=GOOGLE_SCOPES,
+            redirect_uri=url_for("google_callback", _external=True)
+        )
+    else:
+        # Use file-based credentials
+        flow = Flow.from_client_secrets_file(
+            GOOGLE_CLIENT_SECRET_FILE,
+            scopes=GOOGLE_SCOPES,
+            redirect_uri=url_for("google_callback", _external=True)
+        )
+    
     auth_url, state = flow.authorization_url(
         access_type="offline",
         include_granted_scopes="true",
@@ -181,12 +224,33 @@ def google_login():
 def google_callback():
     if current_user.is_authenticated:
         return redirect(url_for('my_revisions'))
-    flow = Flow.from_client_secrets_file(
-        GOOGLE_CLIENT_SECRET_FILE,
-        scopes=GOOGLE_SCOPES,
-        state=session["state"],
-        redirect_uri=url_for("google_callback", _external=True)
-    )
+    
+    if USE_ENV_CREDENTIALS:
+        # Use environment variables for credentials
+        client_config = {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "redirect_uris": [url_for("google_callback", _external=True)]
+            }
+        }
+        flow = Flow.from_client_config(
+            client_config,
+            scopes=GOOGLE_SCOPES,
+            state=session["state"],
+            redirect_uri=url_for("google_callback", _external=True)
+        )
+    else:
+        # Use file-based credentials
+        flow = Flow.from_client_secrets_file(
+            GOOGLE_CLIENT_SECRET_FILE,
+            scopes=GOOGLE_SCOPES,
+            state=session["state"],
+            redirect_uri=url_for("google_callback", _external=True)
+        )
 
     flow.fetch_token(authorization_response=request.url)
     credentials = flow.credentials
