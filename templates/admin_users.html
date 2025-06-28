@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - User List | ResumaticAI</title>
+    <title>Admin - User Management | ResumaticAI</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -108,6 +108,52 @@
             padding: 40px;
             color: #6b7280;
         }
+
+        .provider-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .google-badge {
+            background: #db4437;
+            color: white;
+        }
+
+        .facebook-badge {
+            background: #4267B2;
+            color: white;
+        }
+
+        .other-badge {
+            background: #6c757d;
+            color: white;
+        }
+
+        .filter-tabs {
+            margin: 20px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .filter-tabs button {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+        }
+
+        .filter-tabs button.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .filter-tabs button:hover {
+            background-color: #f9fafb;
+        }
     </style>
 </head>
 
@@ -125,8 +171,20 @@
         <div class="stats">
             <h3>User Statistics</h3>
             <p><strong>Total Users:</strong> {{ users|length }}</p>
+            {% if user_stats %}
+            <p><strong>Google Users:</strong> {{ user_stats.google_users }}</p>
+            <p><strong>Facebook Users:</strong> {{ user_stats.facebook_users }}</p>
+            <p><strong>Other Users:</strong> {{ user_stats.other_users }}</p>
+            {% endif %}
             <p><strong>Admin Users:</strong> {{ users|selectattr('is_admin')|list|length }}</p>
             <p><strong>Regular Users:</strong> {{ users|rejectattr('is_admin')|list|length }}</p>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-btn active" onclick="filterUsers('all')">All Users</button>
+            <button class="filter-btn" onclick="filterUsers('google')">Google Users</button>
+            <button class="filter-btn" onclick="filterUsers('facebook')">Facebook Users</button>
+            <button class="filter-btn" onclick="filterUsers('admin')">Admins</button>
         </div>
 
         {% if users %}
@@ -135,6 +193,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Provider</th>
                     <th>User ID</th>
                     <th>Role</th>
                     <th>Signup Date</th>
@@ -142,10 +201,21 @@
             </thead>
             <tbody>
                 {% for user in users %}
-                <tr>
+                <tr class="user-row"
+                    data-provider="{% if user.id.startswith('facebook_') %}facebook{% elif user.id.isdigit() %}google{% else %}other{% endif %}"
+                    data-admin="{% if user.is_admin %}true{% else %}false{% endif %}">
                     <td><strong>{{ user.name }}</strong></td>
                     <td>{{ user.email }}</td>
-                    <td class="user-id">{{ user.id }}</td>
+                    <td>
+                        {% if user.id.startswith('facebook_') %}
+                        <span class="provider-badge facebook-badge">Facebook</span>
+                        {% elif user.id.isdigit() %}
+                        <span class="provider-badge google-badge">Google</span>
+                        {% else %}
+                        <span class="provider-badge other-badge">Other</span>
+                        {% endif %}
+                    </td>
+                    <td class="user-id">{{ user.id[:15] }}{% if user.id|length > 15 %}...{% endif %}</td>
                     <td>
                         {% if user.is_admin %}
                         <span class="admin-badge">Admin</span>
@@ -171,6 +241,41 @@
         </div>
         {% endif %}
     </div>
+
+    <script>
+        function filterUsers(type) {
+            const rows = document.querySelectorAll('.user-row');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filter rows
+            rows.forEach(row => {
+                const provider = row.dataset.provider;
+                const isAdmin = row.dataset.admin === 'true';
+
+                let show = false;
+                switch (type) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'google':
+                        show = provider === 'google';
+                        break;
+                    case 'facebook':
+                        show = provider === 'facebook';
+                        break;
+                    case 'admin':
+                        show = isAdmin;
+                        break;
+                }
+
+                row.style.display = show ? '' : 'none';
+            });
+        }
+    </script>
 </body>
 
 </html>
