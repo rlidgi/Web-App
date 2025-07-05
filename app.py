@@ -254,9 +254,25 @@ def google_callback():
 
     flow.fetch_token(authorization_response=request.url)
     credentials = flow.credentials
-    user_info = google.oauth2.id_token.verify_oauth2_token(
-        credentials.id_token, google.auth.transport.requests.Request()
-    )
+    
+    # Add clock skew tolerance for token verification with retry logic
+    import time
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            user_info = google.oauth2.id_token.verify_oauth2_token(
+                credentials.id_token, 
+                google.auth.transport.requests.Request(),
+                clock_skew_in_seconds=30  # Allow 30 seconds clock skew
+            )
+            break  # Success, exit retry loop
+        except google.auth.exceptions.InvalidValue as e:
+            if "Token used too early" in str(e) and attempt < max_retries - 1:
+                # Wait 2 seconds and retry
+                time.sleep(2)
+                continue
+            else:
+                raise  # Re-raise if not a timing issue or max retries reached
     user_id = user_info["sub"]
     is_new = user_id not in users
     user = User(user_id, user_info["name"], user_info.get("email", ""), is_new=is_new)

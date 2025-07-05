@@ -49,7 +49,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
   <!-- Primary Meta Tags -->
   <title>Resumatic AI | Free AI Resume Enhancement Tool</title>
-  <meta content="Resumatic AI | Best AI Resume Enhancement Tool 2025" name="title" />
+  <meta content="Resumatic AI | Free AI Resume Enhancement Tool" name="title" />
   <meta
     content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
     name="description" />
@@ -73,7 +73,7 @@
   <!-- Open Graph / Facebook -->
   <meta content="website" property="og:type" />
   <meta content="{{ request.url }}" property="og:url" />
-  <meta content="Resumatic AI | Best AI Resume Enhancement Tool 2025" property="og:title" />
+  <meta content="Resumatic AI | Free AI Resume Enhancement Tool" property="og:title" />
   <meta
     content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
     property="og:description" />
@@ -86,7 +86,7 @@
   <meta content="@ResumaticAI" name="twitter:site" />
   <meta content="@ResumaticAI" name="twitter:creator" />
   <meta content="{{ request.url }}" name="twitter:url" />
-  <meta content="Resumatic AI | Best AI Resume Enhancement Tool 2025" name="twitter:title" />
+  <meta content="Resumatic AI | Free AI Resume Enhancement Tool" name="twitter:title" />
   <meta
     content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
     name="twitter:description" />
@@ -152,7 +152,10 @@
         "name": "Is my data secure?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Yes, we take privacy seriously. Your resume content is processed securely and is never stored on our servers."
+          "text": "Yes, your data is secure. We take your privacy seriously and use 
+          industry-standard encryption to protect your information. We do not share, sell, or 
+          store your personal data beyond what is necessary to provide our services. Any data 
+          you input is used solely to generate your results."
         }
       }]
     }
@@ -164,7 +167,7 @@
       "@type": "Organization",
       "name": "Resumatic AI",
       "url": "{{ request.url }}",
-      "logo": "{{ url_for('static', filename='images/logo.jpg', _external=True) }}",
+      "logo": "{{ url_for('static', filename='images/logo23.png', _external=True) }}",
       "sameAs": [
         "https://twitter.com/ResumaticAI",
         "https://www.linkedin.com/company/resumatic-ai",
@@ -210,17 +213,19 @@
   <link href="https://resumaticai.com/" hreflang="x-default" rel="alternate" />
   <link href="https://resumaticai.com/" hreflang="en" rel="alternate" />
   <!-- Favicon and App Icons -->
-  <link href="{{ url_for('static', filename='images/favicon.ico') }}" rel="icon" type="image/x-icon" />
+  <link href="{{ url_for('static', filename='images/favicon2.ico') }}" rel="icon" type="image/x-icon" />
   <link href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180" />
-  <link href="{{ url_for('static', filename='images/favicon-32x32.png') }}" rel="icon" sizes="32x32" type="image/png" />
-  <link href="{{ url_for('static', filename='images/favicon-16x16.png') }}" rel="icon" sizes="16x16" type="image/png" />
+  <link href="{{ url_for('static', filename='images/favicon2-32x32.png') }}" rel="icon" sizes="32x32"
+    type="image/png" />
+  <link href="{{ url_for('static', filename='images/favicon2-16x16.png') }}" rel="icon" sizes="16x16"
+    type="image/png" />
   <link href="{{ url_for('static', filename='site.webmanifest') }}" rel="manifest" />
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Passion+One:wght@700&amp;display=swap" rel="stylesheet">
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-  <link href="{{ url_for('static', filename='images/favicon.ico') }}" rel="icon" type="image/x-icon" />
+  <link href="{{ url_for('static', filename='images/favicon2.ico') }}" rel="icon" type="image/x-icon" />
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -591,6 +596,18 @@
     .animate-progress {
       animation: progress 2s ease-in-out infinite;
     }
+
+    /* Simple analysis image styles */
+    .analysis-image {
+      transition: transform .25s, opacity .25s;
+      border-radius: 0.5rem;
+    }
+
+    .analysis-container {
+      transition: transform .25s, opacity .25s;
+      position: relative;
+      border-radius: 0.5rem;
+    }
   </style>
   </link>
   </link>
@@ -634,7 +651,7 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6" id="mobileMenu">
     <div class="flex justify-between items-center mb-8">
-      <img alt="Logo" class="h-8 w-auto" src="{{ url_for('static', filename='images/logo.jpg') }}" />
+      <img alt="Logo" class="h-12 w-auto" src="{{ url_for('static', filename='images/logo23.png') }}" />
       <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
         <i class="fas fa-times"></i>
       </button>
@@ -650,11 +667,11 @@
         <i class="fas fa-user mr-2"></i>My Account
       </a>
       <a class="block px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center mt-2" href="/logout">
-        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+        Logout
       </a>
       {% else %}
       <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/login">
-        <i class="fas fa-sign-in-alt mr-2"></i>Login
+        Login
       </a>
       {% endif %}
     </nav>
@@ -665,11 +682,11 @@
     <!-- Navigation -->
     <nav aria-label="Main navigation" class="bg-white shadow-sm sticky top-0 z-50" role="navigation">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
+        <div class="flex justify-between h-20 items-center">
           <div class="flex items-center">
             <a class="flex items-center" href="/">
-              <img alt="Resumatic AI Logo" class="h-8 w-auto" height="32"
-                src="{{ url_for('static', filename='images/logo.jpg') }}" width="32" />
+              <img alt="Resumatic AI Logo" class="h-16 w-auto" height="64"
+                src="{{ url_for('static', filename='images/logo23.png') }}" width="48" />
               <span class="sr-only">Resumatic AI</span>
             </a>
           </div>
@@ -684,11 +701,11 @@
               <i class="fas fa-user mr-2"></i>My Account
             </a>
             <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-              <i class="fas fa-sign-out-alt mr-2"></i>Logout
+              Logout
             </a>
             {% else %}
             <a href="/login" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
-              <i class="fas fa-sign-in-alt mr-2"></i>Login
+              Login
             </a>
             {% endif %}
           </div>
@@ -710,7 +727,7 @@
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
         <div class="text-center">
-          <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
+          <span class="inline-block px-4 py-1.5 bg-primary/10 text-primary rounded-full text-lg font-semibold mb-4"
             role="text">
             Transform Your Career Prospects
           </span>
@@ -746,12 +763,14 @@
           </div>
           <div class="mt-12 flex justify-center">
             <div class="w-full max-w-2xl rounded-lg overflow-hidden shadow-lg bg-white">
-              <!-- Replace GIF with embedded SVG -->
+              <!-- Analysis container with scroll-triggered animation -->
               <div class="relative bg-gradient-to-r from-indigo-50 to-blue-50 p-6" style="padding-bottom: 65%;">
                 <div class="absolute inset-0 flex items-center justify-center flex-col p-6">
-                  <h2 class="text-center text-gray-800 text-xl font-bold">Comprehensive Resume Analysis</h2>
-                  <img src="/static/images/analysis.jpg" alt="Resume Entry Illustration"
-                    class="w-auto h-auto max-w-full max-h-full object-contain mt-4 hover:scale-105 transition-transform duration-500">
+                  <h2 class="text-center text-gray-800 text-xl font-bold mb-4">Comprehensive Resume Analysis</h2>
+                  <div class="analysis-container">
+                    <img src="/static/images/analysis.jpg" alt="Resume Analysis Illustration"
+                      class="analysis-image w-auto h-auto max-w-full max-h-full object-contain" id="analysisImage">
+                  </div>
                 </div>
               </div>
             </div>
@@ -773,7 +792,7 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- Feature Cards -->
-          <article style="background-image:url(&quot;/static/images/bg13.png" ); background-size: cover&quot
+          <article style="background-image:url('/static/images/bg13.png'); background-size: cover;"
             class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <div class="flex items-center mb-4">
               <i aria-hidden="true" class="fas fa-magic text-primary text-2xl mr-4"></i>
@@ -781,7 +800,7 @@
             </div>
             <p class="text-gray-600">AI-powered suggestions to improve your resume's content, structure, and impact.</p>
           </article>
-          <article style="background-image:url(&quot;/static/images/bg11.png" ); background-size: cover&quot
+          <article style="background-image:url('/static/images/bg11.png'); background-size: cover;"
             class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <div class="flex items-center mb-4">
               <i aria-hidden="true" class="fas fa-search text-primary text-2xl mr-4"></i>
@@ -789,7 +808,7 @@
             </div>
             <p class="text-gray-600">Automatically identify and add relevant keywords to match job requirements.</p>
           </article>
-          <article style="background-image:url(&quot;/static/images/bg13.png" ); background-size: cover&quot
+          <article style="background-image:url('/static/images/bg13.png'); background-size: cover;"
             class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <div class="flex items-center mb-4">
               <i aria-hidden="true" class="fas fa-chart-line text-primary text-2xl mr-4"></i>
@@ -1057,9 +1076,10 @@
           </div>
           <div class="bg-white rounded-lg shadow-sm p-6">
             <h3 class="text-lg font-semibold mb-2">Is my data secure?</h3>
-            <p class="text-gray-600">Yes, we take privacy seriously. Your resume content is processed securely and is
-              never stored on our server. That being said, feel free to remove personal information such as name or
-              address.</p>
+            <p class="text-gray-600">Yes, your data is secure. We take your privacy seriously and
+              use industry-standard encryption to protect your information. We do not share, sell,
+              or store your personal data beyond what is necessary to provide our services. Any
+              data you input is used solely to generate your results.</p>
           </div>
         </div>
       </div>
@@ -1070,7 +1090,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div>
-          <img alt="Logo" class="h-8 w-auto mb-4" src="{{ url_for('static', filename='images/logo.jpg') }}" />
+          <img alt="Logo" class="h-12 w-auto mb-4" src="{{ url_for('static', filename='images/logo23.png') }}" />
           <p class="text-gray-500">Empowering job seekers with AI-enhanced resumes.</p>
         </div>
         <div>
@@ -1308,6 +1328,24 @@
             document.getElementById('loadingOverlay').classList.remove('hidden');
             return; // Allow normal form submission
           }
+        });
+      }
+    });
+  </script>
+
+  <script>
+    // Simple analysis image setup (no animations)
+    document.addEventListener('DOMContentLoaded', function () {
+      const analysisImage = document.getElementById('analysisImage');
+
+      if (analysisImage) {
+        // Just ensure the image loads properly
+        analysisImage.addEventListener('load', function () {
+          console.log('Analysis image loaded successfully');
+        });
+
+        analysisImage.addEventListener('error', function () {
+          console.error('Failed to load analysis image');
         });
       }
     });
