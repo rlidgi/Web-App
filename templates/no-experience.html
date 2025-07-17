@@ -23,12 +23,13 @@
   <meta property="og:description"
     content="No job history? No problem. Build a powerful resume from scratch with tips on summaries, skills, education, and more." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://resumaticai.com/blog/no-experience-resume" />
-  <meta property="og:image" content="https://resumaticai.com/assets/images/no-experience-cover.jpg" />
+  <meta property="og:url" content="https://resumaticai.com/blog/no-experience" />
+  <meta property="og:image" content="https://resumaticai.com/static/images/logo23.png" />
+  <meta property="fb:app_id" content="2405626099815308" />
   <title>How to Write a Resume With No Experience | ResumaticAI</title>
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://resumaticai.com/no-experience">
+  <link rel="canonical" href="https://resumaticai.com/blog/no-experience">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -210,10 +211,10 @@
             target="_blank" rel="noopener">
             <i class="fab fa-linkedin"></i> LinkedIn
           </a>
-          <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" class="share-btn facebook"
-            target="_blank" rel="noopener">
+          <a id="facebook-share" href="#" class="share-btn facebook" target="_blank" rel="noopener">
             <i class="fab fa-facebook"></i> Facebook
           </a>
+
         </div>
       </div>
 
@@ -290,4 +291,11 @@
     document.addEventListener('DOMContentLoaded', function () {
       updateReadingProgress();
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const currentUrl = window.location.href;
+      const facebookLink = document.getElementById("facebook-share");
+      facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+    });
+
   </script>

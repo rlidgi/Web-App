@@ -23,12 +23,13 @@
   <meta property="og:description"
     content="Should your resume start with a summary or an objective? Find out what works best for your career stage and how to write one that stands out." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://resumaticai.com/blog/resume-summary-vs-objective" />
-  <meta property="og:image" content="https://resumaticai.com/assets/images/summary-objective-cover.jpg" />
+  <meta property="og:url" content="https://resumaticai.com/blog/Resume_objective" />
+  <meta property="og:image" content="https://resumaticai.com/static/images/logo.png" />
+  <meta property="fb:app_id" content="2405626099815308" />
   <title>Resume Summary vs. Objective: Which to Use in 2025 | ResumaticAI</title>
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://resumaticai.com/Resume_objective">
+  <link rel="canonical" href="https://resumaticai.com/blog/Resume_objective">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -498,10 +499,12 @@
                     class="share-btn linkedin" target="_blank" rel="noopener">
                     <i class="fab fa-linkedin"></i> LinkedIn
                   </a>
-                  <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" class="share-btn facebook"
-                    target="_blank" rel="noopener">
+                  <a id="facebook-share" href="#" class="share-btn facebook" target="_blank" rel="noopener">
                     <i class="fab fa-facebook"></i> Facebook
                   </a>
+
+
+
                 </div>
               </div>
 
@@ -583,7 +586,19 @@
         </div>
 
         <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+        </script>
+
+        <script>
+
+          document.addEventListener("DOMContentLoaded", function () {
+            const currentUrl = window.location.href;
+            const facebookLink = document.getElementById("facebook-share");
+            facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+          });
+
+
+        </script>
 
     </body>
 

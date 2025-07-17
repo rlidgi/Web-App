@@ -17,11 +17,24 @@
   <title>How to Beat the ATS in 2025 | ResumaticAI</title>
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://resumaticai.com/ats-optimization">
+  <link rel="canonical" href="https://resumaticai.com/blog/ats-optimization">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description"
     content="Learn how to optimize your resume for Applicant Tracking Systems (ATS) in 2025 with actionable tips, AI tools, and formatting strategies.">
+
+
+
+  <meta property="og:title" content="How to Beat the ATS: Optimize Your Resume for Success in 2025" />
+  <meta property="og:description" content="An ATS is software that automatically collects, scans, and 
+ranks resumes based on how closely they match a job posting. Think of it as the search engine recruiters 
+use to find the best-fit candidates—only it’s scanning thousands of resumes at once. Get tips on how to 
+optimize your resume for ATS success." />
+  <meta property="og:url" content="https://resumaticai.com/blog/ats-optimization" />
+  <meta property="og:type" content="article" />
+  <meta property="og:image" content="https://resumaticai.com/static/images/logo23.png" />
+  <meta property="fb:app_id" content="2405626099815308" />
+
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -154,10 +167,10 @@
         target="_blank" rel="noopener">
         <i class="fab fa-linkedin"></i> LinkedIn
       </a>
-      <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" class="share-btn facebook"
-        target="_blank" rel="noopener">
+      <a id="facebook-share" href="#" class="share-btn facebook" target="_blank" rel="noopener">
         <i class="fab fa-facebook"></i> Facebook
       </a>
+
     </div>
   </div>
 
@@ -251,6 +264,13 @@
     document.addEventListener('DOMContentLoaded', function () {
       updateReadingProgress();
     });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const currentUrl = window.location.href;
+      const facebookLink = document.getElementById("facebook-share");
+      facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+    });
+
   </script>
 </body>
 

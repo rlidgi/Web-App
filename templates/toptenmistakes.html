@@ -22,12 +22,14 @@
     <meta property="og:description"
         content="Make your resume interview-ready by learning the top mistakes candidates make and how to correct them with smart tools and clear strategies." />
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="https://resumaticai.com/blog/top-resume-mistakes" />
-    <meta property="og:image" content="https://resumaticai.com/assets/images/resume-mistakes-2025.jpg" />
+    <meta property="og:url" content="https://resumaticai.com/blog/toptenmistakes" />
+    <meta property="og:image" content="https://resumaticai.com/static/images/topten.jpg" />
+
+    <meta property="fb:app_id" content="2405626099815308" />
     <title>Top 10 Resume Mistakes to Avoid | ResumaticAI</title>
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://resumaticai.com/toptenmistakes">
+    <link rel="canonical" href="https://resumaticai.com/blog/toptenmistakes">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -298,18 +300,23 @@
         <div class="share-section">
             <h3>📢 Share This Article</h3>
             <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?text=Top%2010%20Resume%20Mistakes%20to%20Avoid&url={{ request.url }}"
+                <a href="https://twitter.com/intent/tweet?text=Top%2010%20Resume%20Mistakes%20to%20Avoid&url={{ request.url if request else 'https://resumaticai.com/blog/toptenmistakes' }}"
                     class="share-btn twitter" target="_blank" rel="noopener">
                     <i class="fab fa-twitter"></i> Twitter
                 </a>
-                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}"
+                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url if request else 'https://resumaticai.com/blog/toptenmistakes' }}"
                     class="share-btn linkedin" target="_blank" rel="noopener">
                     <i class="fab fa-linkedin"></i> LinkedIn
                 </a>
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" class="share-btn facebook"
-                    target="_blank" rel="noopener">
+                <a id="facebook-share"
+                    href="https://www.facebook.com/sharer/sharer.php?u={{ request.url if request else 'https://resumaticai.com/blog/toptenmistakes' }}"
+                    class="share-btn facebook" target="_blank" rel="noopener noreferrer">
                     <i class="fab fa-facebook"></i> Facebook
                 </a>
+
+
+
+
             </div>
         </div>
 
@@ -386,7 +393,18 @@
         document.addEventListener('DOMContentLoaded', function () {
             updateReadingProgress();
         });
+
+
+
+
+
+
+
     </script>
+
+
+
+
 </body>
 
 </html>

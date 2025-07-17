@@ -23,12 +23,14 @@
     <meta property="og:description"
         content="Boost interview chances by aligning your resume with job descriptions using keywords, bullet strategies, and tools like ResumaticAI." />
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="https://resumaticai.com/blog/tailor-your-resume" />
-    <meta property="og:image" content="https://resumaticai.com/assets/images/tailor-resume-guide-2025.jpg" />
+    <meta property="og:url" content="https://resumaticai.com/blog/tailorresumejob" />
+    <meta property="og:image" content="https://resumaticai.com/static/images/tailor.jpg" />
+    <meta property="fb:app_id" content="2405626099815308" />
+
     <title>How to Tailor Your Resume to a Job Description | ResumaticAI</title>
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://resumaticai.com/tailorresumejob">
+    <link rel="canonical" href="https://resumaticai.com/blog/tailorresumejob">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -207,10 +209,12 @@
                     class="share-btn linkedin" target="_blank" rel="noopener">
                     <i class="fab fa-linkedin"></i> LinkedIn
                 </a>
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" class="share-btn facebook"
-                    target="_blank" rel="noopener">
+                <a id="facebook-share"
+                    href="https://www.facebook.com/sharer/sharer.php?u={{ request.url if request else 'https://resumaticai.com/blog/tailorresumejob' }}"
+                    class="share-btn facebook" target="_blank" rel="noopener noreferrer">
                     <i class="fab fa-facebook"></i> Facebook
                 </a>
+
             </div>
         </div>
 
@@ -287,6 +291,9 @@
         document.addEventListener('DOMContentLoaded', function () {
             updateReadingProgress();
         });
+
+
+
     </script>
 </body>
 

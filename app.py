@@ -402,6 +402,15 @@ Respond with ONLY the JSON object, no markdown formatting or additional text."""
         traceback.print_exc()
         raise
 
+
+def revised_resume_formatted(revised_resume):
+    prompt2 = f"Please format the following resume for better readability:\n\n{revised_resume}"
+    response2 = client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt2}]
+            )
+    return response.choices[0].message.content
+
 @app.route("/")
 def index():
     current_year = datetime.now().year
@@ -442,6 +451,7 @@ def revise_resume_route():
         print(f"Resume text preview (first 200 chars): {resume_text[:200]}...")
         print(f"Job description preview: {job_description[:100] if job_description else 'None'}...")
         revised_resume, feedback = revise_resume(resume_text, job_description)
+        revised_resume= revised_resume_formatted(revised_resume)
         print("=== FEEDBACK DATA ===")
         print(f"Feedback type: {type(feedback)}")
         print(json.dumps(feedback, indent=2))
@@ -507,10 +517,41 @@ def blog():
     current_year = datetime.now().year
     return render_template("blog.html", year=current_year, user=current_user if current_user.is_authenticated else None)
 
-@app.route("/blog/<post>")
-def blog_post(post):
+# Individual blog post routes
+@app.route("/blog/ats-optimization")
+def ats_optimization():
     current_year = datetime.now().year
-    return render_template(f"{post}.html", year=current_year, user=current_user if current_user.is_authenticated else None)
+    return render_template("ats-optimization.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
+
+@app.route("/blog/Resume_objective")
+def resume_objective():
+    current_year = datetime.now().year
+    return render_template("Resume_objective.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
+
+@app.route("/blog/Power_words")
+def power_words():
+    current_year = datetime.now().year
+    return render_template("Power_words.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
+
+@app.route("/blog/no-experience")
+def no_experience():
+    current_year = datetime.now().year
+    return render_template("no-experience.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
+
+@app.route("/blog/resume-format-2025")
+def resume_format_2025():
+    current_year = datetime.now().year
+    return render_template("resume-format-2025.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
+
+@app.route("/blog/toptenmistakes")
+def top_ten_mistakes():
+    current_year = datetime.now().year
+    return render_template("toptenmistakes.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
+
+@app.route("/blog/tailorresumejob")
+def tailor_resume_job():
+    current_year = datetime.now().year
+    return render_template("tailorresumejob.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
 
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
