@@ -2,5 +2,10 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 Disallow: /private/
+Disallow: /*.json$
+Disallow: /__pycache__/
+Disallow: /flask_session/
+Disallow: /temp_uploads/
 
+# Sitemap location
 Sitemap: https://resumaticai.com/sitemap.xml 

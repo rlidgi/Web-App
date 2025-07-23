@@ -1,0 +1,77 @@
+{
+  "total_visits": 112,
+  "facebook_ad_visits": 0,
+  "organic_visits": 95,
+  "total_conversions": 14,
+  "facebook_ad_conversions": 0,
+  "daily_stats": {
+    "2025-07-22": {
+      "total": 108,
+      "facebook_ad": 0,
+      "organic": 93,
+      "direct": 15,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 14,
+      "facebook_ad_conversions": 0
+    },
+    "2025-07-23": {
+      "total": 4,
+      "facebook_ad": 0,
+      "organic": 2,
+      "direct": 2,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 0,
+      "facebook_ad_conversions": 0
+    }
+  },
+  "utm_campaigns": {},
+  "referrer_data": {
+    "direct": {
+      "count": 17,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-23"
+    },
+    "http://127.0.0.1:5000/": {
+      "count": 78,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-23"
+    },
+    "http://127.0.0.1:5000/my_revisions": {
+      "count": 3,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-22"
+    },
+    "http://127.0.0.1:5000/blog/ats-optimization": {
+      "count": 4,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-22"
+    },
+    "http://127.0.0.1:5000/analytics": {
+      "count": 1,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-22"
+    },
+    "http://127.0.0.1:5000/blog": {
+      "count": 2,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-22"
+    },
+    "http://127.0.0.1:5000/revise_resume": {
+      "count": 7,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-22"
+    }
+  },
+  "last_updated": "2025-07-23"
+}

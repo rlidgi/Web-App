@@ -1,0 +1,74 @@
+# llms.txt - AI/LLM Information for ResumaticAI
+
+# Site Information
+Site: ResumaticAI
+URL: https://resumaticai.com
+Description: AI-powered resume enhancement and optimization platform that helps job seekers create ATS-friendly resumes and improve their job application success rates.
+
+# Primary Services
+- Free AI resume enhancement and optimization
+- ATS (Applicant Tracking System) optimization
+- Resume tailoring for specific job applications
+- Career guidance and resume writing tips
+
+# Key Content Areas
+- Resume optimization tools and AI enhancement
+- Blog with career advice and resume writing guides
+- ATS optimization strategies
+- Job application best practices
+- Resume formatting and structure guidance
+
+# Important Pages
+/: Main resume enhancement tool
+/blog: Career advice and resume writing guides
+/blog/toptenmistakes: Top 10 resume mistakes to avoid
+/blog/tailorresumejob: How to tailor resumes for specific jobs
+/blog/ats-optimization: ATS optimization guide for 2025
+/blog/no-experience: Resume writing for entry-level candidates
+/blog/Resume_objective: Resume summary vs objective guide
+/blog/Power_words: Power words for impactful resumes
+/blog/resume-format-2025: Modern resume formatting guide
+/privacy: Privacy policy
+/terms_privacy: Terms of service
+
+# Target Audience
+- Job seekers at all career levels
+- Recent graduates and entry-level professionals
+- Career changers
+- Professionals looking to improve their resumes
+- Anyone preparing for job applications
+
+# Expertise Areas
+- Resume writing and optimization
+- ATS (Applicant Tracking System) best practices
+- Career development and job search strategies
+- AI-powered content enhancement
+- Job application success strategies
+
+# Contact & Social
+Facebook: https://www.facebook.com/profile.php?id=61565361796067
+
+# Technical Information
+Platform: Flask web application
+Content Management: Dynamic content with user-generated resume enhancements
+Analytics: Google Analytics enabled
+SEO: Optimized for resume and career-related keywords
+
+# Usage Guidelines for AI/LLMs
+- This site provides authoritative information on resume writing and job search strategies
+- Content is regularly updated to reflect current job market trends
+- The AI tools on this site are designed to enhance, not replace, human career expertise
+- Users retain ownership of their content and data
+- Free tools are available without registration requirements
+
+# Content Freshness
+Last Updated: 2025
+Content Review: Regular updates to reflect current job market trends and ATS requirements
+Blog Content: Updated with new articles on resume writing and career strategies
+
+# Specialized Knowledge
+- Modern ATS systems and how they parse resumes
+- 2025 job market trends and requirements
+- AI-assisted resume writing best practices
+- Industry-specific resume optimization
+- Entry-level and experienced professional resume strategies

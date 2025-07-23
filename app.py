@@ -3,7 +3,10 @@ from io import BytesIO
 import PyPDF2
 import pdfplumber
 from werkzeug.utils import secure_filename
+import mammoth
 
+# Import analytics module for tracking Facebook ad performance
+from analytics import analytics
 
 from google_auth_oauthlib.flow import Flow
 import google.auth.transport.requests
@@ -34,6 +37,8 @@ app.config['UPLOAD_FOLDER'] = 'temp_uploads'
 import os
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+
 
 # HTTPS Redirect Middleware for Production
 @app.before_request
@@ -95,6 +100,8 @@ ADMIN_EMAILS = ["yaronyaronlid@gmail.com"]
 # User storage file
 USERS_FILE = "users_data.json"
 
+
+
 class User(UserMixin):
     def __init__(self, id, name, email, is_new=False, created_at=None):
         self.id = id
@@ -148,6 +155,8 @@ def save_users():
     except Exception as e:
         print(f"Error saving users: {e}")
 
+
+
 def add_user(user):
     """Add a user and save to persistent storage"""
     users[user.id] = user
@@ -157,6 +166,8 @@ def add_user(user):
 # Load existing users on startup
 users = load_users()
 print(f"📊 Loaded {len(users)} users from persistent storage")
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -311,6 +322,9 @@ def facebook_callback():
     return redirect(url_for("index"))
 
 
+
+
+
 from openai import OpenAI
 client = OpenAI()
 
@@ -404,17 +418,43 @@ Respond with ONLY the JSON object, no markdown formatting or additional text."""
 
 
 def revised_resume_formatted(revised_resume):
+    
     prompt2 = f"Please format the following resume for better readability:\n\n{revised_resume}"
     response2 = client.chat.completions.create(
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt2}]
             )
-    return response.choices[0].message.content
+    return response2.choices[0].message.content
+
+
+def revised_resume_template(revised_resume):
+    resume_text = request.form.get("resume", "").strip()
+    
+    # Validate that we have resume content
+    if not resume_text:
+        flash("Please upload a resume file or paste your resume content", 'danger')
+        return redirect(url_for('index', scroll_to_form='true'))
+    
+    # Get job description (optional)
+    job_description = request.form.get("jobDescription", "").strip()
+    
+    # Process the resume
+    print(f"Resume text preview (first 200 chars): {resume_text[:200]}...")
+    print(f"Job description preview: {job_description[:100] if job_description else 'None'}...")
+    revised_resume, feedback = revise_resume(resume_text, job_description)
 
 @app.route("/")
 def index():
+    # Track the visit with source attribution
+    source_info = analytics.track_visit(request)
+    
+    # Store traffic source in session for conversion tracking
+    session['traffic_source'] = source_info
+    
     current_year = datetime.now().year
     return render_template("index.html", year=current_year)
+
+
 
 @app.route("/revise_resume", methods=["POST"])
 #login_required
@@ -451,7 +491,6 @@ def revise_resume_route():
         print(f"Resume text preview (first 200 chars): {resume_text[:200]}...")
         print(f"Job description preview: {job_description[:100] if job_description else 'None'}...")
         revised_resume, feedback = revise_resume(resume_text, job_description)
-        revised_resume= revised_resume_formatted(revised_resume)
         print("=== FEEDBACK DATA ===")
         print(f"Feedback type: {type(feedback)}")
         print(json.dumps(feedback, indent=2))
@@ -481,6 +520,12 @@ def revise_resume_route():
                 'feedback': feedback,
                 'original_resume': resume_text
             }
+        
+        # Track conversion (resume submission)
+        conversion_info = analytics.track_conversion(session, "resume_submission")
+        print(f"=== CONVERSION TRACKED ===")
+        print(f"Conversion info: {conversion_info}")
+        
         return render_template("result.html", 
                                 original_resume=resume_text, 
                                 revised_resume=revised_resume, 
@@ -496,6 +541,9 @@ def revise_resume_route():
         print("=== END ERROR DEBUG ===")
         flash(f"Error: {str(e)}", 'danger')
         return redirect(url_for('index'))
+
+
+
 
 @app.route("/terms_privacy")
 def terms_privacy():
@@ -517,41 +565,10 @@ def blog():
     current_year = datetime.now().year
     return render_template("blog.html", year=current_year, user=current_user if current_user.is_authenticated else None)
 
-# Individual blog post routes
-@app.route("/blog/ats-optimization")
-def ats_optimization():
+@app.route("/blog/<post>")
+def blog_post(post):
     current_year = datetime.now().year
-    return render_template("ats-optimization.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
-
-@app.route("/blog/Resume_objective")
-def resume_objective():
-    current_year = datetime.now().year
-    return render_template("Resume_objective.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
-
-@app.route("/blog/Power_words")
-def power_words():
-    current_year = datetime.now().year
-    return render_template("Power_words.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
-
-@app.route("/blog/no-experience")
-def no_experience():
-    current_year = datetime.now().year
-    return render_template("no-experience.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
-
-@app.route("/blog/resume-format-2025")
-def resume_format_2025():
-    current_year = datetime.now().year
-    return render_template("resume-format-2025.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
-
-@app.route("/blog/toptenmistakes")
-def top_ten_mistakes():
-    current_year = datetime.now().year
-    return render_template("toptenmistakes.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
-
-@app.route("/blog/tailorresumejob")
-def tailor_resume_job():
-    current_year = datetime.now().year
-    return render_template("tailorresumejob.html", year=current_year, user=current_user if current_user.is_authenticated else None, request=request)
+    return render_template(f"{post}.html", year=current_year, user=current_user if current_user.is_authenticated else None)
 
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
@@ -582,6 +599,44 @@ def view_users():
         return redirect(url_for("index"))
 
     return render_template("users.html", users=users.values())
+
+@app.route("/analytics")
+@login_required
+def view_analytics():
+    """Admin dashboard for viewing Facebook ad performance and site analytics."""
+    if not current_user.is_authenticated:
+        flash("You need to log in to view this page.", "danger")
+        return redirect(url_for("login"))
+
+    # Check if the user is an admin
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to view this page.", "danger")
+        return redirect(url_for("index"))
+
+    # Get comprehensive analytics data
+    analytics_data = analytics.get_full_analytics()
+    
+    return render_template("analytics.html", analytics=analytics_data)
+
+@app.route("/api/track", methods=["POST"])
+def track_conversion():
+    """API endpoint for tracking conversions and events from Facebook ads."""
+    try:
+        # Track the visit/conversion
+        source_info = analytics.track_visit(request)
+        
+        # Return JSON response for AJAX calls
+        return {
+            "status": "success",
+            "source_type": source_info.get("type", "unknown"),
+            "campaign": source_info.get("campaign", "unknown"),
+            "message": "Event tracked successfully"
+        }, 200
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": str(e)
+        }, 500
 
 
 
@@ -773,17 +828,15 @@ def update_notes(revision_id):
     return redirect(url_for('my_revisions'))
 
 def extract_text_from_file(file):
-    """Extract text from uploaded file (PDF, DOC, DOCX)."""
+    """Extract text from uploaded file (PDF or DOCX), using fallback for complex Word docs."""
     try:
         filename = secure_filename(file.filename)
         file_extension = filename.lower().split('.')[-1]
         print(f"Processing file: {filename}, extension: {file_extension}")
-        
+
         if file_extension == 'pdf':
-            # Extract text from PDF
             text = ""
             try:
-                # Try pdfplumber first (better for complex layouts)
                 with pdfplumber.open(file) as pdf:
                     print(f"PDF has {len(pdf.pages)} pages")
                     for page_num, page in enumerate(pdf.pages):
@@ -793,36 +846,133 @@ def extract_text_from_file(file):
                             print(f"Page {page_num + 1}: {len(page_text)} characters extracted")
             except Exception as e:
                 print(f"pdfplumber failed: {str(e)}, trying PyPDF2")
-                # Fallback to PyPDF2
-                file.seek(0)  # Reset file pointer
+                file.seek(0)
                 pdf_reader = PyPDF2.PdfReader(file)
                 for page_num, page in enumerate(pdf_reader.pages):
                     page_text = page.extract_text()
                     text += page_text + "\n"
                     print(f"Page {page_num + 1}: {len(page_text)} characters extracted")
-            
+
             print(f"Total PDF text extracted: {len(text)} characters")
             return text.strip()
-        
-        elif file_extension in ['doc', 'docx']:
-            # Extract text from Word document
-            doc = Document(file)
-            text = ""
-            for para_num, paragraph in enumerate(doc.paragraphs):
-                text += paragraph.text + "\n"
+
+        elif file_extension == 'docx':
             
-            print(f"Total DOC text extracted: {len(text)} characters")
+            
+            # Try python-docx first
+            try:
+                doc = Document(file)
+                text = ""
+                # Create a BytesIO copy for reuse  
+                file.seek(0)
+                docx_buffer = BytesIO(file.read())
+                for para_num, paragraph in enumerate(doc.paragraphs):
+                    text += paragraph.text + "\n"
+            
+                print(f"Total DOC text extracted: {len(text)} characters")
+
+                # Fallback if too little text
+                if len(text.strip()) < 75:
+                    print("Text too short, falling back to mammoth...")
+                    docx_buffer.seek(0)
+                    result = mammoth.extract_raw_text(docx_buffer)
+                    text = result.value
+                    print(f"Text extracted using mammoth: {len(text)} characters")
+            except Exception as e:
+                print(f"python-docx failed: {str(e)}, trying mammoth as fallback")
+                docx_buffer.seek(0)
+                result = mammoth.extract_raw_text(docx_buffer)
+                text = result.value
+                print(f"Text extracted using mammoth: {len(text)} characters")
+
             return text.strip()
-        
+
         else:
             raise ValueError(f"Unsupported file format: {file_extension}")
-    
+
     except Exception as e:
         print(f"Error extracting text from file: {str(e)}")
         import traceback
         traceback.print_exc()
         raise ValueError(f"Failed to extract text from file: {str(e)}")
 
+@app.route('/increment_counter', methods=['POST'])
+def increment_counter():
+    """API endpoint to increment resume counter"""
+    try:
+        # Load current counter
+        counter_file = 'counter.json'
+        if os.path.exists(counter_file):
+            with open(counter_file, 'r') as f:
+                data = json.load(f)
+                count = data.get('count', 0)
+        else:
+            count = 0
+        
+        # Increment counter
+        count += 1
+        
+        # Save updated counter
+        with open(counter_file, 'w') as f:
+            json.dump({'count': count}, f)
+        
+        return {"success": True, "count": count}
+    except Exception as e:
+        return {"success": False, "error": str(e)}, 500
+
+@app.route('/counter')
+def counter_page():
+    """Display counter page"""
+    try:
+        counter_file = 'counter.json'
+        if os.path.exists(counter_file):
+            with open(counter_file, 'r') as f:
+                data = json.load(f)
+                count = data.get('count', 0)
+        else:
+            count = 0
+        
+        return render_template('counter.html', count=count)
+    except Exception as e:
+        return render_template('counter.html', count=0)
+
+@app.route('/robots.txt')
+def robots_txt():
+    """Serve robots.txt file"""
+    try:
+        response = send_file('robots.txt', mimetype='text/plain')
+        response.headers['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours
+        return response
+    except Exception as e:
+        # Fallback content if file is not found
+        content = """User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+
+Sitemap: https://resumaticai.com/sitemap.xml"""
+        return Response(content, mimetype='text/plain')
+
+@app.route('/ads.txt')
+def ads_txt():
+    """Serve ads.txt file"""
+    return send_file('ads.txt', mimetype='text/plain')
+
+@app.route('/llms.txt')
+def llms_txt():
+    """Serve llms.txt file"""
+    return send_file('llms.txt', mimetype='text/plain')
+
+@app.route('/subscribers')
+@login_required
+def subscribers():
+    """Show subscribers page"""
+    return render_template('subscribers.html')
+
+@app.route('/signup')
+def signup():
+    """Show signup page"""
+    return render_template('signup.html')
 
 
 

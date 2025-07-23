@@ -176,7 +176,8 @@
                 <li>📄 Summary + skill auto-generation</li>
                 <li>✅ ATS-format check</li>
             </ul>
-            <p><a href="https://resumaticai.com" target="_blank">Try it now—free and instant.</a></p>
+            <p><a href="https://resumaticai.com" target="_blank" rel="noopener noreferrer">Try it now—free and
+                    instant.</a></p>
 
             <h2 id="final-review">📋 Tailoring Checklist</h2>
             <ul>
@@ -203,18 +204,37 @@
             <div class="share-buttons">
                 <a href="https://twitter.com/intent/tweet?text=How%20to%20Tailor%20Your%20Resume%20to%20a%20Job%20Description&url={{ request.url }}"
                     class="share-btn twitter" target="_blank" rel="noopener">
-                    <i class="fab fa-twitter"></i> Twitter
+                    <i class="fab fa-twitter"></i> Share on Twitter
                 </a>
                 <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}"
                     class="share-btn linkedin" target="_blank" rel="noopener">
-                    <i class="fab fa-linkedin"></i> LinkedIn
+                    <i class="fab fa-linkedin"></i> Share on LinkedIn
                 </a>
                 <a id="facebook-share"
                     href="https://www.facebook.com/sharer/sharer.php?u={{ request.url if request else 'https://resumaticai.com/blog/tailorresumejob' }}"
                     class="share-btn facebook" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-facebook"></i> Facebook
+                    <i class="fab fa-facebook"></i> Share on Facebook
                 </a>
 
+            </div>
+        </div>
+
+        <!-- Related Articles -->
+        <div class="related-articles">
+            <h3>📚 Related Articles</h3>
+            <div class="article-grid">
+                <a href="/blog/toptenmistakes" class="article-card">
+                    <h4>Top 10 Resume Mistakes to Avoid</h4>
+                    <p>Learn the most common resume pitfalls and how to fix them</p>
+                </a>
+                <a href="/blog/ats-optimization" class="article-card">
+                    <h4>How to Pass ATS Resume Screening</h4>
+                    <p>Optimize your resume to get past automated filtering systems</p>
+                </a>
+                <a href="/blog/Power_words" class="article-card">
+                    <h4>Power Words for Your Resume</h4>
+                    <p>Discover impactful words that make your resume stand out</p>
+                </a>
             </div>
         </div>
 

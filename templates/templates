@@ -1,0 +1,61 @@
+<!-- Template: Modern -->
+<!-- File: templates/modern.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modern.css') }}">
+    <title>Modern Resume</title>
+</head>
+
+<body>
+    <div class="resume">
+        <h1>{{ resume.name }}</h1>
+        <p class="summary">{{ resume.summary }}</p>
+        <section>
+            <h2>Experience</h2>
+            {% for job in resume.experience %}
+            <div class="job">
+                <strong>{{ job.job_title }}</strong> - {{ job.company }} ({{ job.years }})
+                <p>{{ job.details }}</p>
+            </div>
+            {% endfor %}
+        </section>
+        <section>
+            <h2>Education</h2>
+            {% for edu in resume.education %}
+            <div class="edu">
+                <strong>{{ edu.degree }}</strong> - {{ edu.school }} ({{ edu.years }})
+            </div>
+            {% endfor %}
+        </section>
+        <section>
+            <h2>Skills</h2>
+            <ul>
+                {% for skill in resume.skills %}
+                <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+</body>
+
+</html>
+
+<!-- Repeat similar structure for other templates with style variations -->
+
+<!-- Template: Classic -->
+<!-- File: templates/classic.html -->
+<!-- Uses serif fonts, underlined headers -->
+
+<!-- Template: Creative -->
+<!-- File: templates/creative.html -->
+<!-- Uses two-column layout, icons, color blocks -->
+
+<!-- Template: Professional -->
+<!-- File: templates/professional.html -->
+<!-- Conservative layout, muted tones -->
+
+<!-- Template: Technical -->
+<!-- File: templates/technical.html -->
+<!-- Monospace font, boxed sections, skill bars -->

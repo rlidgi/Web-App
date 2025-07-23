@@ -55,7 +55,7 @@
   <title>Resumatic AI | Free AI Resume Enhancement Tool</title>
   <meta content="Resumatic AI | Free AI Resume Enhancement Tool" name="title" />
   <meta
-    content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
+    content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free!"
     name="description" />
   <meta
     content="resume builder, AI resume tool, resume enhancement, career development, job application, resume optimization, resume writer, ATS optimization, professional resume, CV builder"
@@ -74,127 +74,43 @@
   <meta content="US" name="geo.region" />
   <meta content="39.8283;-98.5795" name="geo.position" />
   <meta content="39.8283, -98.5795" name="ICBM" />
-  <!-- Open Graph / Facebook -->
-  <meta content="website" property="og:type" />
-  <meta content="{{ request.url }}" property="og:url" />
-  <meta content="Resumatic AI | Free AI Resume Enhancement Tool" property="og:title" />
-  <meta
-    content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
-    property="og:description" />
-  <meta content="{{ url_for('static', filename='images/logo23.png', _external=True) }}" property="og:image" />
-  <meta content="Resumatic AI Resume Enhancement Tool" property="og:image:alt" />
-  <meta content="Resumatic AI" property="og:site_name" />
-  <meta content="en_US" property="og:locale" />
-  <!-- Twitter -->
-  <meta content="summary_large_image" name="twitter:card" />
-  <meta content="@ResumaticAI" name="twitter:site" />
-  <meta content="@ResumaticAI" name="twitter:creator" />
-  <meta content="{{ request.url }}" name="twitter:url" />
-  <meta content="Resumatic AI | Free AI Resume Enhancement Tool" name="twitter:title" />
-  <meta
-    content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
-    name="twitter:description" />
-  <meta content="{{ url_for('static', filename='images/logo23.png', _external=True) }}" name="twitter:image" />
-  <meta content="Resumatic AI Resume Enhancement Tool" name="twitter:image:alt" />
-  <!-- Structured Data -->
+  <!-- Structured Data (JSON-LD) -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Resumatic AI",
-      "applicationCategory": "Career Development Tool",
-      "operatingSystem": "All",
-      "description": "AI-powered resume enhancement tool that helps job seekers improve their resumes instantly with ATS optimization and professional formatting.",
+      "@type": "WebPage",
+      "name": "Resumatic AI | Free AI Resume Enhancement Tool",
+      "description": "Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free!",
       "url": "{{ request.url }}",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+      "mainEntity": {
+        "@type": "SoftwareApplication",
+        "name": "Resumatic AI",
+        "applicationCategory": "Career Development Tool",
+        "operatingSystem": "All",
+        "description": "Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free!",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "1842",
+          "bestRating": "5",
+          "worstRating": "1"
+        }
       },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "ratingCount": "1842",
-        "bestRating": "5",
-        "worstRating": "1"
-      },
-      "featureList": [
-        "AI-powered resume analysis",
-        "Instant resume enhancement",
-        "ATS optimization",
-        "Keyword optimization",
-        "Professional formatting",
-        "Job match analysis",
-        "No signup required",
-        "ai resume enhancement", 
-        "resume optimization tool",
-        "ats optimization"
-      ]
-    }
-  </script>
-  <!-- FAQ Structured Data -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [{
-        "@type": "Question",
-        "name": "Is this service really free?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, our basic resume enhancement service is completely free to use with no hidden charges."
-        }
-      }, {
-        "@type": "Question",
-        "name": "How does the AI enhancement work?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Our AI analyzes your resume content and suggests improvements in language, structure, and impact while maintaining your original information."
-        }
-      }, {
-        "@type": "Question",
-        "name": "Is my data secure?",
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": "Yes, your data is secure. We take your privacy seriously and use 
-          industry-standard encryption to protect your information. We do not share, sell, or 
-          store your personal data beyond what is necessary to provide our services. Any data 
-          you input is used solely to generate your results."
-        }
-      }]
-    }
-  </script>
-  <!-- Organization Structured Data -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Resumatic AI",
-      "url": "{{ request.url }}",
-      "logo": "{{ url_for('static', filename='images/logo23.png', _external=True) }}",
-      "sameAs": [
-        "https://twitter.com/ResumaticAI",
-        "https://www.linkedin.com/company/resumatic-ai",
-        "https://www.facebook.com/ResumaticAI"
-      ]
+      "publisher": {
+        "@type": "Organization",
+        "name": "Resumatic AI",
+        "url": "{{ request.url }}",
+        "logo": "{{ url_for('static', filename='images/logo23.png', _external=True) }}"
+      }
     }
   </script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-  <!-- Breadcrumb Structured Data -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [{
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "{{ request.url }}"
-      }]
-    }
-  </script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -218,11 +134,6 @@
   <link href="https://resumaticai.com/" hreflang="en" rel="alternate" />
   <!-- Favicon and App Icons -->
   <link href="{{ url_for('static', filename='images/favicon2.ico') }}" rel="icon" type="image/x-icon" />
-  <link href="{{ url_for('static', filename='images/apple-touch-icon.png') }}" rel="apple-touch-icon" sizes="180x180" />
-  <link href="{{ url_for('static', filename='images/favicon2-32x32.png') }}" rel="icon" sizes="32x32"
-    type="image/png" />
-  <link href="{{ url_for('static', filename='images/favicon2-16x16.png') }}" rel="icon" sizes="16x16"
-    type="image/png" />
   <link href="{{ url_for('static', filename='site.webmanifest') }}" rel="manifest" />
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -459,7 +370,7 @@
     }
 
     .gif-container img {
-      /* Remove transition */
+      transition: transform 0.3s ease;
     }
 
     .gif-container:hover img {
@@ -726,7 +637,8 @@
     <!-- Hero Section -->
     <section aria-labelledby="hero-heading" class="relative overflow-hidden">
       <div aria-hidden="true" class="absolute inset-0">
-        <img src="/static/images/heroimage6.jpg" alt="Resume and laptop" class="w-full h-full object-cover opacity-60">
+        <img src="{{ url_for('static', filename='images/heroimage6.jpg') }}" alt="Resume and laptop"
+          class="w-full h-full object-cover opacity-60">
       </div>
 
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
@@ -744,12 +656,12 @@
 
           </p>
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
+            <a href="#resume-form"
               class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90 transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 pulse"
-              id="getStartedButton" type="button" onclick="scrollToLogin()">
+              id="getStartedButton">
               Get Started Now
               <i class="fas fa-arrow-right ml-2"></i>
-            </button>
+            </a>
           </div>
           <div class="mt-8 flex flex-wrap justify-center gap-6">
             <div class="flex items-center">
@@ -772,7 +684,8 @@
                 <div class="absolute inset-0 flex items-center justify-center flex-col p-6">
                   <h2 class="text-center text-gray-800 text-xl font-bold mb-4">Comprehensive Resume Analysis</h2>
                   <div class="analysis-container">
-                    <img src="/static/images/analysis.jpg" alt="Resume Analysis Illustration"
+                    <img src="{{ url_for('static', filename='images/analysis.jpg') }}"
+                      alt="Resume Analysis Illustration"
                       class="analysis-image w-auto h-auto max-w-full max-h-full object-contain" id="analysisImage">
                   </div>
                 </div>
@@ -782,6 +695,26 @@
         </div>
       </div>
     </section>
+
+
+    <!-- Visual Resume Section 
+    <section class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-6">Before & After AI Enhancement</h2>
+        <p class="text-gray-600 mb-12">Real examples of resumes improved using Resumatic AI.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-lg font-semibold mb-2">Before</h3>
+            <img src="{{ url_for('static', filename='images/resume_new.jpg') }}" alt="Before resume example" class="rounded-lg shadow-md">
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-2">After</h3>
+            <img src="{{ url_for('static', filename='images/resume_new.jpg') }}" alt="After resume example" class="rounded-lg shadow-md">
+          </div>
+        </div>
+      </div>
+    </section>
+  -->
 
     <!-- Features Section -->
     <section aria-labelledby="features-heading" class="py-20 bg-white" id="features">
@@ -802,7 +735,9 @@
               <i aria-hidden="true" class="fas fa-magic text-primary text-2xl mr-4"></i>
               <h3 class="text-xl font-semibold text-gray-900">Smart Enhancement</h3>
             </div>
-            <p class="text-gray-600">AI-powered suggestions to improve your resume's content, structure, and impact.</p>
+            <p class="text-gray-600">Resumatic AI intelligently rewrites your resume bullet points
+              using action verbs, quantifiable achievements, and crisp phrasing, all tailored to
+              your industry. It highlights what matters and cuts what doesn't.</p>
           </article>
           <article style="background-image:url('/static/images/bg11.png'); background-size: cover;"
             class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
@@ -810,7 +745,11 @@
               <i aria-hidden="true" class="fas fa-search text-primary text-2xl mr-4"></i>
               <h3 class="text-xl font-semibold text-gray-900">Keyword Optimization</h3>
             </div>
-            <p class="text-gray-600">Automatically identify and add relevant keywords to match job requirements.</p>
+            <p class="text-gray-600">Our keyword engine analyzes your resume to ensure it aligns with
+              common industry terms and roles. When a job description is provided, we further tailor
+              your content to reflect the specific language and priorities of that position, improving
+              your chances of passing Applicant Tracking Systems (ATS).
+            </p>
           </article>
           <article style="background-image:url('/static/images/bg13.png'); background-size: cover;"
             class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
@@ -818,7 +757,9 @@
               <i aria-hidden="true" class="fas fa-chart-line text-primary text-2xl mr-4"></i>
               <h3 class="text-xl font-semibold text-gray-900">Impact Analysis</h3>
             </div>
-            <p class="text-gray-600">Measure and improve the effectiveness of your achievements and experiences.</p>
+            <p class="text-gray-600">See your resume through an employer’s eyes. We break down
+              how your content scores in clarity, strength, and alignment with job expectations, empowering
+              you with actionable insights.</p>
           </article>
         </div>
       </div>
@@ -850,13 +791,14 @@
               <span class="text-2xl font-bold text-primary">3</span>
             </div>
             <h3 class="text-xl font-semibold mb-2">Get Results</h3>
-            <p class="text-gray-600">Review a comprehensive resume analysis and the enhanced resume.</p>
+            <p class="text-gray-600">Review a comprehensive resume analysis and an enhanced resume.</p>
             <div class="hidden md:block absolute top-1/2 right-0 w-full h-0.5 bg-gray-200"></div>
           </div>
         </div>
       </div>
     </section>
     <!-- Testimonials Section -->
+
     <!-- Enhanced Resume Form Section -->
     <section class="py-20 bg-white relative overflow-hidden" id="resume-form">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -1042,21 +984,24 @@
               class="w-full h-48 object-cover rounded-t-lg mb-4">
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Top 10 Resume Mistakes</h3>
             <p class="text-gray-600 mb-4">Avoid common pitfalls in 2025 and make your resume stand out.</p>
-            <a href="/blog/toptenmistakes" class="text-primary font-semibold hover:underline">Read More →</a>
+            <a href="/blog/toptenmistakes" class="text-primary font-semibold hover:underline">Read Top 10 Resume
+              Mistakes Guide →</a>
           </article>
           <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <img src="{{ url_for('static', filename='images/tailor.jpg') }}" alt="Tailor Your Resume"
               class="w-full h-48 object-cover rounded-t-lg mb-4">
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Tailor Your Resume</h3>
             <p class="text-gray-600 mb-4">Learn how to customize your resume for each application effectively.</p>
-            <a href="/blog/tailorresumejob" class="text-primary font-semibold hover:underline">Read More →</a>
+            <a href="/blog/tailorresumejob" class="text-primary font-semibold hover:underline">Read Resume Tailoring
+              Guide →</a>
           </article>
           <article class="feature-card p-6 bg-white rounded-lg shadow-lg relative overflow-hidden">
             <img src="{{ url_for('static', filename='images/robot.jpg') }}" alt="Pass the ATS Bots"
               class="w-full h-48 object-cover rounded-t-lg mb-4">
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Pass the ATS Bots</h3>
             <p class="text-gray-600 mb-4">Ensure your resume clears automated filters used by most employers.</p>
-            <a href="/blog/ats-optimization" class="text-primary font-semibold hover:underline">Read More →</a>
+            <a href="/blog/ats-optimization" class="text-primary font-semibold hover:underline">Read ATS Optimization
+              Guide →</a>
           </article>
         </div>
       </div>
@@ -1102,8 +1047,8 @@
           <ul class="space-y-2">
             <li><a class="text-gray-500 hover:text-gray-900" href="#features">Features</a></li>
             <li><a class="text-gray-500 hover:text-gray-900" href="#how-it-works">How it Works</a></li>
-            <li><a class="text-gray-500 hover:text-gray-900" href="#testimonials"> </a></li>
             <li><a class="text-gray-500 hover:text-gray-900" href="#faq">FAQ</a></li>
+            <li><a class="text-gray-500 hover:text-gray-900" href="/counter">Resume Counter</a></li>
           </ul>
         </div>
         <div>
@@ -1118,9 +1063,10 @@
           <ul class="space-y-2">
             <li>
               <a class="text-gray-500 hover:text-gray-900" href="https://www.facebook.com/profile.php?id=61565361796067"
-                target="_blank" rel="noopener noreferrer">
+                target="_blank" rel="noopener noreferrer" aria-label="Follow ResumaticAI on Facebook">
                 <img src="{{ url_for('static', filename='images/facebook-logo.png') }}" alt="Facebook"
                   class="h-12 w-12 inline">
+                Follow us on Facebook
               </a>
             </li>
           </ul>
@@ -1354,6 +1300,9 @@
       }
     });
   </script>
+
+  <!-- Facebook Ad Tracking Script -->
+  <script src="{{ url_for('static', filename='js/facebook-tracking.js') }}"></script>
 
 </body>
 

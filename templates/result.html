@@ -13,10 +13,38 @@
         gtag('config', 'G-KRPLMCR73G');
     </script>
 
+    <link href="{{ url_for('static', filename='images/favicon2.ico') }}" rel="icon" type="image/x-icon" />
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Analysis Result</title>
+    <meta name="description"
+        content="Get detailed resume analysis with AI feedback, ATS optimization scores, and improvement recommendations to boost your job application success.">
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="ResumaticAI">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="7 days">
+    <link rel="canonical" href="https://resumaticai.com/result">
+
+    <title>Resume Analysis Result | ResumaticAI</title>
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Resume Analysis Result",
+        "description": "Get detailed resume analysis with AI feedback, ATS optimization scores, and improvement recommendations to boost your job application success.",
+        "url": "https://resumaticai.com/result",
+        "publisher": {
+            "@type": "Organization",
+            "name": "ResumaticAI",
+            "url": "https://resumaticai.com"
+        }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -52,10 +80,136 @@
                 transform: translateY(-10px);
             }
         }
+
+        /* Navigation styles */
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #4F46E5;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .primary {
+            color: #4F46E5;
+        }
     </style>
 </head>
 
 <body class="bg-gray-100 font-sans">
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6" id="mobileMenu">
+        <div class="flex justify-between items-center mb-8">
+            <img alt="Logo" class="h-12 w-auto" src="{{ url_for('static', filename='images/logo23.png') }}" />
+            <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="space-y-4">
+            <a class="block text-gray-600 hover:text-primary" href="/">Home</a>
+            <a class="block text-gray-600 hover:text-primary" href="/#features">Features</a>
+            <a class="block text-gray-600 hover:text-primary" href="/#how-it-works">How it Works</a>
+            <a class="block text-gray-600 hover:text-primary" href="/blog">Blog</a>
+            <a class="block text-gray-600 hover:text-primary" href="/about">About</a>
+            <a class="block text-gray-600 hover:text-primary" href="/#faq">FAQ</a>
+            {% if current_user.is_authenticated %}
+            <a class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center"
+                href="/my_revisions">
+                <i class="fas fa-user mr-2"></i>My Account
+            </a>
+            <a class="block px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center mt-2" href="/logout">
+                Logout
+            </a>
+            {% else %}
+            <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/login">
+                Login
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <!-- Navigation -->
+    <header role="banner">
+        <nav aria-label="Main navigation" class="bg-white shadow-sm sticky top-0 z-50" role="navigation">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-20 items-center">
+                    <div class="flex items-center">
+                        <a class="flex items-center" href="/">
+                            <img alt="Resumatic AI Logo" class="h-16 w-auto" height="64"
+                                src="{{ url_for('static', filename='images/logo23.png') }}" width="48" />
+                            <span class="sr-only">Resumatic AI</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/">Home</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors"
+                            href="/#features">Features</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/#how-it-works">How
+                            it Works</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/blog">Blog</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/about">About</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/#faq">FAQ</a>
+                        {% if current_user.is_authenticated %}
+                        <a href="/my_revisions" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            <i class="fas fa-user mr-2"></i>My Account
+                        </a>
+                        <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                            Logout
+                        </a>
+                        {% else %}
+                        <a href="/login" class="px-4 py-2 text-white rounded hover:bg-primary/90"
+                            style="background-color: #4F46E5;">
+                            Login
+                        </a>
+                        {% endif %}
+                    </div>
+                    <button aria-expanded="false" aria-label="Toggle menu"
+                        class="md:hidden text-gray-600 hover:text-gray-900" id="menuButton">
+                        <i aria-hidden="true" class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Signup Prompt (only if not logged in) - Positioned at top -->
+    {% if not current_user.is_authenticated %}
+    <div class="bg-white rounded-lg shadow p-6 mx-auto max-w-6xl mt-4 mb-6 text-center">
+        <h2 class="text-xl font-bold mb-2">Want to save and access all your resume revisions?</h2>
+        <p class="text-gray-600 mb-4">Sign up for a free account to keep track of your enhanced resumes and download
+            them anytime.</p>
+        <div class="flex justify-center gap-4">
+            <a href="/login/google" class="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-600">Sign up with
+                Google</a>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="max-w-6xl mx-auto p-4">
         <!-- Loading Modal -->
         <div id="loadingModal"
@@ -72,214 +226,207 @@
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <div class="max-w-6xl mx-auto p-4">
         <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Resume Analysis Results</h1>
 
         <div id="scoreData" data-score="{{ feedback.get('overall_score', 50) | int }}" style="display: none;"></div>
 
         <!-- Action Buttons -->
-        <div class="flex justify-end gap-4 mb-4">
-            <button onclick="exportAsPDF()" class="px-4 py-2 bg-primary text-black rounded hover:bg-primary/80">
-                <i class="fas fa-file-pdf mr-2"></i>Download PDF
-            </button>
-            <button onclick="copyResume()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
-                <i class="fas fa-copy mr-2"></i>Copy Resume
-            </button>
+        <button onclick="exportAsPDF()" class="px-4 py-2 bg-primary text-black rounded hover:bg-primary/80">
+            <i class="fas fa-file-pdf mr-2"></i>Download PDF
+        </button>
+        <button onclick="copyResume()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
+            <i class="fas fa-copy mr-2"></i>Copy Resume
+        </button>
 
-        </div>
-
-        <!-- Download Word Document -->
-        <div class="flex justify-end gap-4 mb-4">
-            <form method="post" action="/download_resume_docx" style="display:inline;">
-                <input type="hidden" name="resume" value="{{ revised_resume|e }}">
-                <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                    <i class="fas fa-file-word mr-2"></i>Download Revised Resume (Word)
-                </button>
-            </form>
-        </div>
-
-        <!-- Score and Comparison -->
-        <div class="grid md:grid-cols-2 gap-6 mb-10">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-lg font-semibold mb-4">Score</h2>
-                <div class="relative w-48 h-48 mx-auto">
-                    <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <!-- Background circle -->
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="#E5E7EB" stroke-width="8" />
-                        <!-- Progress circle -->
-                        <circle cx="50" cy="50" r="45" fill="none" stroke="#10B981" stroke-width="8"
-                            stroke-dasharray="283" stroke-dashoffset="283" transform="rotate(-90 50 50)"
-                            class="transition-all duration-1000 ease-in-out" />
-                        <!-- Score text -->
-                        <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
-                            class="text-3xl font-bold fill-gray-800">
-                            {{ feedback.get('overall_score', 50) | int }}
-                        </text>
-                    </svg>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-lg font-semibold mb-4">How You Compare</h2>
-                <div class="space-y-6">
-                    <!-- Percentile Ranking -->
-                    <div class="text-center">
-                        <div class="text-4xl font-bold text-primary mb-2">{{ feedback.get('overall_score', 50) | int }}%
-                        </div>
-                        <div class="text-gray-600">Percentile Rank</div>
-                    </div>
-
-                    <!-- Key Metrics -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="text-sm text-gray-600 mb-1">Average Score</div>
-                            <div class="text-xl font-semibold">65%</div>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <div class="text-sm text-gray-600 mb-1">Top 25%</div>
-                            <div class="text-xl font-semibold">85%</div>
-                        </div>
-                    </div>
-
-                    <!-- Progress Bar -->
-                    <div class="relative pt-1">
-                        <div class="flex mb-2 items-center justify-between">
-                            <div>
-                                <span
-                                    class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-primary bg-primary/10">
-                                    Your Score
-                                </span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xs font-semibold inline-block text-primary">
-                                    {{ feedback.get('overall_score', 50) | int }}%
-                                </span>
-                            </div>
-                        </div>
-                        <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                            <div style="width: {{ feedback.get('overall_score', 50) | int }}%"
-                                class="shadow-none flex flex-col text-center whitespace-nowrap text-black justify-center bg-[#10B981] transition-all duration-500">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Comparison Text -->
-                    <div class="text-sm text-gray-600 text-center">
-                        {% if feedback.get('overall_score', 50) | int >= 85 %}
-                        <span class="text-green-600 font-semibold">Excellent!</span> Your resume is in the top 25% of
-                        submissions.
-                        {% elif feedback.get('overall_score', 50) | int >= 65 %}
-                        <span class="text-blue-600 font-semibold">Good!</span> Your resume is above average.
-                        {% else %}
-                        <span class="text-yellow-600 font-semibold">Room for improvement.</span> Consider implementing
-                        the suggested
-                        changes.
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Category Scores with Tabs -->
-        <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Category Breakdown</h2>
-            <div class="flex flex-wrap gap-4 justify-center mb-6" id="tabs">
-                {% for category, score in feedback['subscores'].items() %}
-                <button data-tab="{{ category }}"
-                    class="tab-btn px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300">{{ category }}
-                    <span class="ml-2 font-bold">{{ score }}</span></button>
-                {% endfor %}
-            </div>
-
-            <div id="tabContent">
-                {% for item in feedback['improvement_items'] %}
-                <div class="tab-pane hidden" data-category="{{ item.category }}">
-
-                    <div class="flex items-center mb-2">
-                        {% if item.severity == 'error' %}
-                        <i class="fas fa-times-circle text-red-500 mr-2"></i>
-                        {% elif item.severity == 'warning' %}
-                        <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-                        {% else %}
-                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                        {% endif %}
-                        <h3 class="font-semibold text-gray-800">{{ item.category }}</h3>
-                        <span
-                            class="ml-2 px-2 py-1 rounded text-sm text-black {% if item.severity == 'error' %}bg-red-500{% elif item.severity == 'warning' %}bg-yellow-500{% else %}bg-blue-500{% endif %}">{{
-                            item.severity|capitalize }}</span>
-                    </div>
-                    <p class="text-gray-700 mb-1">{{ item.message }}</p>
-                    {% if item.example_lines %}
-                    <div class="text-sm text-gray-500 italic">Example: {{ item.example_lines }}</div>
-                    {% endif %}
-
-                </div>
-                {% endfor %}
-            </div>
-        </div> <!-- Job Description Section (if provided) -->
-        {% if job_description %}
-        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-r-lg mt-10">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <i class="fas fa-briefcase text-blue-400 text-lg mt-1"></i>
-                </div>
-                <div class="ml-3 w-full">
-                    <h3 class="text-lg font-medium text-blue-800 mb-2">Job Description Provided</h3>
-                    <div class="text-blue-700 bg-white p-3 rounded border">
-                        {% set job_desc_length = job_description | length %}
-                        {% if job_desc_length > 500 %} <div id="shortJobDescription">
-                            <p class="whitespace-pre-line text-sm">{{ job_description[:500] }}...</p>
-                            <button onclick="toggleJobDescription()"
-                                class="text-black hover:text-gray-700 text-sm font-medium mt-2">
-                                Show more
-                            </button>
-                        </div>
-                        <div id="fullJobDescription" class="hidden">
-                            <p class="whitespace-pre-line text-sm">{{ job_description }}</p>
-                            <button onclick="toggleJobDescription()"
-                                class="text-black hover:text-gray-700 text-sm font-medium mt-2">
-                                Show less
-                            </button>
-                        </div>
-                        {% else %}
-                        <p class="whitespace-pre-line text-sm">{{ job_description }}</p>
-                        {% endif %}
-                    </div>
-                    <p class="text-blue-600 text-sm mt-2">
-                        <i class="fas fa-info-circle mr-1"></i>
-                        Your resume has been tailored to match this job description.
-                    </p>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Original Resume Output -->
-        <div class="bg-white rounded-lg shadow p-6 mt-10">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Original Resume</h2>
-            <pre id="originalResumeOutput" class="whitespace-pre-wrap text-gray-800">{{ original_resume }}</pre>
-        </div>
-
-        <!-- Revised Resume Output -->
-        <div class="bg-white rounded-lg shadow p-6 mt-10">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Revised Resume</h2>
-            <pre id="resumeOutput" class="whitespace-pre-wrap text-gray-800">{{ revised_resume }}</pre>
-        </div>
-
-        <!-- Signup Prompt (only if not logged in) -->
-        {% if not current_user.is_authenticated %}
-        <div class="bg-white rounded-lg shadow p-6 mt-10 text-center">
-            <h2 class="text-xl font-bold mb-2">Want to save and access all your resume revisions?</h2>
-            <p class="text-gray-600 mb-4">Sign up for a free account to keep track of your enhanced resumes
-                and download
-                them anytime.</p>
-            <div class="flex justify-center gap-4">
-                <a href="/login/google" class="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-600">Sign up with
-                    Google
-                </a>
-
-            </div>
-        </div>
-        {% endif %}
     </div>
+
+    <!-- Download Word Document -->
+    <div class="flex justify-end gap-4 mb-4">
+        <form method="post" action="/download_resume_docx" style="display:inline;">
+            <input type="hidden" name="resume" value="{{ revised_resume|e }}">
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                <i class="fas fa-file-word mr-2"></i>Download Revised Resume (Word)
+            </button>
+        </form>
+    </div>
+
+    <!-- Score and Comparison -->
+    <div class="grid md:grid-cols-2 gap-6 mb-10">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">Score</h2>
+            <div class="relative w-48 h-48 mx-auto">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <!-- Background circle -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#E5E7EB" stroke-width="8" />
+                    <!-- Progress circle -->
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#10B981" stroke-width="8" stroke-dasharray="283"
+                        stroke-dashoffset="283" transform="rotate(-90 50 50)"
+                        class="transition-all duration-1000 ease-in-out" />
+                    <!-- Score text -->
+                    <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
+                        class="text-3xl font-bold fill-gray-800">
+                        {{ feedback.get('overall_score', 50) | int }}
+                    </text>
+                </svg>
+            </div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-4">How You Compare</h2>
+            <div class="space-y-6">
+                <!-- Percentile Ranking -->
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-primary mb-2">{{ feedback.get('overall_score', 50) | int }}%
+                    </div>
+                    <div class="text-gray-600">Percentile Rank</div>
+                </div>
+
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-sm text-gray-600 mb-1">Average Score</div>
+                        <div class="text-xl font-semibold">65%</div>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="text-sm text-gray-600 mb-1">Top 25%</div>
+                        <div class="text-xl font-semibold">85%</div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="relative pt-1">
+                    <div class="flex mb-2 items-center justify-between">
+                        <div>
+                            <span
+                                class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-primary bg-primary/10">
+                                Your Score
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-semibold inline-block text-primary">
+                                {{ feedback.get('overall_score', 50) | int }}%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
+                        <div style="width: {{ feedback.get('overall_score', 50) | int }}%"
+                            class="shadow-none flex flex-col text-center whitespace-nowrap text-black justify-center bg-[#10B981] transition-all duration-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Text -->
+                <div class="text-sm text-gray-600 text-center">
+                    {% if feedback.get('overall_score', 50) | int >= 85 %}
+                    <span class="text-green-600 font-semibold">Excellent!</span> Your resume is in the top 25% of
+                    submissions.
+                    {% elif feedback.get('overall_score', 50) | int >= 65 %}
+                    <span class="text-blue-600 font-semibold">Good!</span> Your resume is above average.
+                    {% else %}
+                    <span class="text-yellow-600 font-semibold">Room for improvement.</span> Consider implementing
+                    the suggested
+                    changes.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Scores with Tabs -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Category Breakdown</h2>
+        <div class="flex flex-wrap gap-4 justify-center mb-6" id="tabs">
+            {% for category, score in feedback['subscores'].items() %}
+            <button data-tab="{{ category }}"
+                class="tab-btn px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300">{{ category }}
+                <span class="ml-2 font-bold">{{ score }}</span></button>
+            {% endfor %}
+        </div>
+
+        <div id="tabContent">
+            {% for item in feedback['improvement_items'] %}
+            <div class="tab-pane hidden" data-category="{{ item.category }}">
+
+                <div class="flex items-center mb-2">
+                    {% if item.severity == 'error' %}
+                    <i class="fas fa-times-circle text-red-500 mr-2"></i>
+                    {% elif item.severity == 'warning' %}
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+                    {% else %}
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    {% endif %}
+                    <h3 class="font-semibold text-gray-800">{{ item.category }}</h3>
+                    <span
+                        class="ml-2 px-2 py-1 rounded text-sm text-black {% if item.severity == 'error' %}bg-red-500{% elif item.severity == 'warning' %}bg-yellow-500{% else %}bg-blue-500{% endif %}">{{
+                        item.severity|capitalize }}</span>
+                </div>
+                <p class="text-gray-700 mb-1">{{ item.message }}</p>
+                {% if item.example_lines %}
+                <div class="text-sm text-gray-500 italic">Example: {{ item.example_lines }}</div>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+        </div>
+    </div> <!-- Job Description Section (if provided) -->
+    {% if job_description %}
+    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-r-lg mt-10">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <i class="fas fa-briefcase text-blue-400 text-lg mt-1"></i>
+            </div>
+            <div class="ml-3 w-full">
+                <h3 class="text-lg font-medium text-blue-800 mb-2">Job Description Provided</h3>
+                <div class="text-blue-700 bg-white p-3 rounded border">
+                    {% set job_desc_length = job_description | length %}
+                    {% if job_desc_length > 500 %} <div id="shortJobDescription">
+                        <p class="whitespace-pre-line text-sm">{{ job_description[:500] }}...</p>
+                        <button onclick="toggleJobDescription()"
+                            class="text-black hover:text-gray-700 text-sm font-medium mt-2">
+                            Show more
+                        </button>
+                    </div>
+                    <div id="fullJobDescription" class="hidden">
+                        <p class="whitespace-pre-line text-sm">{{ job_description }}</p>
+                        <button onclick="toggleJobDescription()"
+                            class="text-black hover:text-gray-700 text-sm font-medium mt-2">
+                            Show less
+                        </button>
+                    </div>
+                    {% else %}
+                    <p class="whitespace-pre-line text-sm">{{ job_description }}</p>
+                    {% endif %}
+                </div>
+                <p class="text-blue-600 text-sm mt-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Your resume has been tailored to match this job description.
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Original Resume Output -->
+    <div class="bg-white rounded-lg shadow p-6 mt-10">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Original Resume</h2>
+        <pre id="originalResumeOutput" class="whitespace-pre-wrap text-gray-800">{{ original_resume }}</pre>
+    </div>
+
+    <!-- Revised Resume Output -->
+    <div class="bg-white rounded-lg shadow p-6 mt-10">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Revised Resume</h2>
+        <pre id="resumeOutput" class="whitespace-pre-wrap text-gray-800">{{ revised_resume|safe }}</pre>
+    </div>
+
+
+
+    <!-- Templates-->
+
+
+
 
     <script>
         // Show loading modal when page loads
@@ -345,6 +492,27 @@
                 }
             }
         }
+
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.getElementById('menuButton');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const closeMenuButton = document.getElementById('closeMenu');
+
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', function () {
+                    mobileMenu.classList.add('active');
+                    menuButton.setAttribute('aria-expanded', 'true');
+                });
+            }
+
+            if (closeMenuButton && mobileMenu) {
+                closeMenuButton.addEventListener('click', function () {
+                    mobileMenu.classList.remove('active');
+                    menuButton.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
     </script>
 </body>
 
