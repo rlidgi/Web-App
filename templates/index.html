@@ -3,21 +3,13 @@
 <html lang="en">
 
 <head>
-  <!-- visits counter -->
+  <!-- Clarity tracking code for https://resumaticai.com/ -->
   <script>
-    // Check if the counter exists in localStorage
-    if (localStorage.getItem('pageViewCounter')) {
-      // Increment the counter
-      let count = parseInt(localStorage.getItem('pageViewCounter'));
-      count++;
-      localStorage.setItem('pageViewCounter', count);
-    } else {
-      // Initialize the counter if it doesn't exist
-      localStorage.setItem('pageViewCounter', 1);
-    }
-
-    // You can log the count for testing purposes
-    console.log('Page View Count:', localStorage.getItem('pageViewCounter'));
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i + "?ref=bwt";
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", "sjihir10df");
   </script>
   <!-- Google tag (gtag.js) -->
   <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-KRPLMCR73G"></script>
@@ -1303,6 +1295,160 @@
 
   <!-- Facebook Ad Tracking Script -->
   <script src="{{ url_for('static', filename='js/facebook-tracking.js') }}"></script>
+
+  <!-- Invisible Bot-Resistant Visit Counter -->
+  <script>
+    (function () {
+      'use strict';
+
+      // Bot detection function
+      function isBotOrCrawler() {
+        const userAgent = navigator.userAgent.toLowerCase();
+
+        // Common bot/crawler user agents
+        const botPatterns = [
+          'bot', 'crawl', 'spider', 'slurp', 'facebook', 'twitter', 'linkedin',
+          'pinterest', 'instagram', 'whatsapp', 'telegram', 'discord',
+          'googlebot', 'bingbot', 'yahoo', 'duckduckbot', 'baiduspider',
+          'yandexbot', 'sogou', 'exabot', 'mj12bot', 'ahrefsbot',
+          'semrushbot', 'dotbot', 'petalbot', 'proximic', 'dataminr',
+          'curl', 'wget', 'python', 'java', 'php', 'ruby', 'go-http',
+          'okhttp', 'apache', 'nginx', 'headless', 'phantom', 'selenium',
+          'puppeteer', 'playwright', 'chrome-lighthouse'
+        ];
+
+        // Check if user agent contains bot indicators
+        for (const pattern of botPatterns) {
+          if (userAgent.includes(pattern)) {
+            return true;
+          }
+        }
+
+        // Additional checks for bot-like behavior
+        return (
+          // Check for missing or unusual properties that real browsers have
+          typeof navigator.webdriver !== 'undefined' ||
+          typeof window.callPhantom !== 'undefined' ||
+          typeof window._phantom !== 'undefined' ||
+          typeof window.__nightmare !== 'undefined' ||
+          // Check for automated browser indicators
+          navigator.webdriver === true ||
+          // Check if running in headless mode
+          (navigator.userAgent === '') ||
+          // Check for extremely fast loading (likely automated)
+          (performance.timing && performance.timing.loadEventEnd - performance.timing.navigationStart < 100)
+        );
+      }
+
+      // Human behavior verification
+      function verifyHumanBehavior() {
+        return new Promise((resolve) => {
+          let humanScore = 0;
+
+          // Check if user interacts with the page
+          const interactions = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
+          let interactionDetected = false;
+
+          const interactionHandler = () => {
+            interactionDetected = true;
+            humanScore += 2;
+            interactions.forEach(event => {
+              document.removeEventListener(event, interactionHandler);
+            });
+            if (humanScore >= 2) resolve(true);
+          };
+
+          interactions.forEach(event => {
+            document.addEventListener(event, interactionHandler, { once: true, passive: true });
+          });
+
+          // Additional checks for human-like behavior
+          setTimeout(() => {
+            // Check if viewport size is reasonable (not 0x0 or extremely large like some bots)
+            if (window.innerWidth > 0 && window.innerHeight > 0 &&
+              window.innerWidth < 5000 && window.innerHeight < 5000) {
+              humanScore += 1;
+            }
+
+            // Check if browser supports modern features
+            if (typeof Promise !== 'undefined' && typeof fetch !== 'undefined') {
+              humanScore += 1;
+            }
+
+            // Check time zone (bots often don't have proper timezone)
+            try {
+              const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+              if (tz && tz.length > 0) {
+                humanScore += 1;
+              }
+            } catch (e) {
+              // Ignore timezone errors
+            }
+
+            // If no interaction after 5 seconds but other human indicators present
+            if (!interactionDetected && humanScore >= 2) {
+              resolve(true);
+            } else if (interactionDetected || humanScore >= 3) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          }, 5000);
+        });
+      }
+
+      // Track legitimate visit
+      async function trackLegitimateVisit() {
+        try {
+          // Don't track if it's clearly a bot
+          if (isBotOrCrawler()) {
+            console.debug('Bot/crawler detected, not tracking visit');
+            return;
+          }
+
+          // Wait for human behavior verification
+          const isHuman = await verifyHumanBehavior();
+          if (!isHuman) {
+            console.debug('Automated behavior detected, not tracking visit');
+            return;
+          }
+
+          // Send tracking request to backend
+          const response = await fetch('/api/track_visit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+              timestamp: new Date().toISOString(),
+              page: window.location.pathname,
+              referrer: document.referrer,
+              user_agent: navigator.userAgent,
+              screen_resolution: `${screen.width}x${screen.height}`,
+              viewport: `${window.innerWidth}x${window.innerHeight}`,
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              language: navigator.language
+            })
+          });
+
+          if (response.ok) {
+            console.debug('Legitimate visit tracked successfully');
+          }
+        } catch (error) {
+          console.debug('Error tracking visit:', error);
+          // Fail silently to not affect user experience
+        }
+      }
+
+      // Initialize tracking when page is fully loaded
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', trackLegitimateVisit);
+      } else {
+        trackLegitimateVisit();
+      }
+    })();
+  </script>
 
 </body>
 

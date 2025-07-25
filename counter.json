@@ -1,8 +1,8 @@
 {
-  "total_visits": 112,
+  "total_visits": 149,
   "facebook_ad_visits": 0,
-  "organic_visits": 95,
-  "total_conversions": 14,
+  "organic_visits": 122,
+  "total_conversions": 16,
   "facebook_ad_conversions": 0,
   "daily_stats": {
     "2025-07-22": {
@@ -26,21 +26,43 @@
       "other": 0,
       "conversions": 0,
       "facebook_ad_conversions": 0
+    },
+    "2025-07-24": {
+      "total": 8,
+      "facebook_ad": 0,
+      "organic": 5,
+      "direct": 3,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 0,
+      "facebook_ad_conversions": 0
+    },
+    "2025-07-25": {
+      "total": 29,
+      "facebook_ad": 0,
+      "organic": 22,
+      "direct": 7,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 2,
+      "facebook_ad_conversions": 0
     }
   },
   "utm_campaigns": {},
   "referrer_data": {
     "direct": {
-      "count": 17,
+      "count": 27,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-23"
+      "last_seen": "2025-07-25"
     },
     "http://127.0.0.1:5000/": {
-      "count": 78,
+      "count": 100,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-23"
+      "last_seen": "2025-07-25"
     },
     "http://127.0.0.1:5000/my_revisions": {
       "count": 3,
@@ -61,17 +83,23 @@
       "last_seen": "2025-07-22"
     },
     "http://127.0.0.1:5000/blog": {
-      "count": 2,
+      "count": 3,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-22"
+      "last_seen": "2025-07-24"
     },
     "http://127.0.0.1:5000/revise_resume": {
-      "count": 7,
+      "count": 10,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-22"
+      "last_seen": "2025-07-25"
+    },
+    "http://127.0.0.1:5000/blog/toptenmistakes": {
+      "count": 1,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-25"
     }
   },
-  "last_updated": "2025-07-23"
+  "last_updated": "2025-07-25"
 }

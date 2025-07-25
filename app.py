@@ -4,6 +4,7 @@ import PyPDF2
 import pdfplumber
 from werkzeug.utils import secure_filename
 import mammoth
+import logging
 
 # Import analytics module for tracking Facebook ad performance
 from analytics import analytics
@@ -26,6 +27,10 @@ from azure.identity import DefaultAzureCredential
 
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 load_dotenv()
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY') or 'a-very-secret-random-key'
 
@@ -44,11 +49,26 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 @app.before_request
 def before_request():
     # Only redirect in production (not in debug mode)
-    if not app.debug and not request.is_secure:
-        # Check if the request is coming from Azure (has X-Forwarded-Proto header)
-        if request.headers.get('X-Forwarded-Proto') == 'http':
+    if not app.debug:
+        # Check if this is an HTTP request that needs redirecting
+        # In Azure App Service, check X-Forwarded-Proto header for the original protocol
+        forwarded_proto = request.headers.get('X-Forwarded-Proto', '').lower()
+        
+        # If the original request was HTTP (not HTTPS), redirect to HTTPS
+        if forwarded_proto == 'http':
             url = request.url.replace('http://', 'https://', 1)
             return redirect(url, code=301)
+
+# Add security headers for HTTPS enforcement
+@app.after_request
+def after_request(response):
+    if not app.debug:
+        # Strict Transport Security: force HTTPS for 1 year
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+        # Redirect all requests to HTTPS
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
 
 # Only allow insecure transport for local development (debug mode)
 #if app.debug:
@@ -638,6 +658,99 @@ def track_conversion():
             "message": str(e)
         }, 500
 
+@app.route("/api/track_visit", methods=["POST"])
+def track_visit():
+    """API endpoint for tracking legitimate page visits (bot-filtered)."""
+    try:
+        # Get JSON data from request
+        data = request.get_json()
+        
+        if not data:
+            return {"status": "error", "message": "No data provided"}, 400
+        
+        # Additional server-side bot detection
+        user_agent = request.headers.get('User-Agent', '').lower()
+        bot_indicators = [
+            'bot', 'crawl', 'spider', 'scraper', 'curl', 'wget', 'python',
+            'java', 'php', 'ruby', 'go-http', 'apache', 'nginx'
+        ]
+        
+        # Check if request looks automated
+        if any(indicator in user_agent for indicator in bot_indicators):
+            return {"status": "ignored", "message": "Bot detected"}, 200
+        
+        # Check for required browser headers that bots often miss
+        if not request.headers.get('Accept-Language'):
+            return {"status": "ignored", "message": "Missing browser headers"}, 200
+        
+        # Track the legitimate visit using existing analytics
+        source_info = analytics.track_visit(request)
+        
+        # Log the visit for debugging (can be removed in production)
+        logger.info(f"Legitimate visit tracked: {data.get('page', 'unknown')} from {request.remote_addr}")
+        
+        return {
+            "status": "success",
+            "source_type": source_info.get("type", "unknown"),
+            "message": "Visit tracked successfully"
+        }, 200
+        
+    except Exception as e:
+        logger.error(f"Error tracking visit: {str(e)}")
+        return {
+            "status": "error",
+            "message": "Internal server error"
+        }, 500
+
+@app.route("/api/visit_count", methods=["GET"])
+def get_visit_count():
+    """API endpoint to retrieve current visit count."""
+    try:
+        # Get analytics data
+        analytics_data = analytics.get_full_analytics()
+        
+        return {
+            "status": "success",
+            "data": {
+                "total_visits": analytics_data.get('total_visits', 0),
+                "facebook_ad_visits": analytics_data.get('facebook_ad_visits', 0),
+                "organic_visits": analytics_data.get('organic_visits', 0),
+                "total_conversions": analytics_data.get('summary', {}).get('total_conversions', 0),
+                "last_updated": analytics_data.get('last_updated', 'unknown')
+            }
+        }, 200
+        
+    except Exception as e:
+        logger.error(f"Error retrieving visit count: {str(e)}")
+        return {
+            "status": "error", 
+            "message": "Failed to retrieve visit count"
+        }, 500
+
+@app.route("/admin/stats")
+@login_required
+def admin_stats():
+    """Admin page to view visit statistics."""
+    if not current_user.is_authenticated:
+        flash("You need to log in to view this page.", "danger")
+        return redirect(url_for("login"))
+
+    # Check if the user is an admin
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to view this page.", "danger")
+        return redirect(url_for("index"))
+
+    try:
+        # Get comprehensive analytics data
+        analytics_data = analytics.get_full_analytics()
+        
+        return render_template("admin_stats.html", 
+                             analytics=analytics_data, 
+                             user=current_user)
+    except Exception as e:
+        flash(f"Error loading statistics: {str(e)}", "danger")
+        return redirect(url_for("index"))
+
 
 
 
@@ -898,25 +1011,19 @@ def extract_text_from_file(file):
 
 @app.route('/increment_counter', methods=['POST'])
 def increment_counter():
-    """API endpoint to increment resume counter"""
+    """API endpoint to increment resume counter (conversion tracking)"""
     try:
-        # Load current counter
-        counter_file = 'counter.json'
-        if os.path.exists(counter_file):
-            with open(counter_file, 'r') as f:
-                data = json.load(f)
-                count = data.get('count', 0)
+        # Use analytics module to track conversion
+        conversion_result = analytics.track_conversion(session, "resume_submission")
+        
+        if conversion_result.get("status") == "success":
+            # Get updated total conversions count
+            analytics_data = analytics.get_full_analytics()
+            count = analytics_data.get('summary', {}).get('total_conversions', 0)
+            return {"success": True, "count": count}
         else:
-            count = 0
-        
-        # Increment counter
-        count += 1
-        
-        # Save updated counter
-        with open(counter_file, 'w') as f:
-            json.dump({'count': count}, f)
-        
-        return {"success": True, "count": count}
+            return {"success": False, "error": "Failed to track conversion"}, 500
+            
     except Exception as e:
         return {"success": False, "error": str(e)}, 500
 
@@ -924,16 +1031,23 @@ def increment_counter():
 def counter_page():
     """Display counter page"""
     try:
-        counter_file = 'counter.json'
-        if os.path.exists(counter_file):
-            with open(counter_file, 'r') as f:
-                data = json.load(f)
-                count = data.get('count', 0)
-        else:
-            count = 0
+        # Use the analytics module to get the total conversion count
+        analytics_data = analytics.get_full_analytics()
+        count = analytics_data.get('summary', {}).get('total_conversions', 0)
+        
+        # Fallback to legacy counter.json format if analytics doesn't work
+        if count == 0:
+            counter_file = 'counter.json'
+            if os.path.exists(counter_file):
+                with open(counter_file, 'r') as f:
+                    data = json.load(f)
+                    # Try new format first (total_conversions), then legacy format (count)
+                    count = data.get('total_conversions', data.get('count', 0))
         
         return render_template('counter.html', count=count)
     except Exception as e:
+        # Log the error for debugging
+        print(f"Counter page error: {str(e)}")
         return render_template('counter.html', count=0)
 
 @app.route('/robots.txt')

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Statistics - Resumatic AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.secondary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Visit Statistics Dashboard
+                    </h1>
+                    <div>
+                        <button class="btn refresh-btn me-2" onclick="location.reload()">
+                            <i class="fas fa-sync-alt me-1"></i>
+                            Refresh
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-1"></i>
+                            Home
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Visit Statistics -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-white-50 mb-2">Total Visits</h6>
+                                    <div class="stat-number">{{ analytics.total_visits or 0 }}</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-eye fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="stat-card secondary">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-white-50 mb-2">Facebook Ads</h6>
+                                    <div class="stat-number">{{ analytics.facebook_ad_visits or 0 }}</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fab fa-facebook fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="stat-card success">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-white-50 mb-2">Organic Visits</h6>
+                                    <div class="stat-number">{{ analytics.organic_visits or 0 }}</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-search fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="stat-card warning">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="text-white-50 mb-2">Conversions</h6>
+                                    <div class="stat-number">{{ analytics.summary.total_conversions if analytics.summary
+                                        else 0 }}</div>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-file-alt fa-2x opacity-75"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Endpoints -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-code me-2"></i>
+                            API Endpoints for Programmatic Access
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Get Visit Count (JSON)</h6>
+                                <code class="d-block p-2 bg-light rounded">GET /api/visit_count</code>
+                                <small class="text-muted">Returns comprehensive visit statistics in JSON format</small>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Analytics Dashboard</h6>
+                                <code class="d-block p-2 bg-light rounded">GET /analytics</code>
+                                <small class="text-muted">Full admin analytics dashboard (requires login)</small>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary btn-sm" onclick="testAPI()">
+                                <i class="fas fa-play me-1"></i>
+                                Test API
+                            </button>
+                            <div id="apiResult" class="mt-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Browser Console Method -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-terminal me-2"></i>
+                            Browser Console Method
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p>You can also check the visit count directly from your browser's developer console:</p>
+                        <pre class="bg-dark text-light p-3 rounded"><code>// Open browser console (F12) and run:
+fetch('/api/visit_count')
+  .then(response => response.json())
+  .then(data => console.log('Visit Count:', data));</code></pre>
+                    </div>
+                </div>
+
+                <!-- Last Updated -->
+                <div class="text-center mt-4 text-muted">
+                    <small>
+                        <i class="fas fa-clock me-1"></i>
+                        Last updated: {{ analytics.last_updated or 'Unknown' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('apiResult');
+            resultDiv.innerHTML = '<div class="spinner-border spinner-border-sm me-2"></div>Loading...';
+
+            try {
+                const response = await fetch('/api/visit_count');
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <strong>API Response:</strong><br>
+                            <pre class="mb-0">${JSON.stringify(data.data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>Error:</strong> ${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+
+</html>
