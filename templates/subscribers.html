@@ -4,18 +4,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscribers | ResumaticAI</title>
+    <title>Newsletter Subscribers | ResumaticAI</title>
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://resumaticai.com/subscribers">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body>
-    <div class="container">
-        <h1>Subscribers</h1>
-        <p>Subscriber management interface.</p>
-        <a href="/">← Back to Home</a>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-2xl font-bold text-blue-600">ResumaticAI</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user %}
+                    <span class="text-gray-700">{{ user.name }}</span>
+                    <a href="/logout" class="text-blue-600 hover:text-blue-800">Logout</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Newsletter Subscribers</h1>
+                    <p class="text-gray-600 mt-2">Manage your newsletter subscriber list</p>
+                </div>
+                <div class="text-right">
+                    <div class="bg-blue-100 rounded-lg px-4 py-2">
+                        <div class="text-2xl font-bold text-blue-600">{{ total_count }}</div>
+                        <div class="text-sm text-blue-600">Total Subscribers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mb-6">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'info' if category == 'info' else 'warning' }} 
+                                    bg-{{ 'green' if category == 'success' else 'red' if category == 'danger' else 'blue' if category == 'info' else 'yellow' }}-100 
+                                    border border-{{ 'green' if category == 'success' else 'red' if category == 'danger' else 'blue' if category == 'info' else 'yellow' }}-400 
+                                    text-{{ 'green' if category == 'success' else 'red' if category == 'danger' else 'blue' if category == 'info' else 'yellow' }}-700 
+                                    px-4 py-3 rounded mb-4">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- Subscribers Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">Subscriber List</h2>
+            </div>
+
+            {% if subscribers %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                #
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Email Address
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for subscriber in subscribers %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ loop.index }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <i class="fas fa-envelope text-blue-500 mr-3"></i>
+                                    <span class="text-sm text-gray-900">{{ subscriber.email }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span
+                                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                    Active
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="copyEmail('{{ subscriber.email }}')"
+                                    class="text-blue-600 hover:text-blue-900 mr-3" title="Copy email">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <a href="mailto:{{ subscriber.email }}" class="text-green-600 hover:text-green-900"
+                                    title="Send email">
+                                    <i class="fas fa-paper-plane"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="px-6 py-12 text-center">
+                <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">No Subscribers Yet</h3>
+                <p class="text-gray-500">Your newsletter subscriber list is empty.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Export Options -->
+        {% if subscribers %}
+        <div class="mt-6 flex justify-between items-center">
+            <div class="text-sm text-gray-600">
+                Showing {{ subscribers|length }} of {{ total_count }} subscribers
+            </div>
+            <div class="space-x-4">
+                <button onclick="exportToCSV()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-download mr-2"></i>Export CSV
+                </button>
+                <button onclick="copyAllEmails()"
+                    class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-copy mr-2"></i>Copy All Emails
+                </button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Back Navigation -->
+        <div class="mt-8">
+            <a href="/admin/stats" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Admin Dashboard
+            </a>
+        </div>
     </div>
+
+    <script>
+        // Copy individual email to clipboard
+        function copyEmail(email) {
+            navigator.clipboard.writeText(email).then(function () {
+                showNotification('Email copied to clipboard!');
+            }).catch(function (err) {
+                console.error('Could not copy email: ', err);
+            });
+        }
+
+        // Copy all emails to clipboard
+        function copyAllEmails() {
+            const emails = [];
+            {% for subscriber in subscribers %}
+            emails.push('{{ subscriber.email }}');
+            {% endfor %}
+
+            const emailList = emails.join(', ');
+            navigator.clipboard.writeText(emailList).then(function () {
+                showNotification('All emails copied to clipboard!');
+            }).catch(function (err) {
+                console.error('Could not copy emails: ', err);
+            });
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const csvContent = "data:text/csv;charset=utf-8,"
+                + "Email Address\n"
+            {% for subscriber in subscribers %}
+            + "{{ subscriber.email }}\n"
+            {% endfor %};
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "newsletter_subscribers.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
 </body>
 
 </html>

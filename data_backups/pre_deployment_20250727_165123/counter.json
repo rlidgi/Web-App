@@ -1,8 +1,8 @@
 {
-  "total_visits": 153,
+  "total_visits": 267,
   "facebook_ad_visits": 0,
-  "organic_visits": 123,
-  "total_conversions": 16,
+  "organic_visits": 203,
+  "total_conversions": 36,
   "facebook_ad_conversions": 0,
   "daily_stats": {
     "2025-07-22": {
@@ -39,9 +39,9 @@
       "facebook_ad_conversions": 0
     },
     "2025-07-25": {
-      "total": 29,
+      "total": 37,
       "facebook_ad": 0,
-      "organic": 22,
+      "organic": 30,
       "direct": 7,
       "search": 0,
       "social": 0,
@@ -49,37 +49,48 @@
       "conversions": 2,
       "facebook_ad_conversions": 0
     },
-    "2025-07-30": {
-      "total": 4,
+    "2025-07-26": {
+      "total": 31,
       "facebook_ad": 0,
-      "organic": 1,
-      "direct": 3,
+      "organic": 25,
+      "direct": 6,
       "search": 0,
       "social": 0,
       "other": 0,
-      "conversions": 0,
+      "conversions": 2,
+      "facebook_ad_conversions": 0
+    },
+    "2025-07-27": {
+      "total": 79,
+      "facebook_ad": 0,
+      "organic": 48,
+      "direct": 31,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 18,
       "facebook_ad_conversions": 0
     }
   },
   "utm_campaigns": {},
   "referrer_data": {
     "direct": {
-      "count": 30,
+      "count": 64,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-30"
+      "last_seen": "2025-07-27"
     },
     "http://127.0.0.1:5000/": {
-      "count": 101,
+      "count": 167,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-30"
+      "last_seen": "2025-07-27"
     },
     "http://127.0.0.1:5000/my_revisions": {
-      "count": 3,
+      "count": 4,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-22"
+      "last_seen": "2025-07-26"
     },
     "http://127.0.0.1:5000/blog/ats-optimization": {
       "count": 4,
@@ -88,16 +99,16 @@
       "last_seen": "2025-07-22"
     },
     "http://127.0.0.1:5000/analytics": {
-      "count": 1,
+      "count": 2,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-22"
+      "last_seen": "2025-07-27"
     },
     "http://127.0.0.1:5000/blog": {
-      "count": 3,
+      "count": 4,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-24"
+      "last_seen": "2025-07-27"
     },
     "http://127.0.0.1:5000/revise_resume": {
       "count": 10,
@@ -106,11 +117,29 @@
       "last_seen": "2025-07-25"
     },
     "http://127.0.0.1:5000/blog/toptenmistakes": {
+      "count": 6,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-26"
+    },
+    "http://127.0.0.1:5000/blog/no-experience": {
+      "count": 3,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-26"
+    },
+    "http://127.0.0.1:5000/blog/power-words": {
+      "count": 2,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-07-26"
+    },
+    "http://127.0.0.1:5000/view_revision/295b44c0-e23a-4661-830f-17130729eeeb": {
       "count": 1,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-25"
+      "last_seen": "2025-07-27"
     }
   },
-  "last_updated": "2025-07-30"
+  "last_updated": "2025-07-27"
 }

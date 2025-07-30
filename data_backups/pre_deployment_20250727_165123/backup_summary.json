@@ -1,0 +1,14 @@
+{
+  "backup_time": "20250727_165123",
+  "backed_up_files": [
+    "counter.json",
+    "users_data.json",
+    "users_data_local.json",
+    "revisions_data_local.json"
+  ],
+  "backed_up_dirs": [
+    "flask_session",
+    "temp_uploads"
+  ],
+  "errors": []
+}

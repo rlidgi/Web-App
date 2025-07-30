@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Resume</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+    <div class="max-w-4xl mx-auto bg-white shadow-md mt-10 p-8 rounded-lg">
+        <!-- Header -->
+        <header class="text-center border-b pb-4 mb-6">
+            <h1 id="name" class="text-3xl font-bold">John Doe</h1>
+            <p id="title" class="text-lg text-gray-600">Software Engineer</p>
+            <div class="mt-2 text-sm text-gray-500">
+                <span id="email">john.doe@email.com</span> |
+                <span id="phone">+1 123 456 7890</span> |
+                <span id="location">San Francisco, CA</span>
+            </div>
+        </header>
+
+        <!-- Dynamic Resume Sections -->
+        <main class="space-y-8">
+            {% for section, content in resume.items() %}
+            <section id="{{ section|lower|replace(' ', '_') }}">
+                <h2 class="text-xl font-semibold text-blue-600 border-b mb-2">{{ section }}</h2>
+
+                {% if section == "Skills" and content is iterable and content is not string %}
+                <ul class="list-disc list-inside text-gray-700 columns-2 gap-4">
+                    {% for skill in content %}
+                    <li>{{ skill }}</li>
+                    {% endfor %}
+                </ul>
+
+                {% elif section == "Work Experience" %}
+                {% for job in content %}
+                <div class="mb-4">
+                    <h3 class="font-semibold">{{ job.title }} – {{ job.company }}</h3>
+                    <p class="text-sm text-gray-500">{{ job.start_date }} – {{ job.end_date }} | {{ job.location }}</p>
+                    <ul class="list-disc list-inside mt-2 text-gray-700">
+                        {% for detail in job.details %}
+                        <li>{{ detail }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
+
+                {% elif section == "Education" %}
+                {% for edu in content %}
+                <div class="mb-2">
+                    <h3 class="font-semibold">{{ edu.degree }}</h3>
+                    <p class="text-sm text-gray-500">{{ edu.institution }} — {{ edu.date_range }}</p>
+                </div>
+                {% endfor %}
+
+                {% else %}
+                <p class="text-gray-700">{{ content }}</p>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </main>
+
+    </div>
+</body>
+
+</html>

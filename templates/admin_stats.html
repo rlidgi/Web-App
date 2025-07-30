@@ -75,7 +75,8 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-white-50 mb-2">Total Visits</h6>
-                                    <div class="stat-number">{{ analytics.total_visits or 0 }}</div>
+                                    <div class="stat-number">{{ analytics.summary.total_visits if analytics.summary else
+                                        0 }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-eye fa-2x opacity-75"></i>
@@ -89,7 +90,8 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-white-50 mb-2">Facebook Ads</h6>
-                                    <div class="stat-number">{{ analytics.facebook_ad_visits or 0 }}</div>
+                                    <div class="stat-number">{{ analytics.summary.facebook_ad_visits if
+                                        analytics.summary else 0 }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fab fa-facebook fa-2x opacity-75"></i>
@@ -103,7 +105,8 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <h6 class="text-white-50 mb-2">Organic Visits</h6>
-                                    <div class="stat-number">{{ analytics.organic_visits or 0 }}</div>
+                                    <div class="stat-number">{{ analytics.summary.organic_visits if analytics.summary
+                                        else 0 }}</div>
                                 </div>
                                 <div class="align-self-center">
                                     <i class="fas fa-search fa-2x opacity-75"></i>
@@ -123,6 +126,38 @@
                                 <div class="align-self-center">
                                     <i class="fas fa-file-alt fa-2x opacity-75"></i>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Quick Actions -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-tools me-2"></i>
+                            Admin Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <a href="/subscribers" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    View Newsletter Subscribers
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="/admin/newsletter" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-newspaper me-2"></i>
+                                    Manage Newsletters
+                                </a>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <a href="/users" class="btn btn-info btn-lg w-100">
+                                    <i class="fas fa-users me-2"></i>
+                                    View User Accounts
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -181,7 +216,7 @@ fetch('/api/visit_count')
                 <div class="text-center mt-4 text-muted">
                     <small>
                         <i class="fas fa-clock me-1"></i>
-                        Last updated: {{ analytics.last_updated or 'Unknown' }}
+                        Last updated: {{ analytics.summary.last_updated if analytics.summary else 'Unknown' }}
                     </small>
                 </div>
             </div>

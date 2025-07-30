@@ -17,7 +17,14 @@
     "id": "108278720993144058808",
     "name": "Y L",
     "email": "yaronyaronlid@gmail.com",
-    "created_at": "2025-07-30T03:59:33.264690+00:00",
+    "created_at": "2025-07-27T23:11:32.912037+00:00",
     "is_admin": true
+  },
+  "116560022938217120951": {
+    "id": "116560022938217120951",
+    "name": "Ron Lidgi",
+    "email": "ron.lidgi.617@my.csun.edu",
+    "created_at": "2025-07-26T22:46:01.038954+00:00",
+    "is_admin": false
   }
 }

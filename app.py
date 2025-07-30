@@ -9,6 +9,9 @@ import logging
 # Import analytics module for tracking Facebook ad performance
 from analytics import analytics
 
+# Import newsletter system
+from newsletter import NewsletterManager, NewsletterConfig
+
 from google_auth_oauthlib.flow import Flow
 import google.auth.transport.requests
 import google.oauth2.credentials
@@ -33,6 +36,9 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY') or 'a-very-secret-random-key'
+
+# Ensure HTTPS URLs in sitemap and external links
+app.config['PREFERRED_URL_SCHEME'] = 'https'
 
 # File upload configuration
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -465,20 +471,25 @@ def revised_resume_template(revised_resume):
 
 @app.route("/")
 def index():
-    # Track the visit with source attribution
-    source_info = analytics.track_visit(request)
-    
-    # Store traffic source in session for conversion tracking
-    session['traffic_source'] = source_info
+    # Track the visit with source attribution (only if not already tracked)
+    if 'visit_tracked' not in session:
+        source_info = analytics.track_visit(request)
+        session['visit_tracked'] = True
+        session['traffic_source'] = source_info
+        app.logger.info(f"Homepage visit tracked from server-side: {source_info.get('type', 'unknown')}")
+    else:
+        # Use existing traffic source from session
+        source_info = session.get('traffic_source', {'type': 'organic'})
+        app.logger.info("Homepage visit already tracked in session, skipping duplicate")
     
     current_year = datetime.now().year
     return render_template("index.html", year=current_year)
 
 
 
-@app.route("/revise_resume", methods=["POST"])
+@app.route("/results", methods=["POST"])
 #login_required
-def revise_resume_route():
+def results_route():
     print("=== revise_resume_route called ===")
     try:
         resume_text = ""
@@ -590,17 +601,68 @@ def blog_post(post):
     current_year = datetime.now().year
     return render_template(f"{post}.html", year=current_year, user=current_user if current_user.is_authenticated else None)
 
+@app.route("/templates")
+def templates():
+    client_templates=OpenAI()
+    prompt= f'''Please create a python dictionary with the section names of the provided resume 
+    as keys and the associated content as values.'''
+    try:
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt}]
+            )
+    except Exception as e:
+            print(f"OpenAI API Error: {str(e)}")
+            raise ValueError("Failed to connect to OpenAI API. Please try again later.")
+
+    resume_data = response.choices[0].message.content
+    resume_data = request.json.get('resume_data')
+
+    return render_template('resume_template.html', resume=resume_data)
+
+
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     email = request.form.get("email")
+    referrer = request.referrer or url_for("index")
+    
     if email:
-        with open("subscribers.csv", "a") as f:
-            f.write(email + "\n")
-        flash("Thank you!", "success")
-        return redirect(url_for("thank_you"))
+        try:
+            # Create subscribers.csv if it doesn't exist
+            import os
+            if not os.path.exists("subscribers.csv"):
+                with open("subscribers.csv", "w") as f:
+                    f.write("email\n")  # Header row
+            
+            # Check if email already exists
+            existing_emails = []
+            try:
+                with open("subscribers.csv", "r") as f:
+                    existing_emails = [line.strip().lower() for line in f.readlines()]
+            except FileNotFoundError:
+                pass
+            
+            if email.lower() in existing_emails:
+                flash("You're already subscribed to our newsletter!", "info")
+            else:
+                with open("subscribers.csv", "a") as f:
+                    f.write(email + "\n")
+                flash("Thank you for subscribing! You'll receive our latest resume tips and career advice.", "success")
+            
+            # Smart redirect based on referrer
+            if "/blog" in referrer:
+                return redirect(url_for("blog"))
+            elif "/thank_you" in referrer:
+                return redirect(url_for("thank_you"))
+            else:
+                return redirect(url_for("thank_you"))
+        except Exception as e:
+            flash("Something went wrong. Please try again later.", "danger")
+            print(f"Subscription error: {str(e)}")
+            return redirect(referrer)
     else:
         flash("Please enter a valid email address.", "danger")
-        return redirect(url_for("index"))
+        return redirect(referrer)
 
 @app.route("/thank_you")
 def thank_you():
@@ -642,8 +704,17 @@ def view_analytics():
 def track_conversion():
     """API endpoint for tracking conversions and events from Facebook ads."""
     try:
-        # Track the visit/conversion
-        source_info = analytics.track_visit(request)
+        # Check if this is a duplicate tracking call in the same session
+        if 'visit_tracked' in session:
+            # Just track the conversion/event without counting as a new visit
+            source_info = session.get('traffic_source', {'type': 'unknown'})
+            app.logger.info("Facebook tracking call - visit already tracked, skipping duplicate")
+        else:
+            # Track the visit/conversion (first time)
+            source_info = analytics.track_visit(request)
+            session['visit_tracked'] = True
+            session['traffic_source'] = source_info
+            app.logger.info(f"Facebook tracking - new visit tracked: {source_info.get('type', 'unknown')}")
         
         # Return JSON response for AJAX calls
         return {
@@ -662,6 +733,15 @@ def track_conversion():
 def track_visit():
     """API endpoint for tracking legitimate page visits (bot-filtered)."""
     try:
+        # Check if visit already tracked in this session to prevent double counting
+        if 'visit_tracked' in session:
+            app.logger.info("Visit already tracked in session, skipping duplicate API tracking")
+            return {
+                "status": "success",
+                "message": "Visit already tracked in session",
+                "duplicate_prevented": True
+            }, 200
+        
         # Get JSON data from request
         data = request.get_json()
         
@@ -685,9 +765,11 @@ def track_visit():
         
         # Track the legitimate visit using existing analytics
         source_info = analytics.track_visit(request)
+        session['visit_tracked'] = True
+        session['traffic_source'] = source_info
         
-        # Log the visit for debugging (can be removed in production)
-        logger.info(f"Legitimate visit tracked: {data.get('page', 'unknown')} from {request.remote_addr}")
+        # Log the visit for debugging
+        app.logger.info(f"API visit tracked: {data.get('page', 'unknown')} from {request.remote_addr} - {source_info.get('type', 'unknown')}")
         
         return {
             "status": "success",
@@ -709,14 +791,18 @@ def get_visit_count():
         # Get analytics data
         analytics_data = analytics.get_full_analytics()
         
+        # Extract summary data
+        summary = analytics_data.get('summary', {})
+        
         return {
             "status": "success",
             "data": {
-                "total_visits": analytics_data.get('total_visits', 0),
-                "facebook_ad_visits": analytics_data.get('facebook_ad_visits', 0),
-                "organic_visits": analytics_data.get('organic_visits', 0),
-                "total_conversions": analytics_data.get('summary', {}).get('total_conversions', 0),
-                "last_updated": analytics_data.get('last_updated', 'unknown')
+                "total_visits": summary.get('total_visits', 0),
+                "facebook_ad_visits": summary.get('facebook_ad_visits', 0),
+                "organic_visits": summary.get('organic_visits', 0),
+                "total_conversions": summary.get('total_conversions', 0),
+                "facebook_ad_conversions": summary.get('facebook_ad_conversions', 0),
+                "last_updated": summary.get('last_updated', 'unknown')
             }
         }, 200
         
@@ -744,10 +830,18 @@ def admin_stats():
         # Get comprehensive analytics data
         analytics_data = analytics.get_full_analytics()
         
+        # Debug logging to help troubleshoot
+        app.logger.info(f"Analytics data structure: {type(analytics_data)}")
+        if isinstance(analytics_data, dict) and 'summary' in analytics_data:
+            app.logger.info(f"Summary data: {analytics_data['summary']}")
+        else:
+            app.logger.warning(f"Unexpected analytics data structure: {analytics_data}")
+        
         return render_template("admin_stats.html", 
                              analytics=analytics_data, 
                              user=current_user)
     except Exception as e:
+        app.logger.error(f"Error loading statistics: {str(e)}")
         flash(f"Error loading statistics: {str(e)}", "danger")
         return redirect(url_for("index"))
 
@@ -761,30 +855,72 @@ from flask import Response
 
 @app.route('/sitemap.xml', methods=['GET'])
 def sitemap():
+    """Generate dynamic sitemap with only public pages"""
     pages = []
     lastmod = datetime.now().date().isoformat()
 
-    # Static routes
-    for rule in app.url_map.iter_rules():
-        if "GET" in rule.methods and len(rule.arguments) == 0:
-            url = url_for(rule.endpoint, _external=True)
-            pages.append(
-                f"""
+    # Define allowed public endpoints
+    public_endpoints = {
+        'index': {'priority': '1.0', 'changefreq': 'daily'},
+        'about': {'priority': '0.8', 'changefreq': 'monthly'},
+        'blog': {'priority': '0.9', 'changefreq': 'weekly'},
+        'templates': {'priority': '0.8', 'changefreq': 'monthly'},
+        'counter': {'priority': '0.5', 'changefreq': 'daily'},
+        'login': {'priority': '0.6', 'changefreq': 'monthly'},
+        'signup': {'priority': '0.6', 'changefreq': 'monthly'},
+        'privacy': {'priority': '0.3', 'changefreq': 'yearly'},
+        'terms_privacy': {'priority': '0.3', 'changefreq': 'yearly'},
+        'thank_you': {'priority': '0.4', 'changefreq': 'monthly'},
+        'unsubscribe': {'priority': '0.2', 'changefreq': 'yearly'},
+    }
+
+    # Add static pages
+    for endpoint, config in public_endpoints.items():
+        try:
+            url = url_for(endpoint, _external=True, _scheme='https')
+            pages.append(f"""
+                <url>
+                    <loc>{url}</loc>
+                    <lastmod>{lastmod}</lastmod>
+                    <changefreq>{config['changefreq']}</changefreq>
+                    <priority>{config['priority']}</priority>
+                </url>""")
+        except Exception:
+            # Skip if endpoint doesn't exist
+            continue
+
+    # Add blog posts (assuming they follow the pattern /blog/<post>)
+    blog_posts = [
+        'toptenmistakes',
+        'ats-optimization', 
+        'Resume-objective',
+        'no-experience',
+        'Power-words',
+        'resume-format-2025',
+        'tailorresumejob'
+    ]
+    
+    for post in blog_posts:
+        try:
+            url = url_for('blog_post', post=post, _external=True, _scheme='https')
+            pages.append(f"""
                 <url>
                     <loc>{url}</loc>
                     <lastmod>{lastmod}</lastmod>
                     <changefreq>monthly</changefreq>
                     <priority>0.8</priority>
-                </url>
-                """
-            )
+                </url>""")
+        except Exception:
+            continue
 
     sitemap_xml = f"""<?xml version="1.0" encoding="UTF-8"?>
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
         {''.join(pages)}
     </urlset>"""
 
-    return Response(sitemap_xml, mimetype='application/xml')
+    response = Response(sitemap_xml, mimetype='application/xml')
+    response.headers['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours
+    return response
 
 
 @app.route("/download_resume_docx", methods=["POST"])
@@ -1067,6 +1203,17 @@ Disallow: /private/
 Sitemap: https://resumaticai.com/sitemap.xml"""
         return Response(content, mimetype='text/plain')
 
+@app.route('/sitemap-static.xml')
+def sitemap_static():
+    """Serve static sitemap.xml file as backup"""
+    try:
+        response = send_file('sitemap.xml', mimetype='application/xml')
+        response.headers['Cache-Control'] = 'public, max-age=86400'  # Cache for 24 hours
+        return response
+    except Exception as e:
+        # Fallback to dynamic sitemap
+        return redirect(url_for('sitemap'))
+
 @app.route('/ads.txt')
 def ads_txt():
     """Serve ads.txt file"""
@@ -1080,13 +1227,356 @@ def llms_txt():
 @app.route('/subscribers')
 @login_required
 def subscribers():
-    """Show subscribers page"""
-    return render_template('subscribers.html')
+    """Show subscribers page with actual subscriber data"""
+    # Check if the user is an admin
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to view this page.", "danger")
+        return redirect(url_for("index"))
+    
+    try:
+        subscriber_list = []
+        subscriber_count = 0
+        
+        # Read subscribers from CSV file
+        if os.path.exists("subscribers.csv"):
+            with open("subscribers.csv", "r") as f:
+                lines = f.readlines()
+                # Skip header row if present
+                for line in lines[1:] if lines and lines[0].strip().lower() == 'email' else lines:
+                    email = line.strip()
+                    if email:  # Only add non-empty emails
+                        subscriber_list.append({
+                            'email': email,
+                            'date_added': 'Unknown'  # CSV doesn't store dates
+                        })
+                        subscriber_count += 1
+        
+        # Sort subscribers alphabetically
+        subscriber_list.sort(key=lambda x: x['email'].lower())
+        
+        return render_template('subscribers.html', 
+                             subscribers=subscriber_list, 
+                             total_count=subscriber_count,
+                             user=current_user)
+    except Exception as e:
+        flash(f"Error loading subscribers: {str(e)}", "danger")
+        return render_template('subscribers.html', 
+                             subscribers=[], 
+                             total_count=0,
+                             user=current_user)
 
 @app.route('/signup')
 def signup():
     """Show signup page"""
     return render_template('signup.html')
+
+# Newsletter Management Routes
+@app.route('/admin/newsletter')
+@login_required
+def newsletter_admin():
+    """Newsletter administration dashboard"""
+    if not current_user.is_authenticated:
+        flash("You need to log in to view this page.", "danger")
+        return redirect(url_for("login"))
+
+    # Check if the user is an admin
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to view this page.", "danger")
+        return redirect(url_for("index"))
+
+    try:
+        # Get newsletter archives
+        newsletter_files = []
+        if os.path.exists("newsletters"):
+            for filename in os.listdir("newsletters"):
+                if filename.endswith(".json"):
+                    try:
+                        with open(os.path.join("newsletters", filename), "r") as f:
+                            data = json.load(f)
+                        newsletter_files.append({
+                            "filename": filename,
+                            "month": data.get("month"),
+                            "year": data.get("year"),
+                            "subject": data.get("subject"),
+                            "generated_at": data.get("generated_at"),
+                            "send_stats": data.get("send_stats", {})
+                        })
+                    except Exception as e:
+                        logger.error(f"Error reading newsletter file {filename}: {str(e)}")
+
+        # Sort by year and month (newest first)
+        newsletter_files.sort(key=lambda x: (x.get("year", 0), x.get("month", "")), reverse=True)
+
+        # Get subscriber count
+        subscriber_count = 0
+        if os.path.exists("subscribers.csv"):
+            with open("subscribers.csv", "r") as f:
+                lines = f.readlines()
+                subscriber_count = len([line for line in lines[1:] if line.strip()]) if lines else 0
+
+        return render_template('newsletter_admin.html', 
+                             newsletters=newsletter_files, 
+                             subscriber_count=subscriber_count,
+                             user=current_user)
+    except Exception as e:
+        flash(f"Error loading newsletter dashboard: {str(e)}", "danger")
+        return redirect(url_for("admin_stats"))
+
+@app.route('/admin/newsletter/generate', methods=['POST'])
+@login_required
+def generate_newsletter():
+    """Generate a new newsletter"""
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to access this feature.", "danger")
+        return redirect(url_for("index"))
+
+    try:
+        # Get form data
+        month = request.form.get('month')
+        year_str = request.form.get('year')
+        custom_topics_str = request.form.get('custom_topics', '').strip()
+        preview_only = request.form.get('preview_only') == 'on'
+
+        # Validate inputs
+        if not month or not year_str:
+            flash("Please select both month and year.", "danger")
+            return redirect(url_for('newsletter_admin'))
+
+        try:
+            year = int(year_str)
+        except ValueError:
+            flash("Invalid year provided.", "danger")
+            return redirect(url_for('newsletter_admin'))
+
+        # Parse custom topics
+        custom_topics = None
+        if custom_topics_str:
+            custom_topics = [topic.strip() for topic in custom_topics_str.split(',') if topic.strip()]
+
+        # Initialize newsletter manager
+        newsletter_manager = NewsletterManager()
+
+        # Generate newsletter
+        result = newsletter_manager.create_and_send_newsletter(
+            month=month,
+            year=year,
+            custom_topics=custom_topics,
+            preview_only=preview_only
+        )
+
+        if preview_only:
+            flash(f"Newsletter preview generated for {month} {year}! Check the archives to view it.", "success")
+        else:
+            send_stats = result.get('send_stats', {})
+            flash(f"Newsletter sent! {send_stats.get('sent', 0)} emails sent successfully, {send_stats.get('failed', 0)} failed.", "success")
+
+        return redirect(url_for('newsletter_admin'))
+
+    except Exception as e:
+        logger.error(f"Error generating newsletter: {str(e)}")
+        flash(f"Error generating newsletter: {str(e)}", "danger")
+        return redirect(url_for('newsletter_admin'))
+
+@app.route('/admin/newsletter/preview/<path:filename>')
+@login_required
+def preview_newsletter(filename):
+    """Preview a newsletter"""
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to access this feature.", "danger")
+        return redirect(url_for("index"))
+
+    try:
+        # Security check - ensure filename is safe
+        safe_filename = secure_filename(filename)
+        if not safe_filename.endswith('.html'):
+            safe_filename += '.html'
+
+        filepath = os.path.join("newsletters", safe_filename)
+        
+        if not os.path.exists(filepath):
+            flash("Newsletter not found.", "danger")
+            return redirect(url_for('newsletter_admin'))
+
+        return send_file(filepath)
+
+    except Exception as e:
+        logger.error(f"Error previewing newsletter: {str(e)}")
+        flash("Error loading newsletter preview.", "danger")
+        return redirect(url_for('newsletter_admin'))
+
+@app.route('/admin/newsletter/send/<path:filename>', methods=['POST'])
+@login_required
+def send_existing_newsletter(filename):
+    """Send an existing newsletter"""
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to access this feature.", "danger")
+        return redirect(url_for("index"))
+
+    try:
+        # Security check
+        safe_filename = secure_filename(filename)
+        if not safe_filename.endswith('.json'):
+            safe_filename += '.json'
+
+        filepath = os.path.join("newsletters", safe_filename)
+        
+        if not os.path.exists(filepath):
+            flash("Newsletter not found.", "danger")
+            return redirect(url_for('newsletter_admin'))
+
+        # Load newsletter data
+        with open(filepath, "r") as f:
+            newsletter_data = json.load(f)
+
+        # Initialize newsletter manager and send
+        newsletter_manager = NewsletterManager()
+        send_stats = newsletter_manager.sender.send_newsletter(
+            subject=newsletter_data["subject"],
+            html_content=newsletter_data["html_content"],
+            text_content=newsletter_data["text_content"]
+        )
+
+        # Update the newsletter file with send stats
+        newsletter_data["send_stats"] = send_stats
+        newsletter_data["last_sent"] = datetime.now(timezone.utc).isoformat()
+        
+        with open(filepath, "w") as f:
+            json.dump(newsletter_data, f, indent=2)
+
+        flash(f"Newsletter sent! {send_stats.get('sent', 0)} emails sent successfully, {send_stats.get('failed', 0)} failed.", "success")
+
+    except Exception as e:
+        logger.error(f"Error sending newsletter: {str(e)}")
+        flash(f"Error sending newsletter: {str(e)}", "danger")
+
+    return redirect(url_for('newsletter_admin'))
+
+@app.route('/api/newsletter/test', methods=['POST'])
+@login_required
+def test_newsletter_config():
+    """Test newsletter configuration (SMTP settings)"""
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"status": "error", "message": "Unauthorized"}), 403
+
+    try:
+        config = NewsletterConfig()
+        
+        # Check if credentials are configured
+        if not config.sender_email or not config.sender_password:
+            return jsonify({
+                "status": "error", 
+                "message": "Email credentials not configured. Please add NEWSLETTER_EMAIL and NEWSLETTER_PASSWORD to your .env file."
+            }), 400
+
+        # Log the configuration for debugging (without password)
+        logger.info(f"Testing email config - Email: {config.sender_email}, SMTP: {config.smtp_server}:{config.smtp_port}")
+
+        # Test SMTP connection
+        import smtplib
+        server = smtplib.SMTP(config.smtp_server, config.smtp_port)
+        server.starttls()
+        server.login(config.sender_email, config.sender_password)
+        server.quit()
+
+        return jsonify({
+            "status": "success", 
+            "message": f"Email configuration is working correctly! Connected to {config.smtp_server} with {config.sender_email}"
+        })
+
+    except smtplib.SMTPAuthenticationError as e:
+        error_msg = str(e)
+        if "Username and Password not accepted" in error_msg:
+            return jsonify({
+                "status": "error", 
+                "message": "Authentication failed. For Gmail, make sure you're using an App Password, not your regular password. See newsletter_config.txt for setup instructions."
+            }), 400
+        else:
+            return jsonify({
+                "status": "error", 
+                "message": f"SMTP Authentication Error: {error_msg}"
+            }), 400
+    except smtplib.SMTPException as e:
+        return jsonify({
+            "status": "error", 
+            "message": f"SMTP Error: {str(e)}"
+        }), 400
+    except Exception as e:
+        logger.error(f"Newsletter config test error: {str(e)}")
+        return jsonify({
+            "status": "error", 
+            "message": f"Configuration error: {str(e)}"
+        }), 400
+
+@app.route('/api/newsletter/debug', methods=['POST'])
+@login_required
+def debug_newsletter_config():
+    """Debug newsletter configuration"""
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"status": "error", "message": "Unauthorized"}), 403
+
+    try:
+        config = NewsletterConfig()
+        
+        debug_info = {
+            "email_configured": bool(config.sender_email),
+            "password_configured": bool(config.sender_password),
+            "email_value": config.sender_email if config.sender_email else "Not set",
+            "smtp_server": config.smtp_server,
+            "smtp_port": config.smtp_port,
+            "env_vars": {
+                "NEWSLETTER_EMAIL": "Set" if os.getenv("NEWSLETTER_EMAIL") else "Not set",
+                "NEWSLETTER_PASSWORD": "Set" if os.getenv("NEWSLETTER_PASSWORD") else "Not set"
+            }
+        }
+        
+        return jsonify({"status": "success", "debug_info": debug_info})
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Debug error: {str(e)}"}), 400
+
+@app.route('/unsubscribe')
+def unsubscribe():
+    """Unsubscribe page for newsletter"""
+    return render_template('unsubscribe.html')
+
+@app.route('/unsubscribe', methods=['POST'])
+def unsubscribe_post():
+    """Process unsubscribe request"""
+    email = request.form.get('email', '').strip().lower()
+    
+    if not email:
+        flash("Please enter your email address.", "danger")
+        return redirect(url_for('unsubscribe'))
+    
+    try:
+        # Read current subscribers
+        subscribers = []
+        if os.path.exists("subscribers.csv"):
+            with open("subscribers.csv", "r") as f:
+                subscribers = [line.strip().lower() for line in f.readlines()]
+        
+        # Check if email exists
+        if email not in subscribers:
+            flash("Email address not found in our subscriber list.", "info")
+            return redirect(url_for('unsubscribe'))
+        
+        # Remove email from list
+        updated_subscribers = [sub for sub in subscribers if sub != email and sub != 'email']
+        
+        # Write back to file
+        with open("subscribers.csv", "w") as f:
+            f.write("email\n")  # Header
+            for subscriber in updated_subscribers:
+                if subscriber:  # Skip empty lines
+                    f.write(subscriber + "\n")
+        
+        flash("You have been successfully unsubscribed from our newsletter.", "success")
+        
+    except Exception as e:
+        logger.error(f"Error unsubscribing email: {str(e)}")
+        flash("An error occurred. Please try again later.", "danger")
+    
+    return redirect(url_for('unsubscribe'))
 
 
 
