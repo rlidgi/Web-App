@@ -197,58 +197,110 @@
         </nav>
     </header>
 
-    <!-- Signup Prompt (only if not logged in) - Positioned at top -->
+    <!-- Balanced Signup Prompt (only if not logged in) - Positioned at top -->
     {% if not current_user.is_authenticated %}
-    <div class="bg-white rounded-lg shadow p-6 mx-auto max-w-6xl mt-4 mb-6 text-center">
-        <h2 class="text-xl font-bold mb-2">Want to save and access all your resume revisions?</h2>
-        <p class="text-gray-600 mb-4">Sign up for a free account to keep track of your enhanced resumes and download
-            them anytime.</p>
-        <div class="flex justify-center gap-4">
-            <a href="/login/google" class="px-5 py-2 bg-red-500 text-white rounded hover:bg-red-600">Sign up with
-                Google</a>
+    <div
+        class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg shadow-sm p-5 mx-auto max-w-6xl mt-4 mb-6">
+        <div class="text-center mb-3">
+
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Save Your Work & Track Progress</h2>
+            <p class="text-gray-600 mb-3">Register for free to save this revision and access all your resume
+                improvements.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-3 mb-3">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-9 h-9 bg-green-100 rounded-full mb-2">
+                    <i class="fas fa-save text-green-600 text-sm"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 text-sm mb-1">Save All Revisions</h3>
+                <p class="text-xs text-gray-600">Never lose your work again</p>
+            </div>
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-9 h-9 bg-purple-100 rounded-full mb-2">
+                    <i class="fas fa-eye text-purple-600 text-sm"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 text-sm mb-1">View Analysis</h3>
+                <p class="text-xs text-gray-600">Access feedback anytime</p>
+            </div>
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-9 h-9 bg-orange-100 rounded-full mb-2">
+                    <i class="fas fa-sticky-note text-orange-600 text-sm"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800 text-sm mb-1">Job Tracking</h3>
+                <p class="text-xs text-gray-600">Track applications</p>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a href="/login/google"
+                class="inline-flex items-center px-6 py-3 bg-white border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 transition-colors duration-200 shadow-sm">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="w-5 h-5 mr-3">
+                Continue with Google
+            </a>
+        </div>
+
+        <!-- Additional Features Highlight -->
+        <div class="mt-3 pt-3 border-t border-blue-200">
+            <div class="text-center">
+                <h4 class="text-sm font-semibold text-gray-700 mb-2">Plus get access to:</h4>
+                <div class="flex flex-wrap justify-center gap-2 text-xs text-gray-600">
+                    <span class="inline-flex items-center px-2 py-1 bg-green-50 rounded-full">
+                        <i class="fas fa-download text-green-600 mr-1"></i>
+                        Download any revision
+                    </span>
+                    <span class="inline-flex items-center px-2 py-1 bg-blue-50 rounded-full">
+                        <i class="fas fa-history text-blue-600 mr-1"></i>
+                        Full revision history
+                    </span>
+                    <span class="inline-flex items-center px-2 py-1 bg-purple-50 rounded-full">
+                        <i class="fas fa-chart-bar text-purple-600 mr-1"></i>
+                        Progress tracking
+                    </span>
+                    <span class="inline-flex items-center px-2 py-1 bg-amber-50 rounded-full">
+                        <i class="fas fa-search text-amber-600 mr-1"></i>
+                        Search revisions
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
     {% endif %}
 
+
+
     <div class="max-w-6xl mx-auto p-4">
-        <!-- Loading Modal -->
-        <div id="loadingModal"
-            class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 hidden">
-            <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
-                <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">Processing Your Resume</h3>
-                <p class="text-gray-600 mb-4">We're analyzing your resume and generating personalized feedback. This may
-                    take a few moments...</p>
-                <div class="flex justify-center space-x-2">
-                    <div class="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                    <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                    <div class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-                </div>
-            </div>
+        <div class="text-center mb-8">
+            <h1
+                class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+                Resume Analysis Results
+            </h1>
+            <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+            <p class="text-gray-600 mt-4 text-lg">Your AI-powered resume optimization is complete</p>
         </div>
-
-    </div>
-
-    <div class="max-w-6xl mx-auto p-4">
-        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Resume Analysis Results</h1>
 
         <div id="scoreData" data-score="{{ feedback.get('overall_score', 50) | int }}" style="display: none;"></div>
 
         <!-- Action Buttons -->
-        <button onclick="exportAsPDF()" class="px-4 py-2 bg-primary text-black rounded hover:bg-primary/80">
-            <i class="fas fa-file-pdf mr-2"></i>Download PDF
-        </button>
-        <button onclick="copyResume()" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400">
-            <i class="fas fa-copy mr-2"></i>Copy Resume
-        </button>
+        <div class="flex flex-wrap gap-4 justify-center mb-8">
+            <button onclick="exportAsPDF()"
+                class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <i class="fas fa-file-pdf mr-2"></i>Download PDF
+            </button>
+            <button onclick="copyResume()"
+                class="px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <i class="fas fa-copy mr-2"></i>Copy Resume
+            </button>
+        </div>
 
     </div>
 
     <!-- Download Word Document -->
-    <div class="flex justify-end gap-4 mb-4">
+    <div class="flex justify-center mb-8">
         <form method="post" action="/download_resume_docx" style="display:inline;">
             <input type="hidden" name="resume" value="{{ revised_resume|e }}">
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            <button type="submit"
+                class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                 <i class="fas fa-file-word mr-2"></i>Download Revised Resume (Word)
             </button>
         </form>
@@ -257,7 +309,9 @@
     <!-- Score and Comparison -->
     <div class="grid md:grid-cols-2 gap-6 mb-10">
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-lg font-semibold mb-4">Score</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-pie text-blue-500 mr-3"></i>Score
+            </h2>
             <div class="relative w-48 h-48 mx-auto">
                 <svg class="w-full h-full" viewBox="0 0 100 100">
                     <!-- Background circle -->
@@ -275,7 +329,9 @@
             </div>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-lg font-semibold mb-4">How You Compare</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-trophy text-yellow-500 mr-3"></i>How You Compare
+            </h2>
             <div class="space-y-6">
                 <!-- Percentile Ranking -->
                 <div class="text-center">
@@ -337,7 +393,9 @@
 
     <!-- Category Scores with Tabs -->
     <div class="bg-white rounded-lg shadow p-6 mb-8">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Category Breakdown</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <i class="fas fa-list-alt text-green-500 mr-3"></i>Category Breakdown
+        </h2>
         <div class="flex flex-wrap gap-4 justify-center mb-6" id="tabs">
             {% for category, score in feedback['subscores'].items() %}
             <button data-tab="{{ category }}"
@@ -409,16 +467,81 @@
     </div>
     {% endif %}
 
-    <!-- Original Resume Output -->
+    <!-- Resume Comparison Section -->
     <div class="bg-white rounded-lg shadow p-6 mt-10">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Original Resume</h2>
-        <pre id="originalResumeOutput" class="whitespace-pre-wrap text-gray-800">{{ original_resume }}</pre>
-    </div>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-balance-scale text-purple-500 mr-3"></i>Resume Comparison
+            </h2>
+            <div class="flex space-x-3">
+                <button id="sideBySideBtn" onclick="toggleComparison('side-by-side')"
+                    class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md">
+                    <i class="fas fa-columns mr-2"></i>Side by Side
+                </button>
+                <button id="overlayBtn" onclick="toggleComparison('overlay')"
+                    class="px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-lg hover:from-gray-500 hover:to-gray-600 transition-all duration-200 shadow-md">
+                    <i class="fas fa-layer-group mr-2"></i>Overlay
+                </button>
+            </div>
+        </div>
 
-    <!-- Revised Resume Output -->
-    <div class="bg-white rounded-lg shadow p-6 mt-10">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Revised Resume</h2>
-        <pre id="resumeOutput" class="whitespace-pre-wrap text-gray-800">{{ revised_resume|safe }}</pre>
+        <!-- Side by Side Comparison -->
+        <div id="sideBySideComparison" class="comparison-view">
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="border-r border-gray-200 pr-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">
+                        <i class="fas fa-file-alt text-gray-500 mr-2"></i>Original Resume
+                    </h3>
+                    <div class="bg-gray-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                        <pre id="originalResumeOutput"
+                            class="whitespace-pre-wrap text-gray-800 text-sm">{{ original_resume }}</pre>
+                    </div>
+                </div>
+                <div class="pl-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">
+                        <i class="fas fa-magic text-green-500 mr-2"></i>Revised Resume
+                    </h3>
+                    <div class="bg-green-50 p-4 rounded-lg max-h-96 overflow-y-auto">
+                        <pre id="resumeOutput"
+                            class="whitespace-pre-wrap text-gray-800 text-sm">{{ revised_resume|safe }}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay Comparison -->
+        <div id="overlayComparison" class="comparison-view hidden">
+            <div class="relative">
+                <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-file-alt text-gray-500 mr-2"></i>Original Resume
+                    </h3>
+                    <pre id="originalResumeOverlay"
+                        class="whitespace-pre-wrap text-gray-800 text-sm">{{ original_resume }}</pre>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                        <i class="fas fa-magic text-green-500 mr-2"></i>Revised Resume
+                    </h3>
+                    <pre id="revisedResumeOverlay"
+                        class="whitespace-pre-wrap text-gray-800 text-sm">{{ revised_resume|safe }}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Changes Summary -->
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+            <h4 class="font-semibold text-blue-800 mb-2">
+                <i class="fas fa-lightbulb text-blue-500 mr-2"></i>Key Improvements Made
+            </h4>
+            <ul class="text-sm text-blue-700 space-y-1">
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Enhanced action verbs and professional language</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Improved formatting and structure</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Optimized for ATS compatibility</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Better keyword integration</li>
+                <li><i class="fas fa-check text-green-500 mr-2"></i>Enhanced readability and impact</li>
+            </ul>
+        </div>
     </div>
 
 
@@ -430,15 +553,7 @@
 
     <script>
         // Show loading modal when page loads
-        document.addEventListener('DOMContentLoaded', function () {
-            const loadingModal = document.getElementById('loadingModal');
-            loadingModal.classList.remove('hidden');
 
-            // Hide loading modal when content is ready
-            window.addEventListener('load', function () {
-                loadingModal.classList.add('hidden');
-            });
-        });
 
         const overallScore = parseInt(document.getElementById('scoreData').dataset.score);
         const progressCircle = document.querySelector('circle[stroke="#10B981"]');
@@ -474,6 +589,29 @@
             navigator.clipboard.writeText(resumeText).then(() => {
                 alert("Resume copied to clipboard!");
             });
+        }
+
+        function toggleComparison(mode) {
+            const sideBySideBtn = document.getElementById('sideBySideBtn');
+            const overlayBtn = document.getElementById('overlayBtn');
+            const sideBySideView = document.getElementById('sideBySideComparison');
+            const overlayView = document.getElementById('overlayComparison');
+
+            if (mode === 'side-by-side') {
+                sideBySideView.classList.remove('hidden');
+                overlayView.classList.add('hidden');
+                sideBySideBtn.classList.remove('bg-gray-300', 'text-gray-700');
+                sideBySideBtn.classList.add('bg-blue-500', 'text-white');
+                overlayBtn.classList.remove('bg-blue-500', 'text-white');
+                overlayBtn.classList.add('bg-gray-300', 'text-gray-700');
+            } else {
+                overlayView.classList.remove('hidden');
+                sideBySideView.classList.add('hidden');
+                overlayBtn.classList.remove('bg-gray-300', 'text-gray-700');
+                overlayBtn.classList.add('bg-blue-500', 'text-white');
+                sideBySideBtn.classList.remove('bg-blue-500', 'text-white');
+                sideBySideBtn.classList.add('bg-gray-300', 'text-gray-700');
+            }
         }
 
         document.getElementById('resumeForm').addEventListener('submit', function () {

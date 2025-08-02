@@ -1,7 +1,7 @@
 {
-  "total_visits": 153,
+  "total_visits": 165,
   "facebook_ad_visits": 0,
-  "organic_visits": 123,
+  "organic_visits": 124,
   "total_conversions": 16,
   "facebook_ad_conversions": 0,
   "daily_stats": {
@@ -50,9 +50,20 @@
       "facebook_ad_conversions": 0
     },
     "2025-07-30": {
-      "total": 4,
+      "total": 13,
       "facebook_ad": 0,
-      "organic": 1,
+      "organic": 2,
+      "direct": 11,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 0,
+      "facebook_ad_conversions": 0
+    },
+    "2025-07-31": {
+      "total": 3,
+      "facebook_ad": 0,
+      "organic": 0,
       "direct": 3,
       "search": 0,
       "social": 0,
@@ -64,13 +75,13 @@
   "utm_campaigns": {},
   "referrer_data": {
     "direct": {
-      "count": 30,
+      "count": 41,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-30"
+      "last_seen": "2025-07-31"
     },
     "http://127.0.0.1:5000/": {
-      "count": 101,
+      "count": 102,
       "conversions": 0,
       "conversion_rate": 0.0,
       "last_seen": "2025-07-30"
@@ -112,5 +123,5 @@
       "last_seen": "2025-07-25"
     }
   },
-  "last_updated": "2025-07-30"
+  "last_updated": "2025-07-31"
 }
