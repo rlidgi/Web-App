@@ -3,6 +3,10 @@
 <html lang="en">
 
 <head>
+
+
+
+
   <!-- visits counter -->
   <script>
     // Check if the counter exists in localStorage
@@ -21,14 +25,6 @@
   </script>
 
 
-  <!-- Clarity tracking code for https://resumaticai.com/ -->
-  <script>
-    (function (c, l, a, r, i, t, y) {
-      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
-      t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i + "?ref=bwt";
-      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-    })(window, document, "clarity", "script", "sjihir10df");
-  </script>
 
 
   <!-- Google tag (gtag.js) -->
@@ -1038,6 +1034,18 @@
   </link>
   </link>
   </meta>
+
+  <!-- Clarity tracking code for https://resumaticai.com/ -->
+  <script>
+      (function (c, l, a, r, i, t, y) {
+        c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+        t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i + "?ref=bwt";
+        y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "sjihir10df");
+  </script>
+
+
+
 </head>
 
 <body class="bg-gray-50" data-theme="light">
@@ -1086,9 +1094,15 @@
       <a class="block text-gray-600 hover:text-primary" href="/about">About</a>
       <a class="block text-gray-600 hover:text-primary" href="#faq">FAQ</a>
 
+      {% if current_user.is_authenticated %}
+      <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/logout">
+        Logout
+      </a>
+      {% else %}
       <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/login">
         Login
       </a>
+      {% endif %}
 
     </nav>
 
@@ -1112,9 +1126,15 @@
             <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/about">About</a>
             <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="#faq">FAQ</a>
 
+            {% if user and user.is_authenticated %}
+            <a href="/logout" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+              Logout
+            </a>
+            {% else %}
             <a href="/login" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
               Login
             </a>
+            {% endif %}
 
           </div>
           <button aria-expanded="false" aria-label="Toggle menu" class="md:hidden text-gray-600 hover:text-gray-900"
@@ -1157,10 +1177,12 @@
 
             <div class="flex justify-center">
               <button
-                class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
-                id="getStartedButton" type="button" onclick="scrollToLogin()">
-                <span class="hidden sm:inline">Get Started Now - It's Free</span>
-                <span class="sm:hidden">Get Started Free</span>
+                class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl {% if user and user.is_authenticated %}user-logged-in{% endif %}"
+                id="getStartedButton" type="button">
+                <span class="hidden sm:inline">{% if user and user.is_authenticated %}Create Your Resume Now{% else
+                  %}Get Started Now - It's Free{% endif %}</span>
+                <span class="sm:hidden">{% if user and user.is_authenticated %}Create Resume{% else %}Get Started Free{%
+                  endif %}</span>
                 <i class="fas fa-arrow-right ml-2 sm:ml-3 group-hover:translate-x-1 transition-transform"></i>
               </button>
             </div>
@@ -2361,10 +2383,21 @@
     </footer>
 
     <script>
-      function scrollToLogin() {
-        const loginSection = document.getElementById('resume-form');
-        loginSection.scrollIntoView({ behavior: 'smooth' });
+      // Function to handle button click based on auth status
+      function handleGetStartedClick() {
+        const resumeForm = document.getElementById('resume-form');
+        if (resumeForm) {
+          resumeForm.scrollIntoView({ behavior: 'smooth' });
+        }
       }
+
+      // Add click event listener to Get Started button
+      document.addEventListener('DOMContentLoaded', function () {
+        const getStartedButton = document.getElementById('getStartedButton');
+        if (getStartedButton) {
+          getStartedButton.addEventListener('click', handleGetStartedClick);
+        }
+      });
     </script>
 
     <script>
