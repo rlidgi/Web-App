@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify
+=======
+from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify
+>>>>>>> 899cee323b2657798849319fdf461e5481cd204f
 from io import BytesIO
 import PyPDF2
 import pdfplumber
@@ -61,6 +65,7 @@ def before_request():
     # Only redirect in production (not in debug mode)
     if not app.debug:
         forwarded_proto = request.headers.get('X-Forwarded-Proto', '').lower()
+<<<<<<< HEAD
         app.logger.info(f"[HTTPS REDIRECT] scheme={request.scheme}, X-Forwarded-Proto={forwarded_proto}, port={request.environ.get('SERVER_PORT')}, url={request.url}")
         # Only redirect if X-Forwarded-Proto is present and is 'http'
         if forwarded_proto == 'http':
@@ -73,6 +78,30 @@ def before_request():
             url = request.url.replace('http://', 'https://', 1)
             return redirect(url, code=301)
         # Otherwise, do not redirect (prevents loop)
+=======
+        
+        # Also check for HTTP in the URL scheme
+        is_http = (forwarded_proto == 'http' or 
+                  (request.scheme == 'http' and not forwarded_proto))
+        
+        # If the original request was HTTP (not HTTPS), redirect to HTTPS
+        if is_http:
+            url = request.url.replace('http://', 'https://', 1)
+            return redirect(url, code=301)
+        
+        # Force HTTPS for specific file routes that should always be HTTPS
+        if request.path in ['/robots.txt', '/sitemap.xml', '/llms.txt', '/ads.txt']:
+            if request.scheme == 'http':
+                url = request.url.replace('http://', 'https://', 1)
+                return redirect(url, code=301)
+        
+        # Force HTTPS for all blog posts and important pages
+        if (request.path.startswith('/blog/') or 
+            request.path in ['/', '/about', '/templates', '/counter']):
+            if request.scheme == 'http':
+                url = request.url.replace('http://', 'https://', 1)
+                return redirect(url, code=301)
+>>>>>>> 899cee323b2657798849319fdf461e5481cd204f
 
 # Add security headers for HTTPS enforcement
 @app.before_request
@@ -507,7 +536,11 @@ def index():
 @app.route("/results", methods=["POST"])
 #login_required
 def results_route():
+<<<<<<< HEAD
     print("=== results_route called ===")
+=======
+    print("=== revise_resume_route called ===")
+>>>>>>> 899cee323b2657798849319fdf461e5481cd204f
     try:
         resume_text = ""
         
