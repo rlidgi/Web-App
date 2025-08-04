@@ -217,9 +217,17 @@ def login():
 @app.route("/logout")
 @login_required
 def logout():
+    # Clear any OAuth tokens or state
+    session.pop('state', None)
+    session.pop('google_oauth_token', None)
+    session.pop('facebook_oauth_token', None)
+    session.pop('pending_revision', None)
+    # Clear full session
     session.clear()
+    # Log out the user
     logout_user()
-    return redirect(url_for("index"))
+    flash('You have been successfully logged out.', 'success')
+    return redirect(url_for('index'))
 
 
 @app.route("/login/google")
@@ -492,7 +500,7 @@ def index():
         app.logger.info("Homepage visit already tracked in session, skipping duplicate")
     
     current_year = datetime.now().year
-    return render_template("index.html", year=current_year)
+    return render_template("index.html", year=current_year, user=current_user)
 
 
 

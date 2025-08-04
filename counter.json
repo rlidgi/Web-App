@@ -1,8 +1,8 @@
 {
-  "total_visits": 165,
+  "total_visits": 173,
   "facebook_ad_visits": 0,
-  "organic_visits": 124,
-  "total_conversions": 16,
+  "organic_visits": 132,
+  "total_conversions": 17,
   "facebook_ad_conversions": 0,
   "daily_stats": {
     "2025-07-22": {
@@ -70,6 +70,17 @@
       "other": 0,
       "conversions": 0,
       "facebook_ad_conversions": 0
+    },
+    "2025-08-02": {
+      "total": 8,
+      "facebook_ad": 0,
+      "organic": 8,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 1,
+      "facebook_ad_conversions": 0
     }
   },
   "utm_campaigns": {},
@@ -81,10 +92,10 @@
       "last_seen": "2025-07-31"
     },
     "http://127.0.0.1:5000/": {
-      "count": 102,
+      "count": 108,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-30"
+      "last_seen": "2025-08-02"
     },
     "http://127.0.0.1:5000/my_revisions": {
       "count": 3,
@@ -105,10 +116,10 @@
       "last_seen": "2025-07-22"
     },
     "http://127.0.0.1:5000/blog": {
-      "count": 3,
+      "count": 4,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-07-24"
+      "last_seen": "2025-08-02"
     },
     "http://127.0.0.1:5000/revise_resume": {
       "count": 10,
@@ -121,7 +132,13 @@
       "conversions": 0,
       "conversion_rate": 0.0,
       "last_seen": "2025-07-25"
+    },
+    "http://127.0.0.1:5000/results": {
+      "count": 1,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-08-02"
     }
   },
-  "last_updated": "2025-07-31"
+  "last_updated": "2025-08-02"
 }
