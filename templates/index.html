@@ -89,7 +89,7 @@
   <meta
     content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
     property="og:description" />
-  <meta content="http://resumaticai.com/static/images/logo23.png" property="og:image" />
+  <meta content="http://resumaticai.com/static/images/logo23_large.png" property="og:image" />
   <meta content="Resumatic AI Resume Enhancement Tool" property="og:image:alt" />
   <meta content="Resumatic AI" property="og:site_name" />
   <meta content="en_US" property="og:locale" />
@@ -102,7 +102,7 @@
   <meta
     content="Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting. Free, secure, no signup needed. Start now!"
     name="twitter:description" />
-  <meta content="http://resumaticai.com/static/images/logo23.png" name="twitter:image" />
+  <meta content="http://resumaticai.com/static/images/logo23_large.png" name="twitter:image" />
   <meta content="Resumatic AI Resume Enhancement Tool" name="twitter:image:alt" />
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -179,7 +179,7 @@
       "@type": "Organization",
       "name": "Resumatic AI",
       "url": "http://resumaticai.com/",
-      "logo": "http://resumaticai.com/static/images/logo23.png",
+      "logo": "http://resumaticai.com/static/images/logo23_small.png",
       "sameAs": [
         "https://twitter.com/ResumaticAI",
         "https://www.linkedin.com/company/resumatic-ai",
@@ -254,6 +254,16 @@
   <!-- Custom Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
   <style>
+    html,
+    body {
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
     }
@@ -1075,14 +1085,11 @@
   <!-- Skip link for accessibility -->
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <!-- Theme toggle button -->
-  <button aria-label="Toggle dark mode" class="fixed bottom-4 right-4 p-2 bg-white rounded-full shadow-lg z-50"
-    id="themeToggle">
-    <i aria-hidden="true" class="fas fa-moon"></i>
-  </button>
+
   <!-- Mobile Menu -->
   <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6" id="mobileMenu">
     <div class="flex justify-between items-center mb-8">
-      <img alt="Logo" class="h-12 w-auto" src="/static/images/logo23.png" />
+      <img alt="Logo" class="h-12 w-auto" src="/static/images/logo23_small.png" />
       <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
         <i class="fas fa-times"></i>
       </button>
@@ -1110,12 +1117,14 @@
   <!-- Navigation with mobile menu button -->
   <header role="banner">
     <!-- Navigation -->
-    <nav aria-label="Main navigation" class="bg-white shadow-sm sticky top-0 z-50" role="navigation">
+    <nav aria-label="Main navigation" class="bg-white shadow-sm" role="navigation"
+      style="position:sticky; top:0; z-index:9999; background:white;">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-20 items-center">
           <div class="flex items-center">
             <a class="flex items-center" href="/">
-              <img alt="Resumatic AI Logo" class="h-16 w-auto" height="64" src="/static/images/logo23.png" width="48" />
+              <img alt="Resumatic AI Logo" class="h-16 w-auto" height="64" src="/static/images/logo23_small.png"
+                width="48" />
               <span class="sr-only">Resumatic AI</span>
             </a>
           </div>
@@ -1178,7 +1187,7 @@
             <div class="flex justify-center">
               <button
                 class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl {% if user and user.is_authenticated %}user-logged-in{% endif %}"
-                id="getStartedButton" type="button">
+                id="getStartedButton1" type="button">
                 <span class="hidden sm:inline">{% if user and user.is_authenticated %}Create Your Resume Now{% else
                   %}Get Started Now - It's Free{% endif %}</span>
                 <span class="sm:hidden">{% if user and user.is_authenticated %}Create Resume{% else %}Get Started Free{%
@@ -1236,7 +1245,7 @@
                 class="relative bg-white rounded-2xl shadow-2xl p-4 transform hover:scale-105 transition-transform duration-500 banner-container">
                 <!-- Animated banner image -->
                 <div class="relative overflow-hidden rounded-xl">
-                  <img src="/static/images/banner.png" alt="AI Resume Enhancement Animation"
+                  <img src="/static/images/banner.webp" alt="AI Resume Enhancement Animation"
                     class="w-full h-auto object-cover banner-image">
 
                   <!-- Animated overlay elements to simulate gif effects -->
@@ -1391,799 +1400,783 @@
         </div>
 
         <!-- Statistics Section with person.png -->
-        <div class="bg-white rounded-lg shadow-md p-4 md:p-5 border border-gray-100">
-          <div class="grid lg:grid-cols-2 gap-4 items-center">
-            <div class="space-y-3">
-              <div>
-                <h3 class="text-xl md:text-2xl font-bold text-primary mb-2">
-                  Start Your Success Story Today
-                </h3>
-                <p class="text-lg md:text-xl text-gray-700 leading-relaxed font-medium">
-                  Be among the first to experience next-generation resume enhancement powered by AI. Your dream job is
-                  just a resume away.
-                </p>
-              </div>
+        <!-- Statistics Section with person.png -->
+        <!-- Small Card with person.png -->
 
-              <div class="grid grid-cols-2 gap-3">
 
-              </div>
-            </div>
 
-            <div class="relative">
+
+        <!-- Enhanced How It Works Section -->
+        <section class="py-24 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden" id="how-it-works">
+          <!-- Background decorations -->
+          <div class="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-20 right-10 w-80 h-80 bg-secondary/5 rounded-full blur-3xl"></div>
+
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20 scroll-reveal">
               <div
-                class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-2xl transform scale-105">
+                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm font-semibold mb-6 border border-primary/20 scroll-reveal-scale">
+                <i class="fas fa-cogs mr-2"></i>
+                Simple Process
               </div>
-              <span
-                class="absolute top-4 left-4 bg-white/80 text-primary px-3 py-1 rounded-full text-xs font-semibold shadow-md flex items-center gap-1 z-20">
-                <i class="fas fa-robot text-secondary"></i> AI Powered
-              </span>
-              <img src="/static/images/person.png" alt="Professional person using resume service"
-                class="relative z-10 w-3/5 h-auto rounded-lg shadow-md object-contain transform hover:scale-105 transition-transform duration-500">
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Enhanced How It Works Section -->
-    <section class="py-24 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden" id="how-it-works">
-      <!-- Background decorations -->
-      <div class="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 right-10 w-80 h-80 bg-secondary/5 rounded-full blur-3xl"></div>
-
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center mb-20 scroll-reveal">
-          <div
-            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-sm font-semibold mb-6 border border-primary/20 scroll-reveal-scale">
-            <i class="fas fa-cogs mr-2"></i>
-            Simple Process
-          </div>
-          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 scroll-reveal">
-            How It <span class="gradient-text">Works</span>
-          </h2>
-          <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed scroll-reveal">
-            Transform your resume in three simple steps and unlock your career potential with AI-powered enhancement.
-          </p>
-        </div>
-
-        <!-- Steps Process -->
-        <div class="grid lg:grid-cols-2 gap-16 items-center mb-20">
-          <!-- Left side - CV Image -->
-          <div class="relative order-2 lg:order-1 scroll-reveal-left">
-            <div class="relative">
-              <!-- Decorative background -->
-              <div
-                class="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl transform rotate-3">
-              </div>
-              <div
-                class="absolute inset-0 bg-gradient-to-br from-secondary/10 to-primary/10 rounded-3xl transform -rotate-2">
-              </div>
-
-              <!-- Main CV image container -->
-              <div
-                class="relative bg-white rounded-3xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-500">
-                <img src="/static/images/resumeimage.jpg" alt="Professional CV Template"
-                  class="w-full h-auto rounded-2xl shadow-lg">
-
-                <!-- Floating enhancement indicators -->
-                <div
-                  class="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold animate-bounce">
-                  <i class="fas fa-check mr-1"></i>
-                  Enhanced
-                </div>
-
-                <div class="absolute top-1/2 -left-6 bg-white rounded-lg shadow-lg p-3 animate-pulse">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-3 h-3 bg-primary rounded-full"></div>
-                    <span class="text-sm font-semibold text-gray-700">AI Analyzing</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right side - Steps -->
-          <div class="space-y-8 order-1 lg:order-2 scroll-reveal-right">
-            <!-- Step 1 -->
-            <div class="group flex items-start space-x-6 scroll-reveal">
-              <div class="flex-shrink-0">
-                <div
-                  class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <span class="text-2xl font-bold text-white">1</span>
-                </div>
-              </div>
-              <div class="flex-1">
-                <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                  Provide Your Resume
-                </h3>
-                <p class="text-lg text-gray-600 leading-relaxed mb-4">
-                  Simply upload your resume file or paste the text content. Our system supports PDF, DOC, and DOCX
-                  formats.
-                </p>
-                <div class="flex items-center space-x-4 text-sm text-gray-500">
-                  <span class="flex items-center">
-                    <i class="fas fa-upload mr-2"></i>
-                    Upload File
-                  </span>
-                  <span class="flex items-center">
-                    <i class="fas fa-paste mr-2"></i>
-                    Paste Text
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Connecting line -->
-            <div class="ml-8 w-0.5 h-8 bg-gradient-to-b from-primary to-secondary"></div>
-
-            <!-- Step 2 -->
-            <div class="group flex items-start space-x-6 scroll-reveal">
-              <div class="flex-shrink-0">
-                <div
-                  class="w-16 h-16 bg-gradient-to-br from-secondary to-purple-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <span class="text-2xl font-bold text-white">2</span>
-                </div>
-              </div>
-              <div class="flex-1">
-                <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-secondary transition-colors">
-                  AI Enhancement
-                </h3>
-                <p class="text-lg text-gray-600 leading-relaxed mb-4">
-                  Our advanced AI analyzes your content, improves language, adds impactful keywords, and optimizes
-                  structure.
-                </p>
-                <div class="flex items-center space-x-4 text-sm text-gray-500">
-                  <span class="flex items-center">
-                    <i class="fas fa-brain mr-2"></i>
-                    AI Analysis
-                  </span>
-                  <span class="flex items-center">
-                    <i class="fas fa-magic mr-2"></i>
-                    Content Enhancement
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Connecting line -->
-            <div class="ml-8 w-0.5 h-8 bg-gradient-to-b from-secondary to-purple-500"></div>
-
-            <!-- Step 3 -->
-            <div class="group flex items-start space-x-6 scroll-reveal">
-              <div class="flex-shrink-0">
-                <div
-                  class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                  <span class="text-2xl font-bold text-white">3</span>
-                </div>
-              </div>
-              <div class="flex-1">
-                <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
-                  Get Results
-                </h3>
-                <p class="text-lg text-gray-600 leading-relaxed mb-4">
-                  Receive your enhanced resume with detailed analysis, improvement suggestions, and ATS optimization.
-                </p>
-                <div class="flex items-center space-x-4 text-sm text-gray-500">
-                  <span class="flex items-center">
-                    <i class="fas fa-download mr-2"></i>
-                    Download Resume
-                  </span>
-                  <span class="flex items-center">
-                    <i class="fas fa-chart-bar mr-2"></i>
-                    View Analysis
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Call to Action -->
-        <div class="text-center">
-          <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 max-w-4xl mx-auto">
-            <h3 class="text-3xl font-bold text-gray-900 mb-4">
-              Ready to Transform Your Resume?
-            </h3>
-            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Join thousands of professionals who have enhancedssss their resumessss and accelerated their careers.
-            </p>
-            <button onclick="scrollToLogin()"
-              class="inline-flex items-center px-8 py-4 text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl">
-              Start Now - It's Free
-              <i class="fas fa-rocket ml-3"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Testimonials Section -->
-    <!-- Enhanced Resume Form Section -->
-    <section class="py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden" id="resume-form">
-      <!-- Background decorations -->
-      <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/3 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/3 rounded-full blur-3xl"></div>
-
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-
-
-        <!-- Resume Form -->
-        <!-- Form Header -->
-        <div class="text-center mb-12">
-          <div
-            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-lg font-semibold mb-6 border border-primary/20">
-            <i class="fas fa-wand-magic-sparkles mr-2"></i>
-            Start Your Enhancement
-          </div>
-          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Create Your <span class="gradient-text">Perfect Resume</span>
-          </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Upload your resume or paste your content, and let our AI transform it into a professional, ATS-optimized
-            document.
-          </p>
-        </div>
-
-        <!-- Enhanced Form Container -->
-        <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 backdrop-blur-sm"
-          id="resumeFormContainer">
-          <div class="mb-8">
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-6">
-              <div class="flex items-center space-x-2 text-green-600">
-                <i class="fas fa-shield-check text-lg sm:text-xl"></i>
-                <span class="font-medium sm:font-semibold text-sm sm:text-base">100% Secure</span>
-              </div>
-              <div class="hidden sm:block w-1 h-6 bg-gray-300"></div>
-              <div class="flex items-center space-x-2 text-blue-600">
-                <i class="fas fa-clock text-lg sm:text-xl"></i>
-                <span class="font-medium sm:font-semibold text-sm sm:text-base">Instant Results</span>
-              </div>
-              <div class="hidden sm:block w-1 h-6 bg-gray-300"></div>
-              <div class="flex items-center space-x-2 text-purple-600">
-                <i class="fas fa-gift text-lg sm:text-xl"></i>
-                <span class="font-medium sm:font-semibold text-sm sm:text-base">Completely Free</span>
-              </div>
-            </div>
-          </div>
-
-
-
-          <form action="/results" class="space-y-6" id="resumeForm" method="POST" enctype="multipart/form-data">
-            <!-- Job Description Input -->
-            <div class="relative mb-8">
-              <label class="flex items-center justify-between mb-4" for="jobDescription">
-                <span class="text-lg font-semibold text-gray-900 flex items-center">
-                  <i class="fas fa-briefcase mr-3 text-primary"></i>
-                  Job Description (Optional)
-                </span>
-                <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                  <i class="fas fa-info-circle mr-1"></i>
-                  100-500 words recommended
-                </span>
-              </label>
-              <div class="relative">
-                <textarea aria-label="Job description"
-                  class="block w-full rounded-2xl border-2 border-gray-200 shadow-sm focus:border-primary focus:ring-primary focus:ring-2 resize-none p-4 text-lg placeholder-gray-400 transition-all duration-300 hover:border-gray-300"
-                  id="jobDescription" name="jobDescription"
-                  placeholder="Paste the job description here to get a tailored resume enhancement..."
-                  rows="5"></textarea>
-                <div aria-live="polite"
-                  class="absolute bottom-3 right-4 text-sm text-gray-500 bg-white px-2 py-1 rounded-full shadow-sm"
-                  id="jobDescriptionWordCount"></div>
-              </div>
-              <p class="mt-2 text-sm text-gray-600">
-                <i class="fas fa-lightbulb mr-1 text-yellow-500"></i>
-                Adding a job description helps our AI tailor your resume to specific requirements.
+              <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 scroll-reveal">
+                How It <span class="gradient-text">Works</span>
+              </h2>
+              <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed scroll-reveal">
+                Transform your resume in three simple steps and unlock your career potential with AI-powered
+                enhancement.
               </p>
             </div>
-            <!-- Resume Input -->
-            <div class="relative mb-8">
-              <label class="block mb-4">
-                <span class="text-lg font-semibold text-gray-900 flex items-center">
-                  <i class="fas fa-file-alt mr-3 text-primary"></i>
-                  Submit Your Resume
-                </span>
-              </label>
 
-              <!-- Enhanced Resume Input Method Tabs -->
-              <div class="mb-6">
-                <nav
-                  class="flex space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 p-2 rounded-2xl border border-gray-200"
-                  role="tablist">
-                  <button type="button"
-                    class="resume-tab-btn flex-1 py-3 px-6 text-lg font-semibold text-center rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 flex items-center justify-center space-x-2"
-                    data-tab="upload" id="uploadTab">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Upload File</span>
-                  </button>
-                  <button type="button"
-                    class="resume-tab-btn flex-1 py-3 px-6 text-lg font-semibold text-center rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 flex items-center justify-center space-x-2"
-                    data-tab="paste" id="pasteTab">
-                    <i class="fas fa-edit"></i>
-                    <span>Paste Text</span>
-                  </button>
-                </nav>
-              </div>
-
-              <!-- Enhanced File Upload Section -->
-              <div class="resume-input-section" id="uploadSection">
-                <div class="relative group">
+            <!-- Steps Process -->
+            <div class="grid lg:grid-cols-2 gap-16 items-center mb-20">
+              <!-- Left side - CV Image -->
+              <div class="relative order-2 lg:order-1 scroll-reveal-left">
+                <div class="relative">
+                  <!-- Decorative background -->
                   <div
-                    class="border-2 sm:border-3 border-dashed border-gray-300 rounded-2xl p-6 sm:p-12 text-center hover:border-primary hover:bg-primary/5 transition-all duration-300 cursor-pointer">
-                    <div class="space-y-3 sm:space-y-4">
-                      <div
-                        class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-cloud-upload-alt text-2xl sm:text-4xl text-primary"></i>
-                      </div>
-                      <div>
-                        <label for="resumeFile" class="cursor-pointer">
-                          <span
-                            class="text-lg sm:text-xl font-semibold text-primary hover:text-primary/80 transition-colors">
-                            Click to upload
-                          </span>
-                          <span class="text-base sm:text-lg text-gray-600 block mt-1 sm:mt-2">
-                            or drag and drop your resume here
-                          </span>
-                        </label>
-                        <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.doc,.docx" class="hidden">
-                      </div>
-                      <div
-                        class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
-                        <span class="flex items-center">
-                          <i class="fas fa-file-pdf mr-1 sm:mr-2 text-red-500"></i>
-                          PDF
-                        </span>
-                        <span class="flex items-center">
-                          <i class="fas fa-file-word mr-1 sm:mr-2 text-blue-500"></i>
-                          DOC
-                        </span>
-                        <span class="flex items-center">
-                          <i class="fas fa-file-word mr-1 sm:mr-2 text-blue-600"></i>
-                          DOCX
-                        </span>
-                        <span class="text-gray-400 hidden sm:inline">•</span>
-                        <span>Max 10MB</span>
-                      </div>
-                    </div>
+                    class="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl transform rotate-3">
+                  </div>
+                  <div
+                    class="absolute inset-0 bg-gradient-to-br from-secondary/10 to-primary/10 rounded-3xl transform -rotate-2">
                   </div>
 
-                  <!-- File Info Display -->
-                  <div id="fileInfo"
-                    class="hidden mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
-                    <div class="flex items-center justify-between">
-                      <div class="flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                          <i class="fas fa-check text-white text-xl"></i>
-                        </div>
-                        <div>
-                          <p class="font-semibold text-green-800">File uploaded successfully!</p>
-                          <p class="text-sm text-green-600" id="fileName"></p>
-                        </div>
+                  <!-- Main CV image container -->
+                  <div
+                    class="relative bg-white rounded-3xl shadow-2xl p-8 transform hover:scale-105 transition-transform duration-500">
+                    <video autoplay loop muted playsinline class="w-full h-auto rounded-2xl shadow-lg"
+                      aria-label="Professional CV Template">
+                      <source src="/static/images/gifimage.mp4" type="video/mp4">
+                    </video>
+
+
+                    <!-- Floating enhancement indicators -->
+                    <div
+                      class="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold animate-bounce">
+                      <i class="fas fa-check mr-1"></i>
+                      Enhanced
+                    </div>
+
+                    <div class="absolute top-1/2 -left-6 bg-white rounded-lg shadow-lg p-3 animate-pulse">
+                      <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-primary rounded-full"></div>
+                        <span class="text-sm font-semibold text-gray-700">AI Analyzing</span>
                       </div>
-                      <button type="button" id="removeFile"
-                        class="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors">
-                        <i class="fas fa-times"></i>
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Enhanced Text Paste Section -->
-              <div class="resume-input-section hidden" id="pasteSection">
-                <div class="space-y-4">
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                      <i class="fas fa-info-circle mr-1"></i>
-                      300-800 words recommended
+              <!-- Right side - Steps -->
+              <div class="space-y-8 order-1 lg:order-2 scroll-reveal-right">
+                <!-- Step 1 -->
+                <div class="group flex items-start space-x-6 scroll-reveal">
+                  <div class="flex-shrink-0">
+                    <div
+                      class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
+                      Provide Your Resume
+                    </h3>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-4">
+                      Simply upload your resume file or paste the text content. Our system supports PDF, DOC, and DOCX
+                      formats.
+                    </p>
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                      <span class="flex items-center">
+                        <i class="fas fa-upload mr-2"></i>
+                        Upload File
+                      </span>
+                      <span class="flex items-center">
+                        <i class="fas fa-paste mr-2"></i>
+                        Paste Text
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Connecting line -->
+                <div class="ml-8 w-0.5 h-8 bg-gradient-to-b from-primary to-secondary"></div>
+
+                <!-- Step 2 -->
+                <div class="group flex items-start space-x-6 scroll-reveal">
+                  <div class="flex-shrink-0">
+                    <div
+                      class="w-16 h-16 bg-gradient-to-br from-secondary to-purple-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-secondary transition-colors">
+                      AI Enhancement
+                    </h3>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-4">
+                      Our advanced AI analyzes your content, improves language, adds impactful keywords, and optimizes
+                      structure.
+                    </p>
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                      <span class="flex items-center">
+                        <i class="fas fa-brain mr-2"></i>
+                        AI Analysis
+                      </span>
+                      <span class="flex items-center">
+                        <i class="fas fa-magic mr-2"></i>
+                        Content Enhancement
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Connecting line -->
+                <div class="ml-8 w-0.5 h-8 bg-gradient-to-b from-secondary to-purple-500"></div>
+
+                <!-- Step 3 -->
+                <div class="group flex items-start space-x-6 scroll-reveal">
+                  <div class="flex-shrink-0">
+                    <div
+                      class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
+                      Get Results
+                    </h3>
+                    <p class="text-lg text-gray-600 leading-relaxed mb-4">
+                      Receive your enhanced resume with detailed analysis, improvement suggestions, and ATS
+                      optimization.
+                    </p>
+                    <div class="flex items-center space-x-4 text-sm text-gray-500">
+                      <span class="flex items-center">
+                        <i class="fas fa-download mr-2"></i>
+                        Download Resume
+                      </span>
+                      <span class="flex items-center">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        View Analysis
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="text-center">
+              <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 max-w-4xl mx-auto">
+                <h3 class="text-3xl font-bold text-gray-900 mb-4">
+                  Ready to Transform Your Resume?
+                </h3>
+                <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                  Join thousands of professionals who have enhanced their resumes and accelerated their careers.
+                </p>
+                <button
+                  class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl {% if user and user.is_authenticated %}user-logged-in{% endif %}"
+                  id="getStartedButton" type="button">
+                  Start Now - It's Free
+                  <i class="fas fa-rocket ml-3"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Testimonials Section -->
+        <!-- Enhanced Resume Form Section -->
+        <section class="py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden" id="resume-form">
+          <!-- Background decorations -->
+          <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/3 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-0 right-1/4 w-80 h-80 bg-secondary/3 rounded-full blur-3xl"></div>
+
+          <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+
+
+            <!-- Resume Form -->
+            <!-- Form Header -->
+            <div class="text-center mb-12">
+
+              <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Create Your <span class="gradient-text">Perfect Resume</span>
+              </h2>
+              <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Upload your resume or paste your content, and let our AI transform it into a professional, ATS-optimized
+                document.
+              </p>
+            </div>
+
+            <!-- Enhanced Form Container -->
+            <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-gray-100 backdrop-blur-sm"
+              id="resumeFormContainer">
+              <div class="mb-8">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-6">
+                  <div class="flex items-center space-x-2 text-green-600">
+                    <i class="fas fa-shield-check text-lg sm:text-xl"></i>
+                    <span class="font-medium sm:font-semibold text-sm sm:text-base">100% Secure</span>
+                  </div>
+                  <div class="hidden sm:block w-1 h-6 bg-gray-300"></div>
+                  <div class="flex items-center space-x-2 text-blue-600">
+                    <i class="fas fa-clock text-lg sm:text-xl"></i>
+                    <span class="font-medium sm:font-semibold text-sm sm:text-base">Instant Results</span>
+                  </div>
+                  <div class="hidden sm:block w-1 h-6 bg-gray-300"></div>
+                  <div class="flex items-center space-x-2 text-purple-600">
+                    <i class="fas fa-gift text-lg sm:text-xl"></i>
+                    <span class="font-medium sm:font-semibold text-sm sm:text-base">Completely Free</span>
+                  </div>
+                </div>
+              </div>
+
+
+
+
+              <form action="/results" class="space-y-6" id="resumeForm" method="POST" enctype="multipart/form-data">
+                <!-- Job Description Input -->
+                <div class="relative mb-8">
+                  <label class="flex items-center justify-between mb-4" for="jobDescription">
+                    <span class="text-lg font-semibold text-gray-900 flex items-center">
+                      <i class="fas fa-briefcase mr-3 text-primary"></i>
+                      Job Description (Optional)
                     </span>
-                  </div>
+                    <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                      <i class="fas fa-info-circle mr-1"></i>
+                      100-500 words recommended
+                    </span>
+                  </label>
                   <div class="relative">
-                    <textarea aria-label="Resume content"
-                      class="block w-full rounded-2xl border-2 border-gray-200 shadow-sm focus:border-primary focus:ring-primary focus:ring-2 resize-none p-6 text-lg placeholder-gray-400 transition-all duration-300 hover:border-gray-300"
-                      id="resume" name="resume"
-                      placeholder="Paste your current resume content here. Include your contact information, work experience, education, skills, and any other relevant details..."
-                      rows="16"></textarea>
+                    <textarea aria-label="Job description"
+                      class="block w-full rounded-2xl border-2 border-gray-200 shadow-sm focus:border-primary focus:ring-primary focus:ring-2 resize-none p-4 text-lg placeholder-gray-400 transition-all duration-300 hover:border-gray-300"
+                      id="jobDescription" name="jobDescription"
+                      placeholder="Paste the job description here to get a tailored resume enhancement..."
+                      rows="5"></textarea>
                     <div aria-live="polite"
-                      class="absolute bottom-4 right-4 text-sm text-gray-500 bg-white px-3 py-1 rounded-full shadow-sm"
-                      id="wordCount"></div>
-                    <div class="progress-bar absolute bottom-0 left-0 w-full rounded-b-2xl" id="progressBar"></div>
+                      class="absolute bottom-3 right-4 text-sm text-gray-500 bg-white px-2 py-1 rounded-full shadow-sm"
+                      id="jobDescriptionWordCount"></div>
                   </div>
-                  <p class="text-sm text-gray-600">
-                    <i class="fas fa-magic mr-1 text-primary"></i>
-                    Our AI will analyze and enhance every section of your resume for maximum impact.
+                  <p class="mt-2 text-sm text-gray-600">
+                    <i class="fas fa-lightbulb mr-1 text-yellow-500"></i>
+                    Adding a job description helps our AI tailor your resume to specific requirements.
                   </p>
                 </div>
-              </div>
-            </div>
-            <!-- Live preview container -->
-            <div aria-live="polite" class="preview-container" id="previewContainer">
-              <h4 class="text-lg font-semibold mb-2">Live Preview</h4>
-              <div class="prose prose-sm max-w-none" id="previewContent">
-                Your enhanced resume will appear here as you type...
-              </div>
-            </div>
-            <!-- Job Match Analysis -->
-            <div class="hidden mt-4 p-4 rounded-lg bg-gray-50" id="jobMatchAnalysis">
-              <h4 class="font-semibold mb-2">Job Match Analysis</h4>
-              <div class="space-y-2" id="matchContent"></div>
-            </div>
-            <!-- Enhanced Submit Section -->
-            <div class="mt-12 pt-8 border-t border-gray-200">
-              <div class="text-center space-y-6">
-                <!-- Security badges -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-8">
-                  <div class="flex items-center space-x-2 text-green-600">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center">
-                      <i class="fas fa-shield-check text-sm sm:text-base"></i>
-                    </div>
-                    <span class="font-medium sm:font-semibold text-sm sm:text-base">SSL Encrypted</span>
+                <!-- Resume Input -->
+                <div class="relative mb-8">
+                  <label class="block mb-4">
+                    <span class="text-lg font-semibold text-gray-900 flex items-center">
+                      <i class="fas fa-file-alt mr-3 text-primary"></i>
+                      Submit Your Resume
+                    </span>
+                  </label>
+
+                  <!-- Enhanced Resume Input Method Tabs -->
+                  <div class="mb-6">
+                    <nav
+                      class="flex space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 p-2 rounded-2xl border border-gray-200"
+                      role="tablist">
+                      <button type="button"
+                        class="resume-tab-btn flex-1 py-3 px-6 text-lg font-semibold text-center rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 flex items-center justify-center space-x-2"
+                        data-tab="upload" id="uploadTab">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Upload File</span>
+                      </button>
+                      <button type="button"
+                        class="resume-tab-btn flex-1 py-3 px-6 text-lg font-semibold text-center rounded-xl focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300 flex items-center justify-center space-x-2"
+                        data-tab="paste" id="pasteTab">
+                        <i class="fas fa-edit"></i>
+                        <span>Paste Text</span>
+                      </button>
+                    </nav>
                   </div>
-                  <div class="flex items-center space-x-2 text-blue-600">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                      <i class="fas fa-user-shield text-sm sm:text-base"></i>
+
+                  <!-- Enhanced File Upload Section -->
+                  <div class="resume-input-section" id="uploadSection">
+                    <div class="relative group">
+                      <div
+                        class="border-2 sm:border-3 border-dashed border-gray-300 rounded-2xl p-6 sm:p-12 text-center hover:border-primary hover:bg-primary/5 transition-all duration-300 cursor-pointer">
+                        <div class="space-y-3 sm:space-y-4">
+                          <div
+                            class="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-cloud-upload-alt text-2xl sm:text-4xl text-primary"></i>
+                          </div>
+                          <div>
+                            <label for="resumeFile" class="cursor-pointer">
+                              <span
+                                class="text-lg sm:text-xl font-semibold text-primary hover:text-primary/80 transition-colors">
+                                Click to upload
+                              </span>
+                              <span class="text-base sm:text-lg text-gray-600 block mt-1 sm:mt-2">
+                                or drag and drop your resume here
+                              </span>
+                            </label>
+                            <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.doc,.docx"
+                              class="hidden">
+                          </div>
+                          <div
+                            class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-500">
+                            <span class="flex items-center">
+                              <i class="fas fa-file-pdf mr-1 sm:mr-2 text-red-500"></i>
+                              PDF
+                            </span>
+                            <span class="flex items-center">
+                              <i class="fas fa-file-word mr-1 sm:mr-2 text-blue-500"></i>
+                              DOC
+                            </span>
+                            <span class="flex items-center">
+                              <i class="fas fa-file-word mr-1 sm:mr-2 text-blue-600"></i>
+                              DOCX
+                            </span>
+                            <span class="text-gray-400 hidden sm:inline">•</span>
+                            <span>Max 10MB</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- File Info Display -->
+                      <div id="fileInfo"
+                        class="hidden mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                              <i class="fas fa-check text-white text-xl"></i>
+                            </div>
+                            <div>
+                              <p class="font-semibold text-green-800">File uploaded successfully!</p>
+                              <p class="text-sm text-green-600" id="fileName"></p>
+                            </div>
+                          </div>
+                          <button type="button" id="removeFile"
+                            class="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <span class="font-medium sm:font-semibold text-sm sm:text-base">Privacy Protected</span>
                   </div>
-                  <div class="flex items-center space-x-2 text-purple-600">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                      <i class="fas fa-zap text-sm sm:text-base"></i>
+
+                  <!-- Enhanced Text Paste Section -->
+                  <div class="resume-input-section hidden" id="pasteSection">
+                    <div class="space-y-4">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                          <i class="fas fa-info-circle mr-1"></i>
+                          300-800 words recommended
+                        </span>
+                      </div>
+                      <div class="relative">
+                        <textarea aria-label="Resume content"
+                          class="block w-full rounded-2xl border-2 border-gray-200 shadow-sm focus:border-primary focus:ring-primary focus:ring-2 resize-none p-6 text-lg placeholder-gray-400 transition-all duration-300 hover:border-gray-300"
+                          id="resume" name="resume"
+                          placeholder="Paste your current resume content here. Include your contact information, work experience, education, skills, and any other relevant details..."
+                          rows="16"></textarea>
+                        <div aria-live="polite"
+                          class="absolute bottom-4 right-4 text-sm text-gray-500 bg-white px-3 py-1 rounded-full shadow-sm"
+                          id="wordCount"></div>
+                        <div class="progress-bar absolute bottom-0 left-0 w-full rounded-b-2xl" id="progressBar"></div>
+                      </div>
+                      <p class="text-sm text-gray-600">
+                        <i class="fas fa-magic mr-1 text-primary"></i>
+                        Our AI will analyze and enhance every section of your resume for maximum impact.
+                      </p>
                     </div>
-                    <span class="font-medium sm:font-semibold text-sm sm:text-base">Instant Processing</span>
                   </div>
                 </div>
-
-                <!-- Enhanced Submit Button -->
-                <button
-                  class="group relative inline-flex items-center px-8 py-4 sm:px-12 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary via-secondary to-primary bg-size-200 bg-pos-0 hover:bg-pos-100 focus:outline-none focus:ring-4 focus:ring-primary/50 transition-all duration-500 hover:shadow-2xl transform hover:scale-105 animate-pulse"
-                  id="submitButton" type="submit">
-
-                  <!-- Background gradient animation -->
-                  <div
-                    class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <!-- Live preview container -->
+                <div aria-live="polite" class="preview-container" id="previewContainer">
+                  <h4 class="text-lg font-semibold mb-2">Live Preview</h4>
+                  <div class="prose prose-sm max-w-none" id="previewContent">
+                    Your enhanced resume will appear here as you type...
                   </div>
+                </div>
+                <!-- Job Match Analysis -->
+                <div class="hidden mt-4 p-4 rounded-lg bg-gray-50" id="jobMatchAnalysis">
+                  <h4 class="font-semibold mb-2">Job Match Analysis</h4>
+                  <div class="space-y-2" id="matchContent"></div>
+                </div>
+                <!-- Enhanced Submit Section -->
+                <div class="mt-12 pt-8 border-t border-gray-200">
+                  <div class="text-center space-y-6">
+                    <!-- Security badges -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mb-8">
+                      <div class="flex items-center space-x-2 text-green-600">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center">
+                          <i class="fas fa-shield-check text-sm sm:text-base"></i>
+                        </div>
+                        <span class="font-medium sm:font-semibold text-sm sm:text-base">SSL Encrypted</span>
+                      </div>
+                      <div class="flex items-center space-x-2 text-blue-600">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                          <i class="fas fa-user-shield text-sm sm:text-base"></i>
+                        </div>
+                        <span class="font-medium sm:font-semibold text-sm sm:text-base">Privacy Protected</span>
+                      </div>
+                      <div class="flex items-center space-x-2 text-purple-600">
+                        <div
+                          class="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                          <i class="fas fa-zap text-sm sm:text-base"></i>
+                        </div>
+                        <span class="font-medium sm:font-semibold text-sm sm:text-base">Instant Processing</span>
+                      </div>
+                    </div>
 
-                  <!-- Button content -->
-                  <div class="relative flex items-center space-x-3">
-                    <i
-                      class="fas fa-wand-magic-sparkles text-2xl group-hover:rotate-12 transition-transform duration-300"></i>
-                    <span>Enhance My Resume Now</span>
-                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                    <!-- Enhanced Submit Button -->
+                    <button
+                      class="group relative inline-flex items-center px-8 py-4 sm:px-12 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary via-secondary to-primary bg-size-200 bg-pos-0 hover:bg-pos-100 focus:outline-none focus:ring-4 focus:ring-primary/50 transition-all duration-500 hover:shadow-2xl transform hover:scale-105 animate-pulse"
+                      id="submitButton" type="submit">
+
+                      <!-- Background gradient animation -->
+                      <div
+                        class="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      </div>
+
+                      <!-- Button content -->
+                      <div class="relative flex items-center space-x-3">
+                        <i
+                          class="fas fa-wand-magic-sparkles text-2xl group-hover:rotate-12 transition-transform duration-300"></i>
+                        <span>Enhance My Resume Now</span>
+                        <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                      </div>
+
+                      <!-- Glow effect -->
+                      <div
+                        class="absolute inset-0 bg-gradient-to-r from-primary/40 to-secondary/40 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500 -z-10">
+                      </div>
+                    </button>
+
+                    <p class="text-sm text-gray-600 max-w-md mx-auto">
+                      <i class="fas fa-clock mr-1 text-primary"></i>
+                      Your enhanced resume will be ready in seconds. No signup required!
+                    </p>
                   </div>
-
-                  <!-- Glow effect -->
-                  <div
-                    class="absolute inset-0 bg-gradient-to-r from-primary/40 to-secondary/40 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 transition-opacity duration-500 -z-10">
-                  </div>
-                </button>
-
-                <p class="text-sm text-gray-600 max-w-md mx-auto">
-                  <i class="fas fa-clock mr-1 text-primary"></i>
-                  Your enhanced resume will be ready in seconds. No signup required!
-                </p>
-              </div>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ Section -->
-
-    <!-- Enhanced Career Resources Section -->
-    <section class="py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden" id="career-resources">
-      <!-- Background decorations -->
-      <div class="absolute top-20 left-10 w-80 h-80 bg-primary/3 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-20 right-10 w-96 h-96 bg-secondary/3 rounded-full blur-3xl"></div>
-
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center mb-20 scroll-reveal">
-          <div
-            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-lg font-semibold mb-6 border border-primary/20 scroll-reveal-scale">
-            <i class="fas fa-graduation-cap mr-2"></i>
-            Expert Resources
           </div>
-          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 scroll-reveal">
-            Career Resources & <span class="gradient-text">Resume Tips</span>
-          </h2>
-          <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Expert advice and proven strategies to boost your job search, improve your resume, and land interviews
-            faster in today's competitive market.
-          </p>
-        </div>
+        </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
-          <!-- Enhanced Resource Card 1 -->
-          <article
-            class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100 overflow-hidden transform hover:-translate-y-3 transition-all duration-500 scroll-reveal">
-            <div class="relative overflow-hidden">
-              <img src="/static/images/topten.jpg" alt="Top 10 Resume Mistakes"
-                class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
-              <!-- Overlay gradient -->
+        <!-- FAQ Section -->
+
+        <!-- Enhanced Career Resources Section -->
+        <section class="py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden" id="career-resources">
+          <!-- Background decorations -->
+          <div class="absolute top-20 left-10 w-80 h-80 bg-primary/3 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-20 right-10 w-96 h-96 bg-secondary/3 rounded-full blur-3xl"></div>
+
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20 scroll-reveal">
               <div
-                class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 text-primary rounded-full text-lg font-semibold mb-6 border border-primary/20 scroll-reveal-scale">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                Expert Resources
               </div>
-              <!-- Category badge -->
-              <div class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                <i class="fas fa-exclamation-triangle mr-1"></i>
-                Common Mistakes
-              </div>
-            </div>
-
-            <div class="p-8">
-              <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                Top 10 Resume Mistakes
-              </h3>
-              <p class="text-gray-600 text-lg leading-relaxed mb-6">
-                Avoid common pitfalls in 2025 and make your resume stand out from the competition with these expert
-                insights.
+              <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 scroll-reveal">
+                Career Resources & <span class="gradient-text">Resume Tips</span>
+              </h2>
+              <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Expert advice and proven strategies to boost your job search, improve your resume, and land interviews
+                faster in today's competitive market.
               </p>
+            </div>
 
-              <div class="flex items-center justify-between">
-                <a href="/blog/toptenmistakes"
-                  class="inline-flex items-center text-primary font-bold text-lg group-hover:text-secondary transition-colors">
-                  Read Article
-                  <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-                <div class="flex items-center text-sm text-gray-500">
-                  <i class="fas fa-clock mr-1"></i>
-                  5 min read
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
+              <!-- Enhanced Resource Card 1 -->
+              <article
+                class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100 overflow-hidden transform hover:-translate-y-3 transition-all duration-500 scroll-reveal">
+                <div class="relative overflow-hidden">
+                  <img src="/static/images/topten.webp" alt="Top 10 Resume Mistakes"
+                    class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
+                  <!-- Overlay gradient -->
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  </div>
+                  <!-- Category badge -->
+                  <div class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                    Common Mistakes
+                  </div>
                 </div>
-              </div>
-            </div>
-          </article>
 
-          <!-- Enhanced Resource Card 2 -->
-          <article
-            class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100 overflow-hidden transform hover:-translate-y-3 transition-all duration-500 scroll-reveal">
-            <div class="relative overflow-hidden">
-              <img src="/static/images/tailor.jpg" alt="Tailor Your Resume"
-                class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
-              <!-- Overlay gradient -->
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              </div>
-              <!-- Category badge -->
-              <div class="absolute top-4 left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                <i class="fas fa-edit mr-1"></i>
-                Customization
-              </div>
-            </div>
+                <div class="p-8">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
+                    Top 10 Resume Mistakes
+                  </h3>
+                  <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    Avoid common pitfalls in 2025 and make your resume stand out from the competition with these expert
+                    insights.
+                  </p>
 
-            <div class="p-8">
-              <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                Tailor Your Resume
-              </h3>
-              <p class="text-gray-600 text-lg leading-relaxed mb-6">
-                Learn how to customize your resume for each application effectively and increase your interview chances.
-              </p>
-
-              <div class="flex items-center justify-between">
-                <a href="/blog/tailorresumejob"
-                  class="inline-flex items-center text-primary font-bold text-lg group-hover:text-secondary transition-colors">
-                  Read Article
-                  <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-                <div class="flex items-center text-sm text-gray-500">
-                  <i class="fas fa-clock mr-1"></i>
-                  7 min read
+                  <div class="flex items-center justify-between">
+                    <a href="/blog/toptenmistakes"
+                      class="inline-flex items-center text-primary font-bold text-lg group-hover:text-secondary transition-colors">
+                      Read Article
+                      <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="fas fa-clock mr-1"></i>
+                      5 min read
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </article>
+              </article>
 
-          <!-- Enhanced Resource Card 3 -->
-          <article
-            class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100 overflow-hidden transform hover:-translate-y-3 transition-all duration-500 scroll-reveal">
-            <div class="relative overflow-hidden">
-              <img src="/static/images/robot.jpg" alt="Pass the ATS Bots"
-                class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
-              <!-- Overlay gradient -->
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              </div>
-              <!-- Category badge -->
-              <div class="absolute top-4 left-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                <i class="fas fa-robot mr-1"></i>
-                ATS Optimization
-              </div>
-            </div>
-
-            <div class="p-8">
-              <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
-                Pass the ATS Bots
-              </h3>
-              <p class="text-gray-600 text-lg leading-relaxed mb-6">
-                Ensure your resume clears automated filters used by most employers and reaches human recruiters.
-              </p>
-
-              <div class="flex items-center justify-between">
-                <a href="/blog/ats-optimization"
-                  class="inline-flex items-center text-primary font-bold text-lg group-hover:text-secondary transition-colors">
-                  Read Article
-                  <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-                </a>
-                <div class="flex items-center text-sm text-gray-500">
-                  <i class="fas fa-clock mr-1"></i>
-                  6 min read
+              <!-- Enhanced Resource Card 2 -->
+              <article
+                class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100 overflow-hidden transform hover:-translate-y-3 transition-all duration-500 scroll-reveal">
+                <div class="relative overflow-hidden">
+                  <img src="/static/images/tailor.webp" alt="Tailor Your Resume"
+                    class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
+                  <!-- Overlay gradient -->
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  </div>
+                  <!-- Category badge -->
+                  <div
+                    class="absolute top-4 left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    <i class="fas fa-edit mr-1"></i>
+                    Customization
+                  </div>
                 </div>
-              </div>
+
+                <div class="p-8">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
+                    Tailor Your Resume
+                  </h3>
+                  <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    Learn how to customize your resume for each application effectively and increase your interview
+                    chances.
+                  </p>
+
+                  <div class="flex items-center justify-between">
+                    <a href="/blog/tailorresumejob"
+                      class="inline-flex items-center text-primary font-bold text-lg group-hover:text-secondary transition-colors">
+                      Read Article
+                      <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="fas fa-clock mr-1"></i>
+                      7 min read
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Enhanced Resource Card 3 -->
+              <article
+                class="group bg-white rounded-3xl shadow-xl hover:shadow-2xl border border-gray-100 overflow-hidden transform hover:-translate-y-3 transition-all duration-500 scroll-reveal">
+                <div class="relative overflow-hidden">
+                  <img src="/static/images/robot.jpg" alt="Pass the ATS Bots"
+                    class="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500">
+                  <!-- Overlay gradient -->
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  </div>
+                  <!-- Category badge -->
+                  <div
+                    class="absolute top-4 left-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                    <i class="fas fa-robot mr-1"></i>
+                    ATS Optimization
+                  </div>
+                </div>
+
+                <div class="p-8">
+                  <h3 class="text-2xl font-bold text-gray-900 mb-4 group-hover:text-primary transition-colors">
+                    Pass the ATS Bots
+                  </h3>
+                  <p class="text-gray-600 text-lg leading-relaxed mb-6">
+                    Ensure your resume clears automated filters used by most employers and reaches human recruiters.
+                  </p>
+
+                  <div class="flex items-center justify-between">
+                    <a href="/blog/ats-optimization"
+                      class="inline-flex items-center text-primary font-bold text-lg group-hover:text-secondary transition-colors">
+                      Read Article
+                      <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <div class="flex items-center text-sm text-gray-500">
+                      <i class="fas fa-clock mr-1"></i>
+                      6 min read
+                    </div>
+                  </div>
+                </div>
+              </article>
             </div>
-          </article>
-        </div>
 
 
-    </section>
+        </section>
 
-    <!-- Newsletter Subscription Enhancement -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const subscribeForm = document.getElementById('subscribeForm');
-        const subscribeBtn = document.getElementById('subscribeBtn');
-        const loadingIcon = document.getElementById('loadingIcon');
-        const btnText = subscribeBtn.querySelector('.btn-text');
+        <!-- Newsletter Subscription Enhancement -->
+        <script>
+          document.addEventListener('DOMContentLoaded', function () {
+            const subscribeForm = document.getElementById('subscribeForm');
+            const subscribeBtn = document.getElementById('subscribeBtn');
+            const loadingIcon = document.getElementById('loadingIcon');
+            const btnText = subscribeBtn.querySelector('.btn-text');
 
-        if (subscribeForm) {
-          subscribeForm.addEventListener('submit', function (e) {
-            // Show loading state
-            subscribeBtn.disabled = true;
-            btnText.textContent = 'Subscribing...';
-            loadingIcon.classList.remove('hidden');
+            if (subscribeForm) {
+              subscribeForm.addEventListener('submit', function (e) {
+                // Show loading state
+                subscribeBtn.disabled = true;
+                btnText.textContent = 'Subscribing...';
+                loadingIcon.classList.remove('hidden');
 
-            // Allow form to submit normally
-            // The loading state will persist until page redirects/reloads
+                // Allow form to submit normally
+                // The loading state will persist until page redirects/reloads
+              });
+            }
+
+            // Auto-hide flash messages after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function (alert) {
+              setTimeout(function () {
+                alert.style.opacity = '0';
+                setTimeout(function () {
+                  alert.style.display = 'none';
+                }, 300);
+              }, 5000);
+            });
           });
-        }
+        </script>
+        <!-- Enhanced FAQ Section -->
+        <section class="py-24 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden" id="faq">
+          <!-- Background decorations -->
+          <div class="absolute top-10 right-10 w-72 h-72 bg-primary/3 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-10 left-10 w-64 h-64 bg-secondary/3 rounded-full blur-3xl"></div>
 
-        // Auto-hide flash messages after 5 seconds
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(function (alert) {
-          setTimeout(function () {
-            alert.style.opacity = '0';
-            setTimeout(function () {
-              alert.style.display = 'none';
-            }, 300);
-          }, 5000);
-        });
-      });
-    </script>
-    <!-- Enhanced FAQ Section -->
-    <section class="py-24 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden" id="faq">
-      <!-- Background decorations -->
-      <div class="absolute top-10 right-10 w-72 h-72 bg-primary/3 rounded-full blur-3xl"></div>
-      <div class="absolute bottom-10 left-10 w-64 h-64 bg-secondary/3 rounded-full blur-3xl"></div>
+          <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 scroll-reveal">
+              <div
+                class="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-6 scroll-reveal-scale">
+                <i class="fas fa-question-circle mr-2"></i>
+                Got Questions?
+              </div>
+              <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 scroll-reveal">
+                Frequently Asked <span class="gradient-text">Questions</span>
+              </h2>
+              <p class="text-xl text-gray-600 max-w-2xl mx-auto scroll-reveal">
+                Everything you need to know about our AI-powered resume enhancement service.
+              </p>
+            </div>
 
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center mb-16 scroll-reveal">
-          <div
-            class="inline-flex items-center px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-6 scroll-reveal-scale">
-            <i class="fas fa-question-circle mr-2"></i>
-            Got Questions?
-          </div>
-          <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 scroll-reveal">
-            Frequently Asked <span class="gradient-text">Questions</span>
-          </h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto scroll-reveal">
-            Everything you need to know about our AI-powered resume enhancement service.
-          </p>
-        </div>
-
-        <div class="space-y-6">
-          <!-- FAQ Item 1 -->
-          <div
-            class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
-            <div
-              class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
-              <div class="flex-shrink-0">
+            <div class="space-y-6">
+              <!-- FAQ Item 1 -->
+              <div
+                class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
                 <div
-                  class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <i class="fas fa-gift text-white text-xl"></i>
+                  class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
+                  <div class="flex-shrink-0">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <i class="fas fa-gift text-white text-xl"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3
+                      class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
+                      Is this service really free?
+                    </h3>
+                    <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
+                      Yes, our basic resume enhancement service is completely free to use with no hidden charges. We
+                      believe
+                      everyone deserves access to professional resume improvement tools.
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div class="flex-1">
-                <h3
-                  class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
-                  Is this service really free?
-                </h3>
-                <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
-                  Yes, our basic resume enhancement service is completely free to use with no hidden charges. We believe
-                  everyone deserves access to professional resume improvement tools.
+
+              <!-- FAQ Item 2 -->
+              <div
+                class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
+                <div
+                  class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
+                  <div class="flex-shrink-0">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <i class="fas fa-brain text-white text-xl"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3
+                      class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
+                      How does the AI enhancement work?
+                    </h3>
+                    <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
+                      Our expertly engineered AI analyzes your resume content and suggests effective improvements in
+                      language, structure, and impact while maintaining your original information. The AI focuses on ATS
+                      optimization, keyword enhancement, and professional formatting.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- FAQ Item 3 -->
+              <div
+                class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
+                <div
+                  class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
+                  <div class="flex-shrink-0">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <i class="fas fa-shield-alt text-white text-xl"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3
+                      class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
+                      Is my data secure?
+                    </h3>
+                    <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
+                      Absolutely. We take your privacy seriously and use industry-standard encryption to protect your
+                      information. We do not share, sell, or store your personal data beyond what is necessary to
+                      provide
+                      our services. Any data you input is used solely to generate your enhanced resume.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Additional FAQ Item -->
+              <div
+                class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
+                <div
+                  class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
+                  <div class="flex-shrink-0">
+                    <div
+                      class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <i class="fas fa-clock text-white text-xl"></i>
+                    </div>
+                  </div>
+                  <div class="flex-1">
+                    <h3
+                      class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
+                      How long does the enhancement process take?
+                    </h3>
+                    <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
+                      Our AI processes your resume in just a few seconds! Once you submit your resume, you'll receive
+                      your
+                      enhanced version almost instantly, along with detailed analysis and suggestions for improvement.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="mt-16 text-center scroll-reveal">
+              <div
+                class="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-3xl p-8 border border-primary/10 scroll-bounce">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Still have questions?</h3>
+                <p class="text-lg text-gray-600 mb-6 max-w-xl mx-auto">
+                  We're here to help! Feel free to reach out if you need any assistance with your resume enhancement.
                 </p>
+                <a href="/contact"
+                  class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300">
+                  <i class="fas fa-envelope mr-2"></i>
+                  Contact Support
+                </a>
               </div>
             </div>
           </div>
-
-          <!-- FAQ Item 2 -->
-          <div
-            class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
-            <div
-              class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
-              <div class="flex-shrink-0">
-                <div
-                  class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <i class="fas fa-brain text-white text-xl"></i>
-                </div>
-              </div>
-              <div class="flex-1">
-                <h3
-                  class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
-                  How does the AI enhancement work?
-                </h3>
-                <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
-                  Our expertly engineered AI analyzes your resume content and suggests effective improvements in
-                  language, structure, and impact while maintaining your original information. The AI focuses on ATS
-                  optimization, keyword enhancement, and professional formatting.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- FAQ Item 3 -->
-          <div
-            class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
-            <div
-              class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
-              <div class="flex-shrink-0">
-                <div
-                  class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <i class="fas fa-shield-alt text-white text-xl"></i>
-                </div>
-              </div>
-              <div class="flex-1">
-                <h3
-                  class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
-                  Is my data secure?
-                </h3>
-                <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
-                  Absolutely. We take your privacy seriously and use industry-standard encryption to protect your
-                  information. We do not share, sell, or store your personal data beyond what is necessary to provide
-                  our services. Any data you input is used solely to generate your enhanced resume.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Additional FAQ Item -->
-          <div
-            class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 sm:p-8 border border-gray-100 transform hover:-translate-y-1 transition-all duration-300 scroll-reveal">
-            <div
-              class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 text-center sm:text-left">
-              <div class="flex-shrink-0">
-                <div
-                  class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                  <i class="fas fa-clock text-white text-xl"></i>
-                </div>
-              </div>
-              <div class="flex-1">
-                <h3
-                  class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4 group-hover:text-primary transition-colors">
-                  How long does the enhancement process take?
-                </h3>
-                <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
-                  Our AI processes your resume in just a few seconds! Once you submit your resume, you'll receive your
-                  enhanced version almost instantly, along with detailed analysis and suggestions for improvement.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Contact CTA -->
-        <div class="mt-16 text-center scroll-reveal">
-          <div
-            class="bg-gradient-to-r from-primary/5 to-secondary/5 rounded-3xl p-8 border border-primary/10 scroll-bounce">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">Still have questions?</h3>
-            <p class="text-lg text-gray-600 mb-6 max-w-xl mx-auto">
-              We're here to help! Feel free to reach out if you need any assistance with your resume enhancement.
-            </p>
-            <a href="/contact"
-              class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-semibold rounded-xl hover:shadow-lg transform hover:scale-105 transition-all duration-300">
-              <i class="fas fa-envelope mr-2"></i>
-              Contact Support
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+        </section>
   </main>
   <!-- Enhanced Footer -->
   <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
@@ -2203,7 +2196,7 @@
         <!-- Company Info -->
         <div class="lg:col-span-2">
           <div class="flex items-center mb-6">
-            <img alt="Resumatic AI Logo" class="h-16 w-auto mr-4" src="/static/images/logo23.png" />
+            <img alt="Resumatic AI Logo" class="h-16 w-auto mr-4" src="/static/images/logo23_small.png" />
             <div>
               <h3 class="text-2xl font-bold">Resumatic AI</h3>
               <p class="text-gray-400">AI-Powered Resume Enhancement</p>
@@ -2303,7 +2296,7 @@
             </li>
             <li>
               <a class="text-gray-300 hover:text-white hover:translate-x-1 transform transition-all duration-200 flex items-center group"
-                href="/terms_privacy">
+                href="/termsprivacy">
                 <i class="fas fa-chevron-right mr-2 text-primary group-hover:text-secondary text-sm"></i>
                 Terms of Service
               </a>
@@ -2333,35 +2326,7 @@
       </div>
 
       <!-- Newsletter Signup CTA -->
-      <div
-        class="bg-gradient-to-r from-primary/5 via-secondary/5 to-primary/5 rounded-3xl p-8 md:p-12 border border-primary/10">
-        <div class="text-center max-w-3xl mx-auto">
-          <div
-            class="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
-            <i class="fas fa-envelope text-white text-2xl"></i>
-          </div>
-          <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Get More Career Tips
-          </h3>
-          <p class="text-xl text-gray-600 mb-8 leading-relaxed">
-            Subscribe to our newsletter for weekly resume tips, career advice, and job search strategies delivered
-            straight to your inbox.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-            <input type="email" placeholder="Enter your email address"
-              class="flex-1 px-6 py-4 rounded-2xl border-2 border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 text-lg">
-            <button
-              class="px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-2xl hover:shadow-lg transform hover:scale-105 transition-all duration-300">
-              <i class="fas fa-paper-plane mr-2"></i>
-              Subscribe
-            </button>
-          </div>
-          <p class="text-sm text-gray-500 mt-4">
-            <i class="fas fa-shield-alt mr-1"></i>
-            We respect your privacy. Unsubscribe at any time.
-          </p>
-        </div>
-      </div>
+
     </div>
     </section>
 
@@ -2396,6 +2361,14 @@
         const getStartedButton = document.getElementById('getStartedButton');
         if (getStartedButton) {
           getStartedButton.addEventListener('click', handleGetStartedClick);
+        }
+      });
+
+      // Add click event listener to Get Started button
+      document.addEventListener('DOMContentLoaded', function () {
+        const getStartedButton1 = document.getElementById('getStartedButton1');
+        if (getStartedButton1) {
+          getStartedButton1.addEventListener('click', handleGetStartedClick);
         }
       });
     </script>
@@ -2598,7 +2571,11 @@
       });
     </script>
 
+
+
     <script>
+
+      /*
       // Force scroll to top on page load/reload
       window.addEventListener('beforeunload', function () {
         window.scrollTo(0, 0);
@@ -2614,6 +2591,8 @@
           window.scrollTo(0, 0);
         }, 0);
       });
+
+*/
 
       // Scroll Animation Observer
       document.addEventListener('DOMContentLoaded', function () {
@@ -2722,6 +2701,14 @@
         });
       });
     </script>
+
+
+
+
+
+
+
+
 
 </body>
 
