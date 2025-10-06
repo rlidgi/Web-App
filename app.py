@@ -1774,7 +1774,7 @@ def send_contact_email(name: str, sender_email: str, message: str) -> None:
 
     subject = 'New Contact Form Submission - ResumaticAI'
     text_body = (
-        f"You have a new contact form submission from ResumaticAI.\n\n"
+        f"You have a new contact form submission from ResumaticA I.\n\n"
         f"Name: {name or 'N/A'}\n"
         f"Email: {sender_email or 'N/A'}\n\n"
         f"Message:\n{message or ''}\n"
