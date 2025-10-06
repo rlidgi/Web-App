@@ -1,21 +1,70 @@
 {
-    "name": "Resumatic AI",
-    "short_name": "Resumatic",
-    "description": "AI-powered resume enhancement tool",
+    "name": "Resumatic AI - Professional Resume Enhancement",
+    "short_name": "Resumatic AI",
+    "description": "Transform your resume instantly with AI-powered enhancements. Get better job matches, ATS optimization, and professional formatting.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
+    "background_color": "#4F46E5",
     "theme_color": "#4F46E5",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "en",
+    "categories": [
+        "productivity",
+        "business",
+        "education"
+    ],
     "icons": [
         {
-            "src": "/static/images/android-chrome-192x192.png",
+            "src": "/static/images/logo23_small.png",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         },
         {
-            "src": "/static/images/android-chrome-512x512.png",
+            "src": "/static/images/logo23_large.png",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "any maskable"
         }
-    ]
+    ],
+    "shortcuts": [
+        {
+            "name": "Create Resume",
+            "short_name": "Create",
+            "description": "Start building your resume",
+            "url": "/",
+            "icons": [
+                {
+                    "src": "/static/images/logo23_small.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "My Account",
+            "short_name": "Account",
+            "description": "Access your resume revisions",
+            "url": "/my_revisions",
+            "icons": [
+                {
+                    "src": "/static/images/logo23_small.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/static/images/banner.webp",
+            "sizes": "1280x720",
+            "type": "image/webp",
+            "form_factor": "wide"
+        }
+    ],
+    "prefer_related_applications": false,
+    "related_applications": [],
+    "edge_side_panel": {
+        "preferred_width": 400
+    }
 }

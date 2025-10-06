@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify
+﻿from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify
 from io import BytesIO
 import PyPDF2
 import pdfplumber
@@ -595,6 +595,10 @@ def results_route():
 
 @app.route("/termsprivacy")
 def termsprivacy():
+    return redirect(url_for('terms_privacy'), code=301)
+
+@app.route("/terms_privacy")
+def terms_privacy():
     return render_template("terms_privacy.html")
 
 @app.route("/privacy")
@@ -613,10 +617,106 @@ def blog():
     current_year = datetime.now().year
     return render_template("blog.html", year=current_year, user=current_user if current_user.is_authenticated else None)
 
+# Blog post metadata for SEO optimization
+BLOG_POSTS_METADATA = {
+    'ats-optimization': {
+        'title': 'How to Beat the ATS in 2025 | ResumaticAI',
+        'meta_description': 'Master the art of creating ATS-friendly resumes with our comprehensive guide. Learn how Applicant Tracking Systems work and discover proven strategies to ensure your resume gets past automated screening.',
+        'keywords': 'ATS optimization, applicant tracking system, resume keywords, ATS friendly resume, job application tips, resume writing',
+        'og_title': 'How to Beat the ATS in 2025 - Complete Guide',
+        'og_description': 'Learn proven strategies to create ATS-friendly resumes that pass automated screening systems and get you more job interviews.',
+        'og_image': 'https://resumaticai.com/static/images/robot.png'
+    },
+    'Resume-objective': {
+        'title': 'Resume Summary vs. Objective: Which Should You Use in 2025? | ResumaticAI',
+        'meta_description': 'Learn the key differences between resume summaries and objectives, and discover which one will help you land more interviews in 2025.',
+        'keywords': 'resume summary, resume objective, resume writing tips, career advice, job application, resume format',
+        'og_title': 'Resume Summary vs. Objective: 2025 Guide',
+        'og_description': 'Discover whether to use a resume summary or objective statement in 2025 to maximize your interview chances.',
+        'og_image': 'https://resumaticai.com/static/images/vs.png'
+    },
+    'Power-words': {
+        'title': 'Power Words to Use in Your Resume (And Ones to Avoid) | ResumaticAI',
+        'meta_description': 'Discover the most impactful words to use in your resume and learn which overused phrases to avoid to make your application stand out.',
+        'keywords': 'resume power words, action verbs, resume writing, job application, career tips, resume optimization',
+        'og_title': 'Resume Power Words: What to Use and Avoid',
+        'og_description': 'Learn which words will make your resume stand out and which ones to avoid for better job application success.',
+        'og_image': 'https://resumaticai.com/static/images/power.jpg'
+    },
+    'no-experience': {
+        'title': 'How to Write a Resume With No Work Experience | ResumaticAI',
+        'meta_description': 'Get expert tips on creating a compelling resume when you\'re just starting out, with strategies to highlight your skills and potential.',
+        'keywords': 'resume no experience, first resume, entry level resume, student resume, career starter, resume writing',
+        'og_title': 'Resume Writing for Beginners: No Experience Needed',
+        'og_description': 'Create a compelling resume even without work experience using our expert strategies and tips.',
+        'og_image': 'https://resumaticai.com/static/images/noexperience.jpg'
+    },
+    'resume-format-2025': {
+        'title': 'Best Resume Formats for 2025 (With Examples) | ResumaticAI',
+        'meta_description': 'Explore the most effective resume formats for 2025, complete with real examples and guidelines for different career stages.',
+        'keywords': 'resume format 2025, resume templates, resume examples, resume layout, career stages, resume design',
+        'og_title': 'Best Resume Formats for 2025: Complete Guide',
+        'og_description': 'Choose the perfect resume format for 2025 with our comprehensive guide and real examples.',
+        'og_image': 'https://resumaticai.com/static/images/format.webp'
+    },
+    'toptenmistakes': {
+        'title': 'Top 10 Resume Mistakes to Avoid in 2025 | ResumaticAI',
+        'meta_description': 'Learn the most common resume mistakes that can cost you job opportunities and how to avoid them in 2025.',
+        'keywords': 'resume mistakes, resume errors, job application tips, resume writing, career advice, avoid resume mistakes',
+        'og_title': 'Top 10 Resume Mistakes to Avoid in 2025',
+        'og_description': 'Don\'t let these common resume mistakes cost you job opportunities. Learn how to avoid them.',
+        'og_image': 'https://resumaticai.com/static/images/robot.png'
+    },
+    'tailorresumejob': {
+        'title': 'How to Tailor Your Resume for Each Job Application | ResumaticAI',
+        'meta_description': 'Learn proven strategies to customize your resume for each job application to increase your chances of getting interviews and job offers.',
+        'keywords': 'tailor resume, customize resume, job application, resume customization, targeted resume, job-specific resume',
+        'og_title': 'How to Tailor Your Resume for Each Job Application',
+        'og_description': 'Master the art of customizing your resume for each job to maximize your interview chances and career success.',
+        'og_image': 'https://resumaticai.com/static/images/robot.png'
+    }
+}
+
 @app.route("/blog/<post>")
 def blog_post(post):
     current_year = datetime.now().year
-    return render_template(f"{post}.html", year=current_year, user=current_user if current_user.is_authenticated else None)
+
+    # Canonicalize blog slugs to prevent 500s from template mismatches
+    # Accept underscores/case-insensitive inputs and redirect to canonical slugs
+    canonical_slug_map = {
+        # key: normalized (lowercase, hyphens) -> value: canonical file/slug
+        "toptenmistakes": "toptenmistakes",
+        "ats-optimization": "ats-optimization",
+        "resume-objective": "Resume-objective",
+        "resume-summary-examples": "Resume-objective",
+        "no-experience": "no-experience",
+        "power-words": "Power-words",
+        "resume-format-2025": "resume-format-2025",
+        "tailorresumejob": "tailorresumejob",
+    }
+
+    requested_slug = post.strip()
+    normalized_slug = requested_slug.replace("_", "-").lower()
+
+    if normalized_slug in canonical_slug_map:
+        canonical_slug = canonical_slug_map[normalized_slug]
+        # Redirect variants to the canonical version for SEO consistency
+        if requested_slug != canonical_slug:
+            return redirect(url_for("blog_post", post=canonical_slug), code=301)
+    else:
+        # Unknown slug -> 404 instead of template error 500
+        from flask import abort
+        abort(404)
+
+    # Get metadata for the blog post using the canonical slug
+    post_metadata = BLOG_POSTS_METADATA.get(canonical_slug, {})
+
+    return render_template(
+        f"{canonical_slug}.html",
+        year=current_year,
+        user=current_user if current_user.is_authenticated else None,
+        post_metadata=post_metadata,
+    )
 
 @app.route("/templates")
 def templates():
@@ -891,14 +991,9 @@ def sitemap():
         'index': {'priority': '1.0', 'changefreq': 'daily'},
         'about': {'priority': '0.8', 'changefreq': 'monthly'},
         'blog': {'priority': '0.9', 'changefreq': 'weekly'},
-        'templates': {'priority': '0.8', 'changefreq': 'monthly'},
-        'counter': {'priority': '0.5', 'changefreq': 'daily'},
-        'login': {'priority': '0.6', 'changefreq': 'monthly'},
-        'signup': {'priority': '0.6', 'changefreq': 'monthly'},
+        'contact': {'priority': '0.7', 'changefreq': 'monthly'},
         'privacy': {'priority': '0.3', 'changefreq': 'yearly'},
-        'termsprivacy': {'priority': '0.3', 'changefreq': 'yearly'},
-        'thank_you': {'priority': '0.4', 'changefreq': 'monthly'},
-        'unsubscribe': {'priority': '0.2', 'changefreq': 'yearly'},
+        'terms_privacy': {'priority': '0.3', 'changefreq': 'yearly'},
     }
 
     # Add static pages
@@ -1212,6 +1307,11 @@ def counter_page():
         # Log the error for debugging
         print(f"Counter page error: {str(e)}")
         return render_template('counter.html', count=0)
+
+@app.route('/counter.html')
+def counter_html_legacy():
+    """Redirect old /counter.html URL to the canonical /counter route."""
+    return redirect(url_for('counter_page'), code=301)
 
 @app.route('/robots.txt')
 def robots_txt():
@@ -1627,6 +1727,89 @@ for user_id, user_obj in users.items():
     print(f"User: {user_obj.name}, Email: {user_obj.email}")
 
 
+def _load_email_config_if_missing() -> None:
+    """Load SMTP creds from newsletter_config.txt if env vars are missing."""
+    import os
+    cfg_email = os.getenv('NEWSLETTER_EMAIL', '').strip()
+    cfg_pass = os.getenv('NEWSLETTER_PASSWORD', '').strip()
+    if cfg_email and cfg_pass:
+        return
+    try:
+        if os.path.exists('newsletter_config.txt'):
+            with open('newsletter_config.txt', 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    if '=' in line:
+                        key, val = line.split('=', 1)
+                        key = key.strip()
+                        val = val.strip()
+                        if key in ('NEWSLETTER_EMAIL', 'NEWSLETTER_PASSWORD', 'SMTP_SERVER', 'SMTP_PORT') and val:
+                            os.environ.setdefault(key, val)
+    except Exception as e:
+        logger.error(f"Failed to load newsletter_config.txt: {str(e)}")
+
+# Contact form email helper
+def send_contact_email(name: str, sender_email: str, message: str) -> None:
+    """Send contact form submission to the site owner via SMTP.
+
+    Uses NEWSLETTER_EMAIL/NEWSLETTER_PASSWORD for SMTP auth to avoid duplicating config.
+    Recipient defaults to CONTACT_RECIPIENT or the site owner's email.
+    """
+    import os
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    _load_email_config_if_missing()
+    smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+    smtp_port = int(os.getenv('SMTP_PORT', '587'))
+    auth_email = os.getenv('NEWSLETTER_EMAIL', '').strip()
+    auth_password = os.getenv('NEWSLETTER_PASSWORD', '').strip()
+    recipient = os.getenv('CONTACT_RECIPIENT', 'yaronyaronlid@gmail.com').strip()
+
+    if not auth_email or not auth_password:
+        raise ValueError('Email credentials not configured. Set NEWSLETTER_EMAIL and NEWSLETTER_PASSWORD.')
+
+    subject = 'New Contact Form Submission - ResumaticAI'
+    text_body = (
+        f"You have a new contact form submission from ResumaticAI.\n\n"
+        f"Name: {name or 'N/A'}\n"
+        f"Email: {sender_email or 'N/A'}\n\n"
+        f"Message:\n{message or ''}\n"
+    )
+
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = subject
+    msg['From'] = auth_email
+    msg['To'] = recipient
+    # Prefer plain text; add Reply-To for easy response
+    msg.add_header('Reply-To', sender_email or auth_email)
+    msg.attach(MIMEText(text_body, 'plain', 'utf-8'))
+
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    server.starttls()
+    server.login(auth_email, auth_password)
+    server.send_message(msg)
+    server.quit()
+
+
+def save_contact_message(name: str, sender_email: str, message: str) -> None:
+    """Persist contact messages locally if email delivery fails."""
+    import csv
+    from datetime import datetime
+    filename = 'contact_messages.csv'
+    try:
+        file_exists = os.path.exists(filename)
+        with open(filename, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(['timestamp_iso', 'name', 'email', 'message'])
+            writer.writerow([datetime.utcnow().isoformat(), name or '', sender_email or '', message or ''])
+    except Exception as e:
+        logger.error(f'Failed to save contact message fallback: {str(e)}')
+
 # Contact form route
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -1634,10 +1817,91 @@ def contact():
         name = request.form.get('name')
         email = request.form.get('email')
         message = request.form.get('message')
-        # Here you can add logic to send an email, save to database, etc.
-        flash('Thank you for contacting us! We will get back to you soon.', 'success')
-        return render_template('contact.html')
-    return render_template('contact.html')
+        website = request.form.get('website', '')  # honeypot
+        try:
+            # Basic spam checks: honeypot must be empty, submission must not be too fast (<2s)
+            ts_str = request.form.get('_ts', '0')
+            try:
+                form_ts = int(ts_str)
+            except ValueError:
+                form_ts = 0
+            import time
+            now_s = int(time.time())
+            # Lower threshold to reduce false positives from autofill
+            too_fast = (now_s - form_ts) < 1 if form_ts else False
+
+            if website.strip() or too_fast:
+                logger.info('Contact form blocked by spam checks (honeypot/timing).')
+                flash('Thank you for contacting us!', 'success')
+                return render_template('contact.html', form_ts=int(time.time()))
+
+            send_contact_email(name, email, message)
+            flash('Thank you for contacting us! Your message has been sent.', 'success')
+        except Exception as e:
+            logger.error(f"Contact form email failed: {str(e)}")
+            # Fallback: persist the message so it's not lost
+            try:
+                save_contact_message(name, email, message)
+                flash('Thank you for contacting us! We received your message.', 'info')
+            except Exception:
+                flash('We could not send your message due to a server error. Please try again later.', 'danger')
+        return render_template('contact.html', form_ts=int(time.time()))
+    # GET: set initial timestamp
+    import time
+    return render_template('contact.html', form_ts=int(time.time()))
+
+# Offline page route
+@app.route('/offline.html')
+def offline():
+    """Offline page for PWA functionality"""
+    return render_template('offline.html')
+
+# 410 Gone for legacy/old thin URLs
+@app.route('/index_old')
+@app.route('/index_old.html')
+@app.route('/indexfiver')
+@app.route('/indexfiver.html')
+@app.route('/templates.html')
+def gone_legacy_urls():
+    return Response('This URL has been permanently removed.', status=410, mimetype='text/plain')
+
+# Minimal site search endpoint to support Sitelinks SearchBox
+@app.route('/search')
+def site_search():
+    query = request.args.get('q', '').strip()
+    # Simple, non-indexable helper page for users and bots
+    html = f"""<!DOCTYPE html>
+<html lang=\"en\"><head><meta charset=\"utf-8\">\n<meta name=\"robots\" content=\"noindex, nofollow\">\n<title>Search | ResumaticAI</title></head>
+<body style=\"font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 24px;\">\n<h1>Search</h1>\n<p>Showing results for: <strong>{query}</strong></p>\n<p>We don't have on-site search yet. Try exploring our <a href=\"/blog\">blog</a> or the <a href=\"/\">homepage</a>.</p>\n</body></html>"""
+    return Response(html, mimetype='text/html')
+
+# Explicitly set X-Robots-Tag for low-value or transactional routes
+@app.after_request
+def add_robots_headers(response):
+    try:
+        noindex_endpoints = {
+            'results_route',
+            'login',
+            'signup',
+            'thank_you',
+            'unsubscribe',
+            'counter_page',
+            'counter_html_legacy',
+        }
+        noindex_paths = {
+            '/results',
+            '/login',
+            '/signup',
+            '/thank_you',
+            '/unsubscribe',
+            '/counter',
+            '/counter.html',
+        }
+        if (request.endpoint in noindex_endpoints) or (request.path in noindex_paths):
+            response.headers['X-Robots-Tag'] = 'noindex, nofollow'
+    except Exception:
+        pass
+    return response
 
 if __name__ == "__main__":
     app.run(debug=True, host='127.0.0.1', port=5000)

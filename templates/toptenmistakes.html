@@ -1,430 +1,875 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KRPLMCR73G"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
 
-        gtag('config', 'G-KRPLMCR73G');
-    </script>
 
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description"
-        content="Avoid the most common resume mistakes with this expert 2025 guide. Learn why they matter, how to fix them, and how AI can improve your resume instantly." />
-    <meta name="author" content="ResumaticAI" />
-    <meta property="og:title" content="Top 10 Resume Mistakes to Avoid (and How to Fix Them)" />
-    <meta property="og:description"
-        content="Make your resume interview-ready by learning the top mistakes candidates make and how to correct them with smart tools and clear strategies." />
-    <meta property="og:type" content="article" />
-    <meta property="og:url" content="https://resumaticai.com/blog/toptenmistakes" />
-    <meta property="og:image" content="https://resumaticai.com/static/images/topten.jpg" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2029754528274185"
+    crossorigin="anonymous"></script>
 
-    <meta property="fb:app_id" content="2405626099815308" />
-    <title>Top 10 Resume Mistakes to Avoid | ResumaticAI</title>
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://resumaticai.com/blog/toptenmistakes">
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta property="fb:app_id" content="2405626099815308" />
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- SEO Meta Tags -->
+  <title>{% if post_metadata and post_metadata.title %}{{ post_metadata.title }}{% else %}Top 10 Resume Mistakes to
+    Avoid in 2025 | ResumaticAI{% endif %}</title>
+  {% if post_metadata and post_metadata.meta_description %}
+  <meta name="description" content="{{ post_metadata.meta_description }}" />
+  {% else %}
+  <meta name="description"
+    content="Learn the most common resume mistakes that can cost you job opportunities and how to avoid them in 2025." />
+  {% endif %}
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/blog-style.css') }}">
+
+
+  <!-- Open Graph Meta Tags -->
+  {% if post_metadata and post_metadata.og_title %}
+  <meta property="og:title" content="{{ post_metadata.og_title }}" />
+  {% else %}
+  <meta property="og:title" content="Top 10 Resume Mistakes to Avoid in 2025" />
+  {% endif %}
+
+  {% if post_metadata and post_metadata.og_description %}
+  <meta property="og:description" content="{{ post_metadata.og_description }}" />
+  {% else %}
+  <meta property="og:description"
+    content="Don't let these common resume mistakes cost you job opportunities. Learn how to avoid them." />
+  {% endif %}
+
+  {% if post_metadata and post_metadata.og_image %}
+  <meta property="og:image" content="{{ post_metadata.og_image }}" />
+  {% else %}
+  <meta property="og:image" content="https://resumaticai.com/static/images/robot.png" />
+  {% endif %}
+
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://resumaticai.com/blog/toptenmistakes" />
+  <meta property="og:site_name" content="ResumaticAI" />
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@ResumaticAI" />
+  <meta name="twitter:title"
+    content="{% if post_metadata and post_metadata.og_title %}{{ post_metadata.og_title }}{% else %}Top 10 Resume Mistakes to Avoid in 2025{% endif %}" />
+  <meta name="twitter:description"
+    content="{% if post_metadata and post_metadata.og_description %}{{ post_metadata.og_description }}{% else %}Don't let these common resume mistakes cost you job opportunities. Learn how to avoid them.{% endif %}" />
+  <meta name="twitter:image"
+    content="{% if post_metadata and post_metadata.og_image %}{{ post_metadata.og_image }}{% else %}https://resumaticai.com/static/images/robot.png{% endif %}" />
+
+  <!-- Additional SEO Meta Tags -->
+  <meta name="author" content="ResumaticAI" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="English" />
+  <meta name="revisit-after" content="7 days" />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://resumaticai.com/blog/toptenmistakes" />
+
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Merriweather:wght@400;700&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      /* deep ink */
+      --panel: #11141b;
+      /* canvas */
+      --muted: #a5afc2;
+      /* text secondary */
+      --text: #e8edf7;
+      /* text primary */
+      --brand: #6ee7ff;
+      /* accent */
+      --brand-2: #9b8cff;
+      /* accent 2 */
+      --ok: #3ddc97;
+      /* success */
+      --warn: #ffb454;
+      /* warning */
+      --danger: #ff6b6b;
+      /* danger */
+      --border: #1b2230;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .25);
+      --max: 1200px;
+      --toc: 280px;
+    }
+
+    /* Hide every flavor of the TOC on small screens */
+    @media (max-width: 900px) {
+
+      aside[class*="toc"],
+      aside[id*="toc"],
+      nav.toc,
+      nav[aria-label*="Table of Contents"],
+      aside[aria-label*="Table of Contents"],
+      .toc-panel,
+      .toc-wrapper,
+      .toc {
+        /* catches in-article TOC blocks if any */
+        display: none !important;
+      }
+
+      /* Collapse any two-column layouts that reserved space for the TOC */
+      .with-toc,
+      .post-grid,
+      .content-grid,
+      .article-layout,
+      .layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Ensure comfortable padding on the article after the TOC disappears */
+      article .prose {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+      }
+    }
+
+
+    html,
+    body {
+      height: 100%
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(110, 231, 255, .06), transparent 60%),
+        radial-gradient(900px 700px at -10% 30%, rgba(155, 140, 255, .08), transparent 60%),
+        var(--bg);
+    }
+
+    a {
+      color: var(--brand)
+    }
+
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 20px
+    }
+
+    /* Reading progress */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 0;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      z-index: 9999
+    }
+
+    /* NAV (left unchanged) */
+    .blog-nav {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      backdrop-filter: saturate(120%) blur(6px);
+      background: rgba(11, 13, 18, .6);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .blog-nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px
+    }
+
+    .blog-nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600
+    }
+
+    .blog-nav a.home-btn {
+      padding: .45rem .8rem;
+      border: 1px solid var(--border);
+      border-radius: 12px
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(140deg, rgba(110, 231, 255, .12), rgba(155, 140, 255, .12) 40%, transparent 70%), var(--panel);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .hero-wrap {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 32px;
+      align-items: center;
+      padding: 58px 0
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: #0b0d12;
+      background: linear-gradient(90deg, var(--brand), var(--ok));
+      padding: 6px 12px;
+      border-radius: 999px
+    }
+
+    .post-title {
+      font-family: Merriweather, Georgia, serif;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.15;
+      margin: 16px 0 12px
+    }
+
+    .meta {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted)
+    }
+
+    .meta .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .02)
+    }
+
+    .hero-art {
+      border-radius: 16px;
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: linear-gradient(120deg, rgba(110, 231, 255, .2), rgba(155, 140, 255, .2));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow)
+    }
+
+    /* LAYOUT */
+    .main {
+      display: grid;
+      grid-template-columns: var(--toc) 1fr;
+      gap: 40px;
+      padding: 36px 0 80px
+    }
+
+    @media (max-width: 980px) {
+      .hero-wrap {
+        grid-template-columns: 1fr
+      }
+
+      .main {
+        grid-template-columns: 1fr
+      }
+
+      .toc {
+        position: relative;
+        top: auto
+      }
+    }
+
+    /* TOC */
+    .toc {
+      position: sticky;
+      top: 90px;
+      align-self: start;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .02);
+      padding: 16px
+    }
+
+    .toc h3 {
+      margin: 6px 0 8px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      color: var(--muted);
+      text-transform: uppercase
+    }
+
+    .toc ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 70vh;
+      overflow: auto
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 10px;
+      line-height: 1.25
+    }
+
+    .toc a:hover,
+    .toc a.active {
+      background: rgba(110, 231, 255, .12)
+    }
+
+    /* ARTICLE */
+    article {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+      border-radius: 24px;
+      box-shadow: var(--shadow)
+    }
+
+    .prose {
+      padding: 28px
+    }
+
+    .prose h2 {
+      font-family: Merriweather, Georgia, serif;
+      font-size: clamp(22px, 2.2vw, 30px);
+      margin: 28px 0 10px
+    }
+
+    .prose h3 {
+      margin: 22px 0 8px;
+      font-size: 18px
+    }
+
+    .prose h4 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      color: var(--muted)
+    }
+
+    .prose p {
+      line-height: 1.75;
+      color: var(--text)
+    }
+
+    .prose ul,
+    .prose ol {
+      padding-left: 18px
+    }
+
+    .prose li {
+      margin: 6px 0
+    }
+
+    .callout {
+      border: 1px dashed var(--border);
+      background: rgba(110, 231, 255, .08);
+      padding: 16px;
+      border-radius: 14px
+    }
+
+    .pull-quote {
+      position: relative;
+      border-left: 4px solid var(--brand);
+      padding: 8px 0 8px 16px;
+      color: var(--muted);
+      font-style: italic
+    }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding: .2em .45em;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--border);
+      border-bottom-width: 2px;
+      border-radius: 8px
+    }
+
+    /* SHARE + CTA */
+    .share {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 26px 0 8px
+    }
+
+    .share a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: .55rem .8rem
+    }
+
+    .cta {
+      margin-top: 30px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(110, 231, 255, .08), rgba(155, 140, 255, .08))
+    }
+
+    .cta .btn {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      padding: .7rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel)
+    }
+
+    /* Back to top */
+    .to-top {
+      position: fixed;
+      right: 16px;
+      bottom: 20px;
+      display: none;
+      gap: 8px;
+      align-items: center;
+      padding: .6rem .8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .04);
+      box-shadow: var(--shadow);
+      color: var(--text)
+    }
+
+    .to-top.show {
+      display: flex
+    }
+
+    /* Code blocks/tables (if any) */
+    pre,
+    code {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      border-radius: 12px
+    }
+
+    pre {
+      padding: 14px;
+      overflow: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted)
+    }
+
+    tr:last-child td {
+      border-bottom: 0
+    }
+
+    /* Bottom social share buttons */
+    .share-article a {
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      color: #0b0d12;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .share-article a:hover {
+      background: linear-gradient(90deg, var(--brand-2), var(--brand));
+      transform: translateY(-2px);
+    }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "🛑 Top 10 Resume Mistakes to Avoid (and How to Fix Them) — 2025 Edition",
+  "author": {"@type": "Organization", "name": "ResumaticAI"},
+  "datePublished": "2025-01-15",
+  "publisher": {"@type": "Organization", "name": "ResumaticAI"},
+  "description": "Avoid the most common resume mistakes with this expert 2025 guide and learn how to fix each one with clear, actionable steps."
+}
+</script>
 </head>
 
 <body>
-    <!-- Reading Progress Bar -->
-    <div class="reading-progress" id="reading-progress"></div>
-
-    <!-- Enhanced Navigation -->
-    <nav class="blog-nav">
-        <div class="container">
-
-
-            <div class="nav-links">
-                <a href="/blog">📖 Blog</a>
-
-                <a href="/" class="home-btn">🏠 Home</a>
-            </div>
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress" id="reading-progress"></div>
+  <!-- === EXISTING NAVIGATION (unchanged) === -->
+  <nav class="blog-nav">
+    <div class="container">
+      <div class="nav-links">
+        <a href="/blog">📖 Blog</a>
+        <a class="home-btn" href="/">🏠 Home</a>
+      </div>
+    </div>
+  </nav>
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container hero-wrap">
+      <div>
+        <span class="eyebrow"><i class="fa-solid fa-rocket"></i> Career Guide</span>
+        <h1 class="post-title">🛑 Top 10 Resume Mistakes to Avoid (and How to Fix Them) — 2025 Edition</h1>
+        <div class="meta">
+          <span class="chip"> January 2025</span>
+          <span class="chip"> 10 min read</span>
+          <span class="chip"> ResumaticAI Team</span>
         </div>
-    </nav>
-
-    <!-- Main Content -->
-    <article class="blog-post">
-        <!-- Article Header -->
-        <header class="article-meta">
-            <h1>🛑 Top 10 Resume Mistakes to Avoid (and How to Fix Them) — 2025 Edition</h1>
-            <div class="meta-info">
-                <span class="date">📅 January 2025</span>
-                <span class="read-time">⏱️ 8 min read</span>
-                <span class="author">👤 ResumaticAI Team</span>
-            </div>
-        </header> <!-- Table of Contents -->
-        <div class="toc">
-            <h3>📋 Table of Contents</h3>
-            <ul>
-                <li><a href="#spelling-grammar">1. Spelling & Grammar Mistakes</a></li>
-                <li><a href="#generic-resume">2. Submitting a Generic Resume</a></li>
-                <li><a href="#irrelevant-experience">3. Including Irrelevant Experience</a></li>
-                <li><a href="#no-metrics">4. No Metrics or Results</a></li>
-                <li><a href="#poor-formatting">5. Poor Formatting and Design</a></li>
-                <li><a href="#keyword-stuffing">6. Keyword Stuffing</a></li>
-                <li><a href="#wrong-file-format">7. Wrong File Format</a></li>
-                <li><a href="#outdated-info">8. Outdated or Irrelevant Information</a></li>
-                <li><a href="#missing-contact">9. Missing or Incomplete Contact Information</a></li>
-                <li><a href="#unnecessary-personal">10. Including Unnecessary Personal Info</a></li>
-                <li><a href="#final-checklist">Final Checklist</a></li>
-                <li><a href="#final-thoughts">Final Thoughts</a></li>
-            </ul>
+      </div>
+      <div>
+        <!-- Decorative/optional featured art; replace src as needed -->
+        <img class="hero-art" src="{{ url_for('static', filename='images/topten.webp') }}" alt="Decorative image">
+      </div>
+    </div>
+  </header>
+  <main class="container main">
+    <!-- TOC (sticky) -->
+    <aside aria-label="Table of contents" class="toc">
+      <h3>On this page</h3>
+      <ul id="toc-list">
+        <!-- Populated from headings + preserves your anchor IDs -->
+      </ul>
+    </aside>
+    <!-- ARTICLE -->
+    <article>
+      <div class="prose" id="article-root">
+        <div aria-label="Share this article" class="share">
+          <a id="share-twitter" rel="noopener" target="_blank"><i class="fab fa-x-twitter"></i> Twitter/X</a>
+          <a id="share-linkedin" rel="noopener" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+          <a id="share-fb" rel="noopener" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+          <a href="#" id="copy-link"><i class="fa-regular fa-copy"></i> Copy link</a>
         </div>
-
-        <div class="content">
-            <h1>🛑 Top 10 Resume Mistakes to Avoid (and How to Fix Them) — 2025 Edition</h1>
-
-            <p>Your resume is your gateway to opportunity. But even small errors can shut the door before it opens. In
-                this
-                guide, we cover the most common—and costly—resume mistakes people make, and provide clear, actionable
-                steps
-                to correct them.</p>
-            <p>These aren’t just opinions—they’re backed by input from recruiters, hiring managers, and data from
-                applicant
-                tracking systems (ATS). Fixing these 10 mistakes can significantly improve your chances of getting
-                noticed—and getting hired.</p>
-
-            <hr>
-
-            <h2 id="spelling-grammar">1. 🔡 Spelling & Grammar Mistakes</h2>
-            <p><strong>Why it’s a dealbreaker:</strong> Typos signal sloppiness and poor attention to detail. Recruiters
-                often use this as a quick filter to eliminate candidates from a large pile.</p>
-            <p><strong>How to fix it:</strong></p>
-            <ul>
-                <li>Use spellcheck—but don’t rely on it alone.</li>
-                <li>Run your resume through <em>Grammarly</em> or <emHemingway Editor</em>.</li>
-                <li>Read it out loud or backwards to catch awkward phrasing or hidden typos.</li>
-                <li>Ask at least one other person to proofread it.</li>
-            </ul>
-
-            <blockquote>“Typos don’t just hurt clarity—they suggest a lack of professionalism. If you can’t proofread
-                one
-                page, what does that say about your work ethic?” — Hiring Manager, SaaS Company</blockquote>
-
-            <hr>
-
-            <h2 id="generic-resume">2. 📤 Submitting a Generic Resume</h2>
-            <p><strong>Why it hurts:</strong> A one-size-fits-all resume comes across as impersonal and irrelevant.
-                Hiring
-                managers expect to see alignment with their job description.</p>
-            <p><strong>How to fix it:</strong></p>
-            <ul>
-                <li>Customize your <strong>summary</strong>, <strong>skills section</strong>, and <strong>experience
-                        bullets</strong> to reflect keywords from the job ad.</li>
-                <li>Mirror their terminology—e.g., “client success” vs. “customer support.”</li>
-                <li>Use a tool like <a href="https://resumaticai.com" target="_blank"
-                        rel="noopener noreferrer">ResumaticAI</a> to instantly
-                    tailor
-                    your resume to each job.</li>
-            </ul>
-
-            <p><strong>Tip:</strong> You don’t need a full rewrite—just targeted edits based on the role’s priorities.
-            </p>
-
-            <hr>
-
-            <h2 id="irrelevant-experience">3. 🚫 Including Irrelevant Experience</h2>
-            <p><strong>Why it matters:</strong> Unrelated jobs clutter your resume, distract from your strengths, and
-                dilute
-                your value.</p>
-            <p><strong>How to fix it:</strong></p>
-            <ul>
-                <li>Focus on experience that <em>relates</em> to the role, even if indirectly.</li>
-                <li>Reframe older roles by emphasizing transferable skills (e.g., leadership, communication,
-                    problem-solving).</li>
-                <li>Summarize less relevant jobs in 1-2 lines under a “Previous Roles” section.</li>
-            </ul>
-
-            <hr>
-
-            <h2 id="no-metrics">4. 📊 No Metrics or Results</h2>
-            <p><strong>Why it weakens your case:</strong> Statements like “responsible for managing a team” don’t show
-                <em>impact</em>. Metrics prove your value.
-            </p>
-            <p><strong>How to fix it:</strong></p>
-            <ul>
-                <li>Turn duties into achievements.</li>
-                <li>Use the formula: Action + Context + Outcome (e.g., “Reduced onboarding time by 35% through creation
-                    of
-                    new training materials”).</li>
-                <li>Use real numbers wherever possible—estimates are okay if accurate.</li>
-            </ul>
-
-            <p><strong>Before:</strong> Managed client accounts.<br>
-                <strong>After:</strong> Managed 12+ mid-market accounts, increasing upsell revenue by $50K over 6
-                months.
-            </p>
-
-            <hr>
-
-            <h2 id="poor-formatting">5. 🎨 Poor Formatting and Design</h2>
-            <p><strong>Why it fails:</strong> Your resume should be skimmable in 7–10 seconds. Bad formatting creates
-                friction for both humans and ATS.</p>
-            <p><strong>How to fix it:</strong></p>
-            <ul>
-                <li>Use a clean, single-column layout with consistent spacing.</li>
-                <li>Avoid text boxes, tables, or columns—they confuse ATS.</li>
-                <li>Use fonts like Arial, Calibri, or Helvetica at 10–12 pt size.</li>
-                <li>Make use of bold, bullet points, and whitespace—don't over-format.</li>
-            </ul>
-
-            <p><strong>Tools:</strong> Google Docs, Canva (ATS-safe templates), or use ResumaticAI to auto-format your
-                resume properly.</p>
-
-            <hr>
-
-            <h2 id="keyword-stuffing">6. 🧱 Keyword Stuffing</h2>
-            <p><strong>Why it’s problematic:</strong> “Synergistic team player” means little without context. Recruiters
-                want results, not jargon.</p>
-            <p><strong>How to fix it:</strong></p>
-            <ul>
-                <li>Replace vague descriptors with specific achievements.</li>
-                <li>Use strong action verbs: “led,” “created,” “improved,” “launched,” etc.</li>
-                <li>Drop clichés unless backed up with a clear example.</li>
-            </ul>
-
-            <hr>
-
-            <h2 id="wrong-file-format">7. ⏳ Wrong File Format</h2>
-            <p><strong>Why it’s a red flag:</strong> Too short, and it looks underdeveloped. Too long, and recruiters
-                won’t
-                read it all.</p>
-            <p><strong>Best practices:</strong></p>
-            <ul>
-                <li><strong>1 page:</strong> Entry-level or recent grads</li>
-                <li><strong>2 pages:</strong> Professionals with 5+ years of experience</li>
-                <li><strong>3+ pages:</strong> Academic CVs only</li>
-            </ul>
-
-            <p>Cut fluff. Every line should serve a purpose.</p>
-
-            <hr>
-
-            <h2 id="outdated-info">8. 🤖 Outdated or Irrelevant Information</h2>
-            <p><strong>Why it disqualifies you:</strong> If your resume can’t be parsed correctly, it won’t reach a
-                human
-                reviewer.</p>
-            <p><strong>How to fix it:</strong></p>
-            <ul>
-                <li>Use standard section headings: “Experience,” “Education,” “Skills”</li>
-                <li>Save as a .docx or clean .pdf</li>
-                <li>Don’t use columns, headers/footers, images, or charts</li>
-                <li>Insert relevant keywords from the job description</li>
-            </ul>
-
-            <p><strong>Test before sending:</strong> Run your file through <a href="https://resumaticai.com"
-                    target="_blank">ResumaticAI’s ATS scanner</a>.</p>
-
-            <hr>
-
-            <h2 id="missing-contact">9. 🧭 Missing or Incomplete Contact Information</h2>
-            <p><strong>Why it’s important:</strong> Your summary or objective gives recruiters a quick overview of who
-                you
-                are and what you’re seeking—crucial in fast-paced hiring environments.</p>
-            <p><strong>What to include:</strong></p>
-            <ul>
-                <li>Your role or target title</li>
-                <li>Years of experience</li>
-                <li>Key skills or results</li>
-                <li>Career goals (brief)</li>
-            </ul>
-
-            <p><strong>Example:</strong> “Operations Coordinator with 4 years of experience streamlining fulfillment
-                workflows and reducing costs. Passionate about creating scalable systems in growing logistics teams.”
-            </p>
-
-            <p>Need help writing one? Use ResumaticAI to generate a tailored summary in seconds.</p>
-
-            <hr>
-
-            <h2 id="unnecessary-personal">10. 🛑 Including Unnecessary Personal Info</h2>
-            <p><strong>Why it’s outdated:</strong> Details like age, marital status, or nationality are unnecessary—and
-                can
-                expose you to unconscious bias.</p>
-            <p><strong>What to include instead:</strong></p>
-            <ul>
-                <li>Full Name</li>
-                <li>Phone Number</li>
-                <li>Email</li>
-                <li>City/Region (optional)</li>
-                <li>LinkedIn, GitHub, or portfolio URL</li>
-            </ul>
-
-            <hr>
-
-            <h2 id="final-checklist">📋 Final Checklist: Is Your Resume Ready?</h2>
-            <ul>
-                <li>✅ Proofread for typos and errors</li>
-                <li>✅ Tailored to job description</li>
-                <li>✅ Metrics and achievements in each bullet</li>
-                <li>✅ ATS-friendly formatting</li>
-                <li>✅ Keyword optimization complete</li>
-                <li>✅ Saved in a safe file type</li>
-                <li>✅ No personal or irrelevant info</li>
-            </ul>
-
-            <hr>
-
-            <h2 id="final-thoughts">✨ Final Thoughts</h2>
-            <p>Even the most talented candidates get overlooked because of resume errors that are completely avoidable.
-                By
-                identifying and fixing these top 10 mistakes, you're putting yourself ahead of most applicants. Your
-                resume
-                isn’t just a document—it’s a demonstration of your attention to detail, your communication style, and
-                your
-                fit for the role.</p>
-
-            <p><strong>Want to skip the guesswork?</strong> <a href="https://resumaticai.com"
-                    target="_blank">ResumaticAI</a> will scan your resume for mistakes, suggest improvements, and
-                optimize
-                it for ATS—all in minutes.</p>
-
-            <p><strong>👉 Start your free resume check today.</strong> Because the right resume doesn't just get read—it
-                gets results.</p>
+        <p>Your resume is your gateway to opportunity. But even small errors can shut the door before it opens. In
+          this
+          guide, we cover the most common—and costly—resume mistakes people make, and provide clear, actionable
+          steps
+          to correct them.</p>
+        <p>These aren’t just opinions—they’re backed by input from recruiters, hiring managers, and data from
+          applicant
+          tracking systems (ATS). Fixing these 10 mistakes can significantly improve your chances of getting
+          noticed—and getting hired.</p>
+        <hr />
+        <h2 id="spelling-grammar">1. 🔡 Spelling &amp; Grammar Mistakes</h2>
+        <p><strong>Why it’s a dealbreaker:</strong> Typos signal sloppiness and poor attention to detail. Recruiters
+          often use this as a quick filter to eliminate candidates from a large pile.</p>
+        <p><strong>How to fix it:</strong></p>
+        <ul>
+          <li>Use spellcheck—but don’t rely on it alone.</li>
+          <li>Run your resume through <em>Grammarly</em> or <emhemingway editor<="" em="">.</emhemingway>
+          </li>
+          <li>Read it out loud or backwards to catch awkward phrasing or hidden typos.</li>
+          <li>Ask at least one other person to proofread it.</li>
+        </ul>
+        <blockquote>“Typos don’t just hurt clarity—they suggest a lack of professionalism. If you can’t proofread
+          one
+          page, what does that say about your work ethic?” — Hiring Manager, SaaS Company</blockquote>
+        <hr />
+        <h2 id="generic-resume">2. 📤 Submitting a Generic Resume</h2>
+        <p><strong>Why it hurts:</strong> A one-size-fits-all resume comes across as impersonal and irrelevant.
+          Hiring
+          managers expect to see alignment with their job description.</p>
+        <p><strong>How to fix it:</strong></p>
+        <ul>
+          <li>Customize your <strong>summary</strong>, <strong>skills section</strong>, and <strong>experience
+              bullets</strong> to reflect keywords from the job ad.</li>
+          <li>Mirror their terminology—e.g., “client success” vs. “customer support.”</li>
+          <li>Use a tool like <a href="https://resumaticai.com" rel="noopener noreferrer"
+              target="_blank">ResumaticAI</a> to instantly
+            tailor
+            your resume to each job.</li>
+        </ul>
+        <p><strong>Tip:</strong> You don’t need a full rewrite—just targeted edits based on the role’s priorities.
+        </p>
+        <hr />
+        <h2 id="irrelevant-experience">3. 🚫 Including Irrelevant Experience</h2>
+        <p><strong>Why it matters:</strong> Unrelated jobs clutter your resume, distract from your strengths, and
+          dilute
+          your value.</p>
+        <p><strong>How to fix it:</strong></p>
+        <ul>
+          <li>Focus on experience that <em>relates</em> to the role, even if indirectly.</li>
+          <li>Reframe older roles by emphasizing transferable skills (e.g., leadership, communication,
+            problem-solving).</li>
+          <li>Summarize less relevant jobs in 1-2 lines under a “Previous Roles” section.</li>
+        </ul>
+        <hr />
+        <h2 id="no-metrics">4. 📊 No Metrics or Results</h2>
+        <p><strong>Why it weakens your case:</strong> Statements like “responsible for managing a team” don’t show
+          <em>impact</em>. Metrics prove your value.
+        </p>
+        <p><strong>How to fix it:</strong></p>
+        <ul>
+          <li>Turn duties into achievements.</li>
+          <li>Use the formula: Action + Context + Outcome (e.g., “Reduced onboarding time by 35% through creation
+            of
+            new training materials”).</li>
+          <li>Use real numbers wherever possible—estimates are okay if accurate.</li>
+        </ul>
+        <p><strong>Before:</strong> Managed client accounts.<br />
+          <strong>After:</strong> Managed 12+ mid-market accounts, increasing upsell revenue by $50K over 6
+          months.
+        </p>
+        <hr />
+        <h2 id="poor-formatting">5. 🎨 Poor Formatting and Design</h2>
+        <p><strong>Why it fails:</strong> Your resume should be skimmable in 7–10 seconds. Bad formatting creates
+          friction for both humans and ATS.</p>
+        <p><strong>How to fix it:</strong></p>
+        <ul>
+          <li>Use a clean, single-column layout with consistent spacing.</li>
+          <li>Avoid text boxes, tables, or columns—they confuse ATS.</li>
+          <li>Use fonts like Arial, Calibri, or Helvetica at 10–12 pt size.</li>
+          <li>Make use of bold, bullet points, and whitespace—don't over-format.</li>
+        </ul>
+        <p><strong>Tools:</strong> Google Docs, Canva (ATS-safe templates), or use ResumaticAI to auto-format your
+          resume properly.</p>
+        <hr />
+        <h2 id="keyword-stuffing">6. 🧱 Keyword Stuffing</h2>
+        <p><strong>Why it’s problematic:</strong> “Synergistic team player” means little without context. Recruiters
+          want results, not jargon.</p>
+        <p><strong>How to fix it:</strong></p>
+        <ul>
+          <li>Replace vague descriptors with specific achievements.</li>
+          <li>Use strong action verbs: “led,” “created,” “improved,” “launched,” etc.</li>
+          <li>Drop clichés unless backed up with a clear example.</li>
+        </ul>
+        <hr />
+        <h2 id="wrong-file-format">7. ⏳ Wrong File Format</h2>
+        <p><strong>Why it’s a red flag:</strong> Too short, and it looks underdeveloped. Too long, and recruiters
+          won’t
+          read it all.</p>
+        <p><strong>Best practices:</strong></p>
+        <ul>
+          <li><strong>1 page:</strong> Entry-level or recent grads</li>
+          <li><strong>2 pages:</strong> Professionals with 5+ years of experience</li>
+          <li><strong>3+ pages:</strong> Academic CVs only</li>
+        </ul>
+        <p>Cut fluff. Every line should serve a purpose.</p>
+        <hr />
+        <h2 id="outdated-info">8. 🤖 Outdated or Irrelevant Information</h2>
+        <p><strong>Why it disqualifies you:</strong> If your resume can’t be parsed correctly, it won’t reach a
+          human
+          reviewer.</p>
+        <p><strong>How to fix it:</strong></p>
+        <ul>
+          <li>Use standard section headings: “Experience,” “Education,” “Skills”</li>
+          <li>Save as a .docx or clean .pdf</li>
+          <li>Don’t use columns, headers/footers, images, or charts</li>
+          <li>Insert relevant keywords from the job description</li>
+        </ul>
+        <p><strong>Test before sending:</strong> Run your file through <a href="https://resumaticai.com"
+            target="_blank">ResumaticAI’s ATS scanner</a>.</p>
+        <hr />
+        <h2 id="missing-contact">9. 🧭 Missing or Incomplete Contact Information</h2>
+        <p><strong>Why it’s important:</strong> Your summary or objective gives recruiters a quick overview of who
+          you
+          are and what you’re seeking—crucial in fast-paced hiring environments.</p>
+        <p><strong>What to include:</strong></p>
+        <ul>
+          <li>Your role or target title</li>
+          <li>Years of experience</li>
+          <li>Key skills or results</li>
+          <li>Career goals (brief)</li>
+        </ul>
+        <p><strong>Example:</strong> “Operations Coordinator with 4 years of experience streamlining fulfillment
+          workflows and reducing costs. Passionate about creating scalable systems in growing logistics teams.”
+        </p>
+        <p>Need help writing one? Use ResumaticAI to generate a tailored summary in seconds.</p>
+        <hr />
+        <h2 id="unnecessary-personal">10. 🛑 Including Unnecessary Personal Info</h2>
+        <p><strong>Why it’s outdated:</strong> Details like age, marital status, or nationality are unnecessary—and
+          can
+          expose you to unconscious bias.</p>
+        <p><strong>What to include instead:</strong></p>
+        <ul>
+          <li>Full Name</li>
+          <li>Phone Number</li>
+          <li>Email</li>
+          <li>City/Region (optional)</li>
+          <li>LinkedIn, GitHub, or portfolio URL</li>
+        </ul>
+        <hr />
+        <h2 id="final-checklist">📋 Final Checklist: Is Your Resume Ready?</h2>
+        <ul>
+          <li>✅ Proofread for typos and errors</li>
+          <li>✅ Tailored to job description</li>
+          <li>✅ Metrics and achievements in each bullet</li>
+          <li>✅ ATS-friendly formatting</li>
+          <li>✅ Keyword optimization complete</li>
+          <li>✅ Saved in a safe file type</li>
+          <li>✅ No personal or irrelevant info</li>
+        </ul>
+        <hr />
+        <h2 id="final-thoughts">✨ Final Thoughts</h2>
+        <p>Even the most talented candidates get overlooked because of resume errors that are completely avoidable.
+          By
+          identifying and fixing these top 10 mistakes, you're putting yourself ahead of most applicants. Your
+          resume
+          isn’t just a document—it’s a demonstration of your attention to detail, your communication style, and
+          your
+          fit for the role.</p>
+        <p><strong>Want to skip the guesswork?</strong> <a href="https://resumaticai.com"
+            target="_blank">ResumaticAI</a> will scan your resume for mistakes, suggest improvements, and
+          optimize
+          it for ATS—all in minutes.</p>
+        <p><strong>👉 Start your free resume check today.</strong> Because the right resume doesn't just get read—it
+          gets results.</p>
+        <div class="share-article" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);">
+          <h3>Share this article</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;">
+            <a href="#" id="share-twitter-bottom" rel="noopener"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;"
+              target="_blank">
+              <i class="fab fa-x-twitter"></i> Twitter/X
+            </a>
+            <a href="#" id="share-linkedin-bottom" rel="noopener"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;"
+              target="_blank">
+              <i class="fab fa-linkedin"></i> LinkedIn
+            </a>
+            <a href="#" id="share-fb-bottom" rel="noopener"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;"
+              target="_blank">
+              <i class="fab fa-facebook"></i> Facebook
+            </a>
+            <a href="#" id="copy-link-bottom"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;">
+              <i class="fa-regular fa-copy"></i> Copy link
+            </a>
+          </div>
         </div>
+        <section id="read-next">
+          <h2>📚 Read Next</h2>
+          <ul>
+            <li><a href="/blog/ats-optimization">How to Beat the ATS in 2025</a></li>
+            <li><a href="/blog/tailorresumejob">How to Tailor Your Resume to a Job Description</a></li>
+            <li><a href="/blog/Power-words">Boost Your Resume with Power Words</a></li>
+          </ul>
+        </section>
 
-        <!-- Social Share Buttons -->
-        <div class="share-section">
-            <h3>📢 Share This Article</h3>
-            <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?text=Top%2010%20Resume%20Mistakes%20to%20Avoid&url={{ request.url if request else 'https://resumaticai.com/blog/toptenmistakes' }}"
-                    class="share-btn twitter" target="_blank" rel="noopener">
-                    <i class="fab fa-twitter"></i> Share on Twitter
-                </a>
-                <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url if request else 'https://resumaticai.com/blog/toptenmistakes' }}"
-                    class="share-btn linkedin" target="_blank" rel="noopener">
-                    <i class="fab fa-linkedin"></i> Share on LinkedIn
-                </a>
-                <a id="facebook-share"
-                    href="https://www.facebook.com/sharer/sharer.php?u={{ request.url if request else 'https://resumaticai.com/blog/toptenmistakes' }}"
-                    class="share-btn facebook" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-facebook"></i> Share on Facebook
-                </a>
-
-
-
-
-            </div>
-        </div>
-
-        <!-- Related Articles -->
-        <div class="related-articles">
-            <h3>📚 Related Articles</h3>
-            <div class="article-grid">
-                <a href="/blog/tailorresumejob" class="article-card">
-                    <h4>How to Tailor Your Resume to a Job Description</h4>
-                    <p>Master the art of customizing your resume for each application</p>
-                </a>
-                <a href="/blog/ats-optimization" class="article-card">
-                    <h4>How to Pass ATS Resume Screening</h4>
-                    <p>Optimize your resume to get past automated filtering systems</p>
-                </a>
-                <a href="/blog/Resume_objective" class="article-card">
-                    <h4>Resume Summary vs. Objective Guide</h4>
-                    <p>Choose the right opening statement for your resume</p>
-                </a>
-            </div>
-        </div>
-
-        <!-- Call-to-Action -->
-        <div class="cta-box">
-            <h3>✨ Ready to Fix Your Resume?</h3>
-            <p>Don't let these common mistakes cost you your dream job. Use ResumaticAI to create a resume that gets
-                noticed by both ATS systems and hiring managers.</p>
-            <a href="/" class="btn">🚀 Try ResumaticAI Free</a>
-        </div>
+        <section id="faq">
+          <h2>❓ Mistakes FAQ</h2>
+          <h3>How many bullets per role is ideal?</h3>
+          <p>3–5 for recent roles, 1–3 for older ones. Keep each bullet 1–2 lines with a clear metric.</p>
+          <h3>Should I remove older jobs?</h3>
+          <p>Summarize or collapse pre-2015 roles unless they’re directly relevant.</p>
+          <h3>Is a 2-page resume okay?</h3>
+          <p>Yes for 8–10+ years’ experience or deep scope; otherwise target one page.</p>
+        </section>
+      </div>
     </article>
+  </main>
+  <button aria-label="Back to top" class="to-top" id="to-top"><i class="fa-solid fa-arrow-up"></i> Top</button>
+  <script></script>
+  <script>
+    // Reading progress
+    const progressBar = document.getElementById('reading-progress');
+    const toTop = document.getElementById('to-top');
+    const tocList = document.getElementById('toc-list');
+    const headings = Array.from(document.querySelectorAll('#article-root h2'));
 
-    <!-- Back to Top Button -->
-    <button class="back-to-top" id="back-to-top" aria-label="Back to top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    function onScroll() {
+      const doc = document.documentElement;
+      const total = doc.scrollHeight - doc.clientHeight;
+      const scrolled = (doc.scrollTop / total) * 100;
+      progressBar.style.width = Math.min(100, Math.max(0, scrolled)) + '%';
+      toTop.classList.toggle('show', window.pageYOffset > 320);
+      highlightActiveHeading();
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
 
-    <!-- JavaScript for Enhanced UX -->
-    <script>
-        // Reading Progress Bar
-        function updateReadingProgress() {
-            const article = document.querySelector('.blog-post');
-            const progressBar = document.getElementById('reading-progress');
+    // Smooth scroll to top
+    toTop.addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-            if (article && progressBar) {
-                const articleHeight = article.offsetHeight;
-                const windowHeight = window.innerHeight;
-                const scrollTop = window.pageYOffset;
-                const progress = (scrollTop / (articleHeight - windowHeight)) * 100;
-
-                progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
-            }
-        }
-
-        // Back to Top Button
-        function toggleBackToTop() {
-            const backToTop = document.getElementById('back-to-top');
-            if (window.pageYOffset > 300) {
-                backToTop.style.display = 'flex';
-            } else {
-                backToTop.style.display = 'none';
-            }
-        }
-
-        // Smooth scroll to top
-        document.getElementById('back-to-top').addEventListener('click', function () {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+    // Build TOC from existing h2 IDs (preserves your anchors)
+    function buildTOC() {
+      const frag = document.createDocumentFragment();
+      headings.forEach(h => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + (h.id || h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+        if (!h.id) { h.id = a.href.split('#')[1]; }
+        a.textContent = h.textContent.replace(/^[^a-zA-Z0-9]+\s*/, '');
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
+        li.appendChild(a);
+        frag.appendChild(li);
+      });
+      tocList.innerHTML = '';
+      tocList.appendChild(frag);
+      highlightActiveHeading();
+    }
 
-        // Table of Contents smooth scrolling
-        document.querySelectorAll('.toc a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
+    // Active link highlighting
+    function highlightActiveHeading() {
+      const pos = window.scrollY + 120; // offset for sticky nav
+      let currentId = null;
+      headings.forEach(h => { if (h.offsetTop <= pos) currentId = h.id; });
+      tocList.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + currentId));
+    }
+
+    // Share buttons
+    function initShare() {
+      const url = window.location.href;
+      const text = encodeURIComponent(document.querySelector('.post-title').textContent);
+      document.getElementById('share-twitter').href = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`;
+      document.getElementById('share-linkedin').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+      document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      document.getElementById('copy-link').addEventListener('click', (e) => {
+        e.preventDefault(); navigator.clipboard.writeText(url).then(() => {
+          const btn = e.currentTarget; btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy link'; }, 1400);
         });
+      });
+    }
 
-        // Event listeners
-        window.addEventListener('scroll', function () {
-            updateReadingProgress();
-            toggleBackToTop();
+    document.addEventListener('DOMContentLoaded', () => { buildTOC(); initShare(); onScroll(); });
+
+    // Bottom share buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      const url = window.location.href;
+      const text = encodeURIComponent(document.querySelector('.post-title').textContent);
+      document.getElementById('share-twitter-bottom').href = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`;
+      document.getElementById('share-linkedin-bottom').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+      document.getElementById('share-fb-bottom').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      document.getElementById('copy-link-bottom').addEventListener('click', (e) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(url).then(() => {
+          const btn = e.currentTarget;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy link';
+          }, 1400);
         });
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            updateReadingProgress();
-        });
-
-
-
-
-
-
-
-    </script>
-
-
-
-
+      });
+    });
+  </script>
 </body>
 
 </html>

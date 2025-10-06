@@ -4,6 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="robots" content="noindex, nofollow">
+    <meta property="fb:app_id" content="2405626099815308" />
     <meta name="description"
         content="View the real-time count of resumes enhanced by ResumaticAI. See how many job seekers have improved their resumes with our AI-powered tool.">
     <title>Resume Counter | Resumatic AI</title>
@@ -93,7 +95,7 @@
             <div class="counter-number">{{ count }}</div>
 
             <div class="mt-4">
-                <a href="{{ url_for('increment_route') }}" class="btn-increment">Increment Counter</a>
+                <a href="#" id="incrementBtn" class="btn-increment">Increment Counter</a>
                 <a href="{{ url_for('index') }}" class="btn-increment btn-home">Return to ResumaticAI Home</a>
             </div>
 
@@ -106,6 +108,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var incrementBtn = document.getElementById('incrementBtn');
+            if (incrementBtn) {
+                incrementBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    fetch('/increment_counter', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                        .then(function (res) { return res.json(); })
+                        .then(function (data) {
+                            if (data && typeof data.count === 'number') {
+                                var numberEl = document.querySelector('.counter-number');
+                                var smallEl = document.querySelector('.text-muted');
+                                if (numberEl) numberEl.textContent = data.count;
+                                if (smallEl) smallEl.textContent = 'Counter value: ' + data.count;
+                            }
+                        })
+                        .catch(function () { /* no-op */ });
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

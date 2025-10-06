@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script defer src="/static/js/script.js"></script>
+
 <head>
 
     <!-- Google tag (gtag.js) -->
@@ -21,13 +23,17 @@
         content="Get detailed resume analysis with AI feedback, ATS optimization scores, and improvement recommendations to boost your job application success.">
 
     <!-- Additional SEO Meta Tags -->
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="noindex, nofollow">
     <meta name="author" content="ResumaticAI">
     <meta name="language" content="English">
     <meta name="revisit-after" content="7 days">
-    <link rel="canonical" href="https://resumaticai.com/result">
+    <link rel="canonical" href="https://resumaticai.com/">
 
     <title>Resume Analysis Result | ResumaticAI</title>
+
+    <!-- TrustBox script -->
+    <script type="text/javascript" src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
+    <!-- End TrustBox script -->
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -36,7 +42,7 @@
         "@type": "WebPage",
         "name": "Resume Analysis Result",
         "description": "Get detailed resume analysis with AI feedback, ATS optimization scores, and improvement recommendations to boost your job application success.",
-        "url": "https://resumaticai.com/result",
+        "url": "https://resumaticai.com/",
         "publisher": {
             "@type": "Organization",
             "name": "ResumaticAI",
@@ -123,9 +129,9 @@
 
 <body class="bg-gray-100 font-sans">
     <!-- Mobile Menu -->
-    <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6" id="mobileMenu">
+    <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6 hidden" id="mobileMenu">
         <div class="flex justify-between items-center mb-8">
-            <img alt="Logo" class="h-12 w-auto" src="{{ url_for('static', filename='images/logo23.png') }}" />
+            <img alt="Logo" class="h-12 w-auto" src="{{ url_for('static', filename='images/logo23_small.png') }}" />
             <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
                 <i class="fas fa-times"></i>
             </button>
@@ -161,7 +167,7 @@
                     <div class="flex items-center">
                         <a class="flex items-center" href="/">
                             <img alt="Resumatic AI Logo" class="h-16 w-auto" height="64"
-                                src="{{ url_for('static', filename='images/logo23.png') }}" width="48" />
+                                src="{{ url_for('static', filename='images/logo23_small.png') }}" width="48" />
                             <span class="sr-only">Resumatic AI</span>
                         </a>
                     </div>
@@ -243,7 +249,16 @@
         <!-- Additional Features Highlight -->
         <div class="mt-3 pt-3 border-t border-blue-200">
             <div class="text-center">
-                <h4 class="text-sm font-semibold text-gray-700 mb-2">Plus get access to:</h4>
+
+                <h4 class="text-sm font-semibold text-gray-700 mb-2 relative">
+                    <span
+                        class="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs animate-pulse mr-2">
+                        <i class="fas fa-star mr-1 text-yellow-500"></i>
+                        Advanced Options Available
+                    </span>
+                    Plus get access to:
+                </h4>
+
                 <div class="flex flex-wrap justify-center gap-2 text-xs text-gray-600">
                     <span class="inline-flex items-center px-2 py-1 bg-green-50 rounded-full">
                         <i class="fas fa-download text-green-600 mr-1"></i>
@@ -368,7 +383,7 @@
                         </div>
                     </div>
                     <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                        <div style="width: {{ feedback.get('overall_score', 50) | int }}%"
+                        <div id="progressBarFill"
                             class="shadow-none flex flex-col text-center whitespace-nowrap text-black justify-center bg-[#10B981] transition-all duration-500">
                         </div>
                     </div>
@@ -548,7 +563,35 @@
 
     <!-- Templates-->
 
+    <!-- Review CTA -->
+    <div class="max-w-6xl mx-auto p-4 mt-12 mb-10">
+        <div
+            class="rounded-lg shadow-lg p-8 text-center bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200">
+            <div
+                class="inline-flex items-center px-3 py-1 mb-3 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                <i class="fas fa-heart mr-1 text-emerald-600"></i>
+                We value your feedback
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-800 mb-2">Enjoying ResumaticAI?</h2>
+            <div class="flex justify-center mb-3" aria-hidden="true">
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+            </div>
+            <p class="text-gray-700 mb-5">If we helped, a quick Trustpilot review makes a big difference.</p>
 
+            <!-- TrustBox widget - Review Collector -->
+            <div class="trustpilot-widget" data-locale="en-US" data-template-id="56278e9abfbbba0bdcd568bc"
+                data-businessunit-id="68c642f02962c7c6cf071fa0" data-style-height="52px" data-style-width="100%"
+                data-token="53409e14-dcae-4ea5-8520-489b71c06646">
+                <a href="https://www.trustpilot.com/review/resumaticai.com" target="_blank"
+                    rel="noopener">Trustpilot</a>
+            </div>
+            <!-- End TrustBox widget -->
+        </div>
+    </div>
 
 
     <script>
@@ -560,6 +603,12 @@
         const circumference = 2 * Math.PI * 45; // 2πr
         const offset = circumference - (overallScore / 100) * circumference;
         progressCircle.style.strokeDashoffset = offset;
+
+        // Set progress bar width (moved from inline style to JS to avoid linter issues)
+        const progressBarFill = document.getElementById('progressBarFill');
+        if (progressBarFill) {
+            progressBarFill.style.width = `${overallScore}%`;
+        }
 
         document.querySelectorAll('.tab-btn').forEach(button => {
             button.addEventListener('click', () => {
@@ -631,27 +680,8 @@
             }
         }
 
-        // Mobile menu functionality
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuButton = document.getElementById('menuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
-            const closeMenuButton = document.getElementById('closeMenu');
+        
 
-            if (menuButton && mobileMenu) {
-                menuButton.addEventListener('click', function () {
-                    mobileMenu.classList.add('active');
-                    menuButton.setAttribute('aria-expanded', 'true');
-                });
-            }
+</body >
 
-            if (closeMenuButton && mobileMenu) {
-                closeMenuButton.addEventListener('click', function () {
-                    mobileMenu.classList.remove('active');
-                    menuButton.setAttribute('aria-expanded', 'false');
-                });
-            }
-        });
-    </script>
-</body>
-
-</html>
+</html >

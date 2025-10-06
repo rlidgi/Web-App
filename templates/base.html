@@ -6,16 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Resumatic AI - Professional Resume Enhancement{% endblock %}</title>
 
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- DNS Prefetch for external domains -->
+    <link rel="dns-prefetch" href="//www.googletagmanager.com">
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
+
+    <!-- Critical CSS inline for above-the-fold content -->
+    <style>
+        /* Critical CSS for initial render */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .loading {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .loaded {
+            opacity: 1;
+        }
+    </style>
+
+    <!-- Font Awesome with display=swap for better performance -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        media="print" onload="this.media='all'">
+
+    <!-- Custom CSS with async loading -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" media="print"
+        onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    </noscript>
 
     {% block head %}{% endblock %}
 </head>
 
-<body>
+<body class="loading">
     <header>
         <nav>
             <div class="nav-links">
@@ -58,7 +91,27 @@
         </div>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- Defer non-critical JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+
+    <!-- Performance optimization script -->
+    <script>
+        // Remove loading class when page is ready
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.remove('loading');
+            document.body.classList.add('loaded');
+        });
+
+        // Preload critical resources
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/sw.js').catch(function (err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+
     {% block scripts %}{% endblock %}
     {% block extra_scripts %}{% endblock %}
 </body>

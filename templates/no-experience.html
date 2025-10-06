@@ -1,492 +1,1068 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KRPLMCR73G"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-KRPLMCR73G');
-  </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2029754528274185"
+    crossorigin="anonymous"></script>
 
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <meta property="fb:app_id" content="2405626099815308" />
+
+  <!-- SEO Meta Tags -->
+  <title>{% if post_metadata and post_metadata.title %}{{ post_metadata.title }}{% else %}How to Write a Resume With No
+    Work Experience | ResumaticAI{% endif %}</title>
+  {% if post_metadata and post_metadata.meta_description %}
+  <meta name="description" content="{{ post_metadata.meta_description }}" />
+  {% else %}
   <meta name="description"
-    content="Struggling to write a resume with no experience? Learn how to craft a winning resume from scratch using education, skills, and projects—with help from ResumaticAI." />
-  <meta name="author" content="ResumaticAI" />
-  <meta property="og:title" content="How to Write a Resume With No Experience (2025 Guide)" />
+    content="Get expert tips on creating a compelling resume when you're just starting out, with strategies to highlight your skills and potential." />
+  {% endif %}
+
+
+
+  <!-- Open Graph Meta Tags -->
+  {% if post_metadata and post_metadata.og_title %}
+  <meta property="og:title" content="{{ post_metadata.og_title }}" />
+  {% else %}
+  <meta property="og:title" content="Resume Writing for Beginners: No Experience Needed" />
+  {% endif %}
+
+  {% if post_metadata and post_metadata.og_description %}
+  <meta property="og:description" content="{{ post_metadata.og_description }}" />
+  {% else %}
   <meta property="og:description"
-    content="No job history? No problem. Build a powerful resume from scratch with tips on summaries, skills, education, and more." />
+    content="Create a compelling resume even without work experience using our expert strategies and tips." />
+  {% endif %}
+
+  {% if post_metadata and post_metadata.og_image %}
+  <meta property="og:image" content="{{ post_metadata.og_image }}" />
+  {% else %}
+  <meta property="og:image" content="https://resumaticai.com/static/images/noexperience.jpg" />
+  {% endif %}
+
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://resumaticai.com/blog/no-experience" />
-  <meta property="og:image" content="https://resumaticai.com/static/images/logo23.png" />
-  <meta property="fb:app_id" content="2405626099815308" />
-  <title>How to Write a Resume With No Experience | ResumaticAI</title>
+  <meta property="og:site_name" content="ResumaticAI" />
+
+  <!-- Twitter Card Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@ResumaticAI" />
+  <meta name="twitter:title"
+    content="{% if post_metadata and post_metadata.og_title %}{{ post_metadata.og_title }}{% else %}Resume Writing for Beginners: No Experience Needed{% endif %}" />
+  <meta name="twitter:description"
+    content="{% if post_metadata and post_metadata.og_description %}{{ post_metadata.og_description }}{% else %}Create a compelling resume even without work experience using our expert strategies and tips.{% endif %}" />
+  <meta name="twitter:image"
+    content="{% if post_metadata and post_metadata.og_image %}{{ post_metadata.og_image }}{% else %}https://resumaticai.com/static/images/noexperience.jpg{% endif %}" />
+
+  <!-- Additional SEO Meta Tags -->
+  <meta name="author" content="ResumaticAI" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="English" />
+  <meta name="revisit-after" content="7 days" />
 
   <!-- Canonical URL -->
-  <link rel="canonical" href="https://resumaticai.com/blog/no-experience">
+  <link rel="canonical" href="https://resumaticai.com/blog/no-experience" />
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Merriweather:wght@400;700&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      /* deep ink */
+      --panel: #11141b;
+      /* canvas */
+      --muted: #a5afc2;
+      /* text secondary */
+      --text: #e8edf7;
+      /* text primary */
+      --brand: #6ee7ff;
+      /* accent */
+      --brand-2: #9b8cff;
+      /* accent 2 */
+      --ok: #3ddc97;
+      /* success */
+      --warn: #ffb454;
+      /* warning */
+      --danger: #ff6b6b;
+      /* danger */
+      --border: #1b2230;
+      --radius: 18px;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .25);
+      --max: 1200px;
+      --toc: 280px;
+    }
 
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/blog-style.css') }}">
+
+    /* Hide every flavor of the TOC on small screens */
+    @media (max-width: 900px) {
+
+      aside[class*="toc"],
+      aside[id*="toc"],
+      nav.toc,
+      nav[aria-label*="Table of Contents"],
+      aside[aria-label*="Table of Contents"],
+      .toc-panel,
+      .toc-wrapper,
+      .toc {
+        /* catches in-article TOC blocks if any */
+        display: none !important;
+      }
+
+      /* Collapse any two-column layouts that reserved space for the TOC */
+      .with-toc,
+      .post-grid,
+      .content-grid,
+      .article-layout,
+      .layout {
+        grid-template-columns: 1fr !important;
+      }
+
+      /* Ensure comfortable padding on the article after the TOC disappears */
+      article .prose {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+      }
+    }
+
+
+    html,
+    body {
+      height: 100%
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(110, 231, 255, .06), transparent 60%),
+        radial-gradient(900px 700px at -10% 30%, rgba(155, 140, 255, .08), transparent 60%),
+        var(--bg);
+    }
+
+    a {
+      color: var(--brand)
+    }
+
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 20px
+    }
+
+    /* Reading progress */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 0;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      z-index: 9999
+    }
+
+    /* NAV (left unchanged) */
+    .blog-nav {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      backdrop-filter: saturate(120%) blur(6px);
+      background: rgba(11, 13, 18, .6);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .blog-nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px
+    }
+
+    .blog-nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600
+    }
+
+    .blog-nav a.home-btn {
+      padding: .45rem .8rem;
+      border: 1px solid var(--border);
+      border-radius: 12px
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(140deg, rgba(110, 231, 255, .12), rgba(155, 140, 255, .12) 40%, transparent 70%), var(--panel);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .hero-wrap {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 32px;
+      align-items: center;
+      padding: 58px 0
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: #0b0d12;
+      background: linear-gradient(90deg, var(--brand), var(--ok));
+      padding: 6px 12px;
+      border-radius: 999px
+    }
+
+    .post-title {
+      font-family: Merriweather, Georgia, serif;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.15;
+      margin: 16px 0 12px
+    }
+
+    .meta {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: var(--muted)
+    }
+
+    .meta .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .02)
+    }
+
+    .hero-art {
+      border-radius: 16px;
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: linear-gradient(120deg, rgba(110, 231, 255, .2), rgba(155, 140, 255, .2));
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow)
+    }
+
+    /* LAYOUT */
+    .main {
+      display: grid;
+      grid-template-columns: var(--toc) 1fr;
+      gap: 40px;
+      padding: 36px 0 80px
+    }
+
+    @media (max-width: 980px) {
+      .hero-wrap {
+        grid-template-columns: 1fr
+      }
+
+      .main {
+        grid-template-columns: 1fr
+      }
+
+      .toc {
+        position: relative;
+        top: auto
+      }
+    }
+
+    /* TOC */
+    .toc {
+      position: sticky;
+      top: 90px;
+      align-self: start;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, .02);
+      padding: 16px
+    }
+
+    .toc h3 {
+      margin: 6px 0 8px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      color: var(--muted);
+      text-transform: uppercase
+    }
+
+    .toc ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 70vh;
+      overflow: auto
+    }
+
+    .toc a {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 10px;
+      line-height: 1.25
+    }
+
+    .toc a:hover,
+    .toc a.active {
+      background: rgba(110, 231, 255, .12)
+    }
+
+    /* ARTICLE */
+    article {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .02);
+      border-radius: 24px;
+      box-shadow: var(--shadow)
+    }
+
+    .prose {
+      padding: 28px
+    }
+
+    .prose h2 {
+      font-family: Merriweather, Georgia, serif;
+      font-size: clamp(22px, 2.2vw, 30px);
+      margin: 28px 0 10px
+    }
+
+    .prose h3 {
+      margin: 22px 0 8px;
+      font-size: 18px
+    }
+
+    .prose h4 {
+      margin: 18px 0 8px;
+      font-size: 16px;
+      color: var(--muted)
+    }
+
+    .prose p {
+      line-height: 1.75;
+      color: var(--text)
+    }
+
+    .prose ul,
+    .prose ol {
+      padding-left: 18px
+    }
+
+    .prose li {
+      margin: 6px 0
+    }
+
+    .callout {
+      border: 1px dashed var(--border);
+      background: rgba(110, 231, 255, .08);
+      padding: 16px;
+      border-radius: 14px
+    }
+
+    .pull-quote {
+      position: relative;
+      border-left: 4px solid var(--brand);
+      padding: 8px 0 8px 16px;
+      color: var(--muted);
+      font-style: italic
+    }
+
+    .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      padding: .2em .45em;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--border);
+      border-bottom-width: 2px;
+      border-radius: 8px
+    }
+
+    /* SHARE + CTA */
+    .share {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 26px 0 8px
+    }
+
+    .share a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: .55rem .8rem
+    }
+
+    .cta {
+      margin-top: 30px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(110, 231, 255, .08), rgba(155, 140, 255, .08))
+    }
+
+    .cta .btn {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      font-weight: 700;
+      padding: .7rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel)
+    }
+
+    /* Back to top */
+    .to-top {
+      position: fixed;
+      right: 16px;
+      bottom: 20px;
+      display: none;
+      gap: 8px;
+      align-items: center;
+      padding: .6rem .8rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, .04);
+      box-shadow: var(--shadow);
+      color: var(--text)
+    }
+
+    .to-top.show {
+      display: flex
+    }
+
+    /* Code blocks/tables (if any) */
+    pre,
+    code {
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid var(--border);
+      border-radius: 12px
+    }
+
+    pre {
+      padding: 14px;
+      overflow: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    th {
+      text-align: left;
+      color: var(--muted)
+    }
+
+    tr:last-child td {
+      border-bottom: 0
+    }
+
+    /* Bottom social share buttons */
+    .share-article a {
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+      color: #0b0d12;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .share-article a:hover {
+      background: linear-gradient(90deg, var(--brand-2), var(--brand));
+      transform: translateY(-2px);
+    }
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How to Write a Resume With No Experience (2025 Guide)",
+  "author": {"@type": "Organization", "name": "ResumaticAI"},
+  "datePublished": "2024-09-15",
+  "publisher": {"@type": "Organization", "name": "ResumaticAI"},
+  "description": "No job history? No problem. A 2025-ready guide to building a resume with no experience—using education, projects, skills, and volunteering."
+}
+</script>
 </head>
 
 <body>
   <!-- Reading Progress Bar -->
   <div class="reading-progress" id="reading-progress"></div>
-
-  <!-- Enhanced Navigation -->
+  <!-- === EXISTING NAVIGATION (unchanged) === -->
   <nav class="blog-nav">
     <div class="container">
-
       <div class="nav-links">
         <a href="/blog">📖 Blog</a>
-
-        <a href="/" class="home-btn">🏠 Home</a>
+        <a class="home-btn" href="/">🏠 Home</a>
       </div>
     </div>
   </nav>
-
-  <!-- Main Content -->
-  <article class="blog-post">
-    <!-- Article Header -->
-    <header class="article-meta">
-      <h1>How to Write a Resume With No Experience (2025 Guide)</h1>
-      <div class="meta-info">
-        <span class="date">📅 September 2024</span>
-        <span class="read-time">⏱️ 8 min read</span>
-        <span class="author">👤 ResumaticAI Team</span>
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container hero-wrap">
+      <div>
+        <span class="eyebrow"><i class="fa-solid fa-rocket"></i> Career Guide</span>
+        <h1 class="post-title">How to Write a Resume With No Experience (2025 Guide)</h1>
+        <div class="meta">
+          <span class="chip"> September 2024</span>
+          <span class="chip"> 8 min read</span>
+          <span class="chip"> ResumaticAI Team</span>
+        </div>
       </div>
-    </header>
+      <div>
+        <!-- Decorative/optional featured art; replace src as needed -->
+        <img class="hero-art" src="{{ url_for('static', filename='images/noexperience.jpg') }}" alt="Decorative image">
+      </div>
+    </div>
 
-    <!-- Table of Contents -->
-    <div class="toc">
-      <h3>📋 Table of Contents</h3>
-      <ul>
-        <li><a href="#summary-section">1. Start With a Strong Summary</a></li>
-        <li><a href="#education-section">2. Focus on Your Education</a></li>
-        <li><a href="#skills-section">3. Highlight Transferable Skills</a></li>
-        <li><a href="#projects-section">4. Showcase Projects and Internship Experience</a></li>
-        <li><a href="#personal-projects">5. Include Personal Projects</a></li>
-        <li><a href="#volunteer-section">6. Add Volunteer Work</a></li>
-        <li><a href="#extracurricular-section">7. Highlight Extracurricular Activities</a></li>
-        <li><a href="#certifications-section">8. Add Certifications and Online Courses</a></li>
-        <li><a href="#ats-format">9. Use an ATS-Friendly Format</a></li>
-        <li><a href="#ai-help">Use AI and Online Tools to Refine Your Resume</a></li>
-        <li><a href="#checklist">Quick Resume Checklist</a></li>
-        <li><a href="#final-tips">Final Thoughts</a></li>
+  </header>
+  <main class="container main">
+    <!-- TOC (sticky) -->
+    <aside aria-label="Table of contents" class="toc">
+      <h3>On this page</h3>
+      <ul id="toc-list">
+        <!-- Populated from headings + preserves your anchor IDs -->
       </ul>
-    </div>
-    <h1>💡 How to Write a Resume With No Work Experience (2025 Guide)</h1>
-    <p><strong>Don’t have job experience yet?</strong> That’s okay. Everyone starts somewhere—and a strong, thoughtful
-      resume can help you land your first real opportunity. Whether you’re a student, a recent graduate, or making a
-      career change, this guide will show you how to highlight your strengths and stand out in a competitive job market.
-    </p>
-    <h2 id="summary-section">🧭 1. Start With a Strong Summary</h2>
-    <p>Your resume summary is your 30-second elevator pitch. Even if you’ve never held a formal job, you can use this
-      section to emphasize your passion, personal goals, and relevant academic or project-based experience. It should be
-      2-4 sentences that capture who you are and what you’re aiming for.</p>
-    <blockquote>
-      <p>“Motivated Psychology graduate with experience in research and community outreach. Passionate about data-driven
-        decision-making and human behavior analysis, seeking an entry-level role in research consulting.”</p>
-    </blockquote>
-    <p><strong>Pro Tip:</strong> Mention what you’re aiming for (e.g., “seeking an entry-level role in marketing
-      analytics”) and tailor the summary to the specific job or industry you’re applying to. Use one or two keywords
-      from the job description to show you’re a fit.</p>
-    <h2 id="education-section">🎓 2. Focus on Your Education</h2>
-    <p>When you lack job experience, <strong>education becomes your strongest asset</strong>. Include your degree (or
-      high school diploma if that’s your highest education), school name, graduation year (or expected graduation date),
-      and location. Add your GPA if it’s above 3.5 (experts recommend including it if
-      so, along with any academic honors or awards. You can also list relevant
-      coursework that aligns with the job’s requirements, projects, research, or scholarships.</p>
-    <p>Example:</p>
-    <ul>
-      <li><strong>BS in Computer Science</strong> – CSU East Bay, Expected 2025 (GPA: 3.7)</li>
-      <li><strong>Relevant Courses:</strong> Data Structures, Web Development, AI Applications</li>
-      <li><strong>Capstone Project:</strong> Developed a machine learning model to predict housing prices using Python
-      </li>
-      <li><strong>Honors:</strong> Dean’s List (4 semesters), ABC Scholarship Recipient</li>
-    </ul>
-    <p>Notice how this education section doesn’t just list a degree; it highlights coursework and a project that
-      demonstrate relevant skills. If you’re a high school student or recent grad, you might include advanced classes
-      (AP/IB courses), clubs, or a senior project. The key is to show that your time in school helped you build
-      knowledge and skills that prepare you for the workplace.</p>
-    <p><strong>Pro Tip:</strong> If you have completed any online courses or certifications (e.g., a Google Analytics
-      course, a Coursera certificate), you can include those in your education section or in a separate certifications
-      section. They show initiative and extra skills.</p>
-    <h2 id="skills-section">🛠️ 3. Highlight Transferable Skills</h2>
-    <p>Employers know entry-level candidates won’t have years of job-specific experience, so they pay close attention to
-      skills and attributes you bring. In fact, nearly 90% of employers hiring new graduates are seeking evidence of
-      problem-solving skills on your resume, and almost 80% want to see teamwork
-      skills. Written communication, initiative, a strong work ethic, and technical
-      skills are also highly valued.</p>
-    <p>Make a “Skills” section where you list 5-10 relevant skills. Include a mix of <strong>hard skills</strong>
-      (technical abilities like software proficiency, foreign languages, data analysis, etc.) and <strong>soft
-        skills</strong> (like communication, leadership, teamwork, time management). But don’t just present a bland
-      list—provide context or examples for at least a few of them to make them credible:</p>
-    <ul>
-      <li><strong>Communication:</strong> Led classroom presentations and peer tutoring sessions.</li>
-      <li><strong>Organization:</strong> Managed a full course load while captain of the swim team, meeting all
-        deadlines.</li>
-      <li><strong>Problem-Solving:</strong> Built a scheduling app for the school tutoring center to improve efficiency.
-      </li>
-      <li><strong>Leadership:</strong> Vice President of Marketing Club – coordinated a team of 5 to run a campus event
-        with 200+ attendees.</li>
-    </ul>
-    <p>Each bullet ties a skill to a real experience or accomplishment. This helps hiring managers picture you using the
-      skill. Use strong action verbs (“led”, “managed”, “built”, “coordinated”) to start your skill examples. If you
-      have specific technical skills, you can list those without an example (e.g., Java, Adobe Photoshop, HTML/CSS,
-      Fluent in Spanish).</p>
-    <p><strong>Pro Tip:</strong> Review the job descriptions of positions you’re applying for and take note of the
-      skills they emphasize. If you have those skills, be sure to include them
-      (using the same keywords) in your skills section or elsewhere in your resume. Tailoring your skill set to each job
-      can significantly increase your chances of getting noticed.</p>
-    <h2 id="projects-section">📁 4. Showcase Projects and Internship Experience</h2>
-    <p>Just because you weren’t paid doesn’t mean your work isn’t valuable! Projects can demonstrate your hands-on
-      experience and initiative. Create a “Projects” section (or you can title it “Relevant Projects” or “Academic
-      Projects”) to showcase significant projects you’ve completed during school or on your own. This can also include
-      internships or freelance gigs if you have them.</p>
-    <p>Think of projects that required skills similar to what a job would require. For example:</p>
-    <ul>
-      <li><strong>Academic Projects:</strong> Did you do a capstone project, a lab research project, a group
-        presentation, or a big assignment that is relevant to your field? Describe what you did.</li>
-      <li><strong>Internship or Volunteer Projects:</strong> Maybe you interned at a local business or volunteered to
-        build a website for a nonprofit. That counts as experience.</li>
-      <li><strong>Hackathons/Competitions:</strong> Participating in a hackathon or case competition where you built or
-        created something is great to mention.</li>
-    </ul>
-    <p>Treat each project like a mini job entry. Give it a title, mention when or for how long you worked on it, and
-      bullet points detailing what you did and what the result was. Focus on outcomes, numbers, or impact if possible.
-      For example:</p>
-    <blockquote>
-      <p>“Designed and launched a budgeting app prototype in a 10-day university hackathon; placed 3rd out of 22 teams
-        for user experience and innovation.”</p>
-    </blockquote>
-    <p>This example shows what was done (budgeting app prototype), the context (university hackathon), and the outcome
-      (3rd place out of 22 teams). It’s specific and achievement-oriented.</p>
-    <p>Another example: if you did a research project, you could say, “Conducted a biology experiment on plant growth
-      over 8 weeks; co-authored a 10-page report and presented findings to a class of 30.” Even though it’s academic, it
-      shows communication and initiative.</p>
-    <p>If you had an internship, list it here or in its own “Experience” section. Include the company/organization name,
-      your role (Intern, etc.), location, and dates, just like a job, and add bullets for your contributions. For
-      instance, “Marketing Intern, XYZ Company – Created 12 social media content pieces and increased Twitter engagement
-      by 15% in two months.”</p>
-    <h2 id="personal-projects">📁 5. Include Personal Projects</h2>
-    <p>Personal projects are things you pursued on your own time out of interest or passion. They can be a powerful
-      addition to a no-experience resume because they show self-motivation and curiosity. If you’ve created something
-      meaningful on your own, consider giving it its own spotlight.</p>
-    <p>Examples of personal projects:</p>
-    <ul>
-      <li>Coding your own website or game.</li>
-      <li>Starting a blog or YouTube channel about a topic you love (and maybe building an audience).</li>
-      <li>Designing a personal logo/brand, or creating art/graphic design pieces and compiling a portfolio.</li>
-      <li>Building a DIY project like a robot, a custom PC, or anything tangible that involved significant effort.</li>
-      <li>Writing an eBook or extensive research paper independently.</li>
-    </ul>
-    <p>When adding personal projects, you can either include them under “Projects” or have a separate section called
-      “Personal Projects.” Provide a name/title for each project, and if possible, a date or year. Use one or two bullet
-      points to describe what it is and what you achieved or learned. For example:</p>
-    <blockquote>
-      <p>“Developed a personal finance blog (2024) – Wrote 20+ articles on budgeting and investing for young adults;
-        attracted over 5,000 readers in the first year through social media promotion.”</p>
-    </blockquote>
-    <blockquote>
-      <p>“Self-published a short fantasy novel on Amazon – Managed the writing, editing, and cover design process;
-        received 50+ reviews with a 4.5★ average rating.”</p>
-    </blockquote>
-    <p>The key is to show outcomes (readers, downloads, completion of a complex task, etc.) to prove that your personal
-      project wasn’t just a half-hearted attempt. Even if the project didn’t “win” anything or attract thousands of
-      users, it shows you took initiative to build something from scratch. That’s hugely appealing to employers looking
-      for potential.</p>
-    <p><strong>Pro Tip:</strong> If you don’t have a personal project, think about starting one! It could be as simple
-      as a GitHub repository where you share code samples or a small business idea you experiment with. Not only do you
-      learn a ton, but it also becomes great resume fodder and talking points in interviews.</p>
-    <h2 id="volunteer-section">🌍 6. Add Volunteer Work</h2>
-    <p>Volunteer work can absolutely count as real experience. It demonstrates your values, commitment, and often
-      leadership skills. Employers appreciate candidates who give back to their communities and pick up skills along the
-      way. So, if you have volunteered, create a section for “Volunteer Experience” or incorporate it under a broader
-      “Experience” section.</p>
-    <p>List it similarly to a job: <strong>Role – Organization – Dates</strong>. If your role was just “Volunteer,” you
-      can still specify what you did (e.g., Fundraiser, Tutor, Event Volunteer). Then add a couple of bullet points
-      about your responsibilities and achievements:</p>
-    <ul>
-      <li>“Organized a charity 5K run for the local animal shelter, attracting 200 participants and raising $5,000.”
-      </li>
-      <li>“Volunteered 8 hours/week at a community center, mentoring elementary school kids in reading and math.”</li>
-      <li>“Led a team of 4 volunteers in a beach cleanup initiative; collected 300 lbs of waste and received local media
-        coverage.”</li>
-    </ul>
-    <p>These examples show leadership (organized an event, led a team) and impact (funds raised, hours committed,
-      tangible results). Quantifying your volunteer work—like number of people helped or hours contributed—gives it
-      weight.</p>
-    <p><strong>Insider Insight:</strong> As one HR expert notes, writing a resume with little or no experience doesn’t
-      have to be frustrating. Focus on the transferable skills you’ve gained through volunteering, hobbies, or school
-      projects. Even small jobs like babysitting or mowing lawns can prove your dependability, punctuality, and
-      problem-solving skills. In other words, don’t undervalue any experience where
-      you put in effort and learned something.</p>
-    <h2 id="extracurricular-section">🏅 7. Highlight Extracurricular Activities</h2>
-    <p>Extracurricular activities, like clubs, sports, student government, or community groups, can showcase important
-      qualities that employers appreciate. Through these activities, you might have honed teamwork, leadership, time
-      management, and more. Consider a section for “Extracurricular Activities” or “Leadership & Activities” on your
-      resume if you were actively involved in school or community organizations.</p>
-    <p>You can format it as a simple list or include brief details for key roles:</p>
-    <ul>
-      <li><strong>Treasurer, Business Club (2023 – Present):</strong> Managed a $2,000 annual budget, organized
-        fundraising events, and oversaw club expenditures.</li>
-      <li><strong>Member, Debate Team (2022 – 2024):</strong> Competed in 10+ debates; honed public speaking and
-        argumentation skills, winning 3 regional awards.</li>
-      <li><strong>Varsity Soccer Team (2019 – 2021):</strong> Practiced 5 days a week, balanced athletics with
-        academics, and developed strong teamwork and discipline.</li>
-    </ul>
-    <p>If you held a leadership position (captain, president, officer, etc.), make sure to highlight that and any
-      achievements under your tenure (e.g., “increased membership by 30%” or “won X championship”). Even if you were
-      just a member, including one or two of the most impressive activities can round out your resume and provide
-      talking points. </p>
-    <p>Extracurriculars demonstrate that you’re well-rounded and engaged. For entry-level candidates, sometimes
-      something like being an Eagle Scout, a black belt in martial arts, or a concert pianist can spark an interview
-      conversation because it’s interesting and speaks to your discipline or passion. Just be sure to keep it
-      relevant—focus on activities that have some relation to the skills the job needs or that highlight positive traits
-      (teamwork, leadership, creativity, etc.).</p>
-    <h2 id="certifications-section">🧠 8. Add Certifications and Online Courses</h2>
-    <p>If you have any certifications or completed online courses, especially those relevant to the job, create a
-      section to list them. Additional credentials show that you’ve gone beyond the basic education to up-skill
-      yourself.</p>
-    <p>For example:</p>
-    <ul>
-      <li><strong>Google Data Analytics Professional Certificate</strong> – Coursera (2024)</li>
-      <li><strong>Certified Nursing Assistant (CNA)</strong> – State of California, License #123456 (2023)</li>
-      <li><strong>Front-End Web Development Course</strong> – freeCodeCamp (Completed 2025)</li>
-    </ul>
-    <p>Include the name of the certification or course, the provider or accrediting body, and the date (or expected
-      date). You can also include certifications in things like CPR/First Aid, language proficiency tests, or any
-      software (e.g., “Adobe Certified Associate”).</p>
-    <p>These credentials can sometimes make a difference if an ATS or hiring manager is looking for a specific keyword.
-      Plus, they demonstrate your willingness to learn new things on your own time—a trait every employer loves.</p>
-    <p>Not having formal work experience means you’re likely doing a lot of learning; highlighting these self-driven
-      educational accomplishments can only strengthen your resume.</p>
-    <h2 id="ats-format">🧾 9. Use an ATS-Friendly Format</h2>
-    <p>All your hard work writing great content won’t matter if the company’s Applicant Tracking System can’t read your
-      resume. ATS software is used by many employers to automatically scan and filter resumes. In fact, over 98% of
-      Fortune 500 companies use ATS to manage applicants, and about 75% of recruiters or hiring managers use some form
-      of ATS in their process. More importantly, studies suggest 70% of resumes
-      might never be seen by human eyes due to ATS filtering. So, let’s make sure
-      your resume makes it through!</p>
-    <p>Here are key tips for an ATS-friendly resume:</p>
-    <ul>
-      <li>✅ <strong>Simple layout:</strong> Use a single-column format without tables or text boxes. Stick to standard
-        margins and line spacing. Fancy multi-column designs or graphics can confuse ATS parsing.</li>
-      <li>✅ <strong>Standard fonts:</strong> Use common, easy-to-read fonts (Calibri, Arial, Times New Roman, etc.).
-        Avoid ornate or script fonts. Keep font size between 10 and 12 for body text.</li>
-      <li>✅ <strong>Clear headings:</strong> Label each section clearly (Work Experience, Education, Skills, Projects,
-        etc.). An ATS looks for familiar section titles to organize your info. Don’t get too creative with naming.</li>
-      <li>✅ <strong>No images or unusual formatting:</strong> Avoid headshot photos, logos, or decorative elements.
-        Also, remove any embedded charts or graphs. Use plain text for everything (bullet points are fine; text-based
-        symbols are okay, but avoid emoji or wingdings in the actual resume file).</li>
-      <li>✅ <strong>File type matters:</strong> Submit your resume as a <code>.docx</code> or <code>.pdf</code> file,
-        unless instructed otherwise. These formats are typically ATS-friendly. If you use fancy design software, make
-        sure to export to PDF without any layers.</li>
-      <li>✅ <strong>Use keywords thoughtfully:</strong> The ATS will scan for keywords that match the job description.
-        For example, if the job posting mentions “project management” or “Excel”, make sure those exact phrases appear
-        in your resume (assuming you have those skills). Incorporate relevant keywords in your summary, skills, or
-        project descriptions naturally. This improves your chances of passing the initial filter.</li>
-    </ul>
-    <p>By following these guidelines, your resume will be both human-readable and machine-readable. Always double-check
-      the final layout: is everything aligned left (which is safest for ATS), do section titles stand out, and is all
-      important text actually text (and not part of an image)? </p>
-    <p>One more thing: some ATS software may have trouble with PDFs, so if you want to be extra safe and the application
-      allows it, you might upload a .docx version. However, most modern ATS handle PDFs just fine.</p>
-    <p>Use an ATS scan tool (many are available online) if you want to be sure. It can tell you if something is
-      unreadable or if you’re missing keywords. Remember, the goal is to avoid being in that pile of resumes the ATS
-      filters out before anyone even considers your qualifications.</p>
-    <h2 id="ai-help">🤖 Use AI and Online Tools to Refine Your Resume</h2>
-    <p>Feeling overwhelmed? The good news is, you have technology on your side. There are several online tools and
-      AI-powered resources that can make resume writing easier and more effective:</p>
-    <ul>
-      <li><strong>AI Resume Builders:</strong> Take advantage of AI tools like <a href="https://resumaticai.com"
-          target="_blank">ResumaticAI</a> to jumpstart your resume. You input your details (education, skills, projects,
-        etc.), and the AI helps generate well-worded bullet points and organizes your resume in a professional format.
-        It’s like having a virtual resume coach. ResumaticAI, for example, can analyze your drafts, suggest stronger
-        action verbs, and ensure your formatting is ATS-compliant.</li>
-      <li><strong>ATS optimization tools:</strong> Websites such as Jobscan, Resume Worded, or even LinkedIn’s resume
-        checker can compare your resume against a target job description. They’ll tell you which keywords you’re missing
-        and how to improve the match. This is extremely useful when you’re applying online, as it boosts your chance to
-        get past filters.</li>
-      <li><strong>Spellcheck and grammar tools:</strong> A simple yet crucial step—run your resume through a spell
-        checker and tools like Grammarly. They can catch typos or grammatical mistakes you might have missed. An
-        error-free resume reflects well on your professionalism.</li>
-      <li><strong>Templates and design helpers:</strong> If formatting isn’t your strength, consider using a clean
-        resume template from Microsoft Word, Google Docs, or Canva. Just be sure to choose a template without fancy
-        graphics or multiple columns. The content you put in is what matters most; templates just give you a head start
-        on a neat layout.</li>
-    </ul>
-    <p>While these tools can significantly improve your resume, remember that they complement your input—they don’t
-      replace it. You still need to ensure everything on your resume is accurate and truly represents you. Use AI
-      suggestions as a draft, then refine in your own voice. And don’t rely on any single tool blindly; use your
-      judgment to decide what advice to implement.</p>
-    <h2 id="checklist">📋 Quick Resume Checklist</h2>
-    <ul>
-      <li>✅ <strong>Engaging summary</strong> – Does your summary effectively highlight your strengths and state your
-        goal?</li>
-      <li>✅ <strong>Education is detailed</strong> – Did you list relevant courses, projects, GPA (if impressive), and
-        any honors?</li>
-      <li>✅ <strong>Skills are relevant</strong> – Are you showcasing the key skills (especially ones listed in the job
-        posting) and backing them up with examples?</li>
-      <li>✅ <strong>Experience sections included</strong> – Did you include projects, volunteer work, internships, or
-        extracurriculars that demonstrate your abilities?</li>
-      <li>✅ <strong>Use of action verbs</strong> – Do your bullet points start with strong verbs and focus on
-        achievements/results?</li>
-      <li>✅ <strong>Additional info</strong> – Did you add any certifications, online courses, or awards that could give
-        you an edge?</li>
-      <li>✅ <strong>ATS-friendly format</strong> – Is your resume clean, easy to read, and free of any elements that
-        might trip up an ATS?</li>
-      <li>✅ <strong>Proofreading done</strong> – Have you checked for spelling/grammar errors and asked someone to
-        review it?</li>
-      <li>✅ <strong>Tailored to the job</strong> – Did you tweak your resume to align with the specific job you’re
-        applying to (using relevant keywords and emphasizing the most pertinent skills)?</li>
-    </ul>
-    <h2 id="final-tips">✨ Final Thoughts</h2>
-    <p><strong>You don’t need a long work history to craft a compelling resume. What you need is self-awareness and
-        strategy.</strong> Think about what makes you a great candidate – it could be your academic achievements, your
-      eagerness to learn, or the dedication you’ve shown in extracurricular activities. <strong>Every professional
-        starts somewhere</strong>, and employers hiring for entry-level roles understand that. They’re not expecting
-      polished veterans; they’re looking for potential, attitude, and willingness to grow.</p>
-    <p>Writing a resume with no experience is also a chance to reflect on what you have done so far. You might realize
-      you have more skills and experiences than you thought! Maybe you’ve never had a “real” job, but you have led group
-      projects, volunteered, or taught yourself valuable skills. Those are all resume-worthy.</p>
-    <p>Stay confident and be truthful. As one recruiter advised, it’s better to be honest about your experience than to
-      exaggerate. Hiring managers can often see through fluff. Instead, focus on
-      genuine achievements – no matter how small – and explain why they matter.</p>
-    <p>Finally, remember that your first resume is a living document. Keep updating it as you gain new experiences,
-      skills, or education. Tailor it to each application, keep learning from each job or interview process, and don’t
-      get discouraged by rejection – every “no” is one step closer to “yes.” With a well-crafted resume in hand, you’re
-      already ahead of many of your peers.</p>
-    <p>👉 <strong>Ready to take the next step?</strong> Use this guide as your starting point, and build a resume that
-      you’re proud of. Good luck with your job search – and congratulations on putting yourself out there!</p>
+    </aside>
+    <!-- ARTICLE -->
+    <article>
+      <div class="prose" id="article-root">
+        <div aria-label="Share this article" class="share">
+          <a id="share-twitter" rel="noopener" target="_blank"><i class="fab fa-x-twitter"></i> Twitter/X</a>
+          <a id="share-linkedin" rel="noopener" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+          <a id="share-fb" rel="noopener" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+          <a href="#" id="copy-link"><i class="fa-regular fa-copy"></i> Copy link</a>
+        </div>
+        <header class="article-meta">
+          <div class="meta-info">
+            <span class="date">📅 September 2024</span>
+            <span class="read-time">⏱️ 8 min read</span>
+            <span class="author">👤 ResumaticAI Team</span>
+          </div>
+        </header>
+        <h1>💡 How to Write a Resume With No Work Experience (2025 Guide)</h1>
+        <p><strong>Don’t have job experience yet?</strong> That’s okay. Everyone starts somewhere—and a strong,
+          thoughtful
+          resume can help you land your first real opportunity. Whether you’re a student, a recent graduate, or making a
+          career change, this guide will show you how to highlight your strengths and stand out in a competitive job
+          market.
+        </p>
+        <h2 id="summary-section">🧭 1. Start With a Strong Summary</h2>
+        <p>Your resume summary is your 30-second elevator pitch. Even if you’ve never held a formal job, you can use
+          this
+          section to emphasize your passion, personal goals, and relevant academic or project-based experience. It
+          should be
+          2-4 sentences that capture who you are and what you’re aiming for.</p>
+        <blockquote>
+          <p>“Motivated Psychology graduate with experience in research and community outreach. Passionate about
+            data-driven
+            decision-making and human behavior analysis, seeking an entry-level role in research consulting.”</p>
+        </blockquote>
+        <p><strong>Pro Tip:</strong> Mention what you’re aiming for (e.g., “seeking an entry-level role in marketing
+          analytics”) and tailor the summary to the specific job or industry you’re applying to. Use one or two keywords
+          from the job description to show you’re a fit.</p>
+        <h2 id="education-section">🎓 2. Focus on Your Education</h2>
+        <p>When you lack job experience, <strong>education becomes your strongest asset</strong>. Include your degree
+          (or
+          high school diploma if that’s your highest education), school name, graduation year (or expected graduation
+          date),
+          and location. Add your GPA if it’s above 3.5 (experts recommend including it if
+          so, along with any academic honors or awards. You can also list relevant
+          coursework that aligns with the job’s requirements, projects, research, or scholarships.</p>
+        <p>Example:</p>
+        <ul>
+          <li><strong>BS in Computer Science</strong> – CSU East Bay, Expected 2025 (GPA: 3.7)</li>
+          <li><strong>Relevant Courses:</strong> Data Structures, Web Development, AI Applications</li>
+          <li><strong>Capstone Project:</strong> Developed a machine learning model to predict housing prices using
+            Python
+          </li>
+          <li><strong>Honors:</strong> Dean’s List (4 semesters), ABC Scholarship Recipient</li>
+        </ul>
+        <p>Notice how this education section doesn’t just list a degree; it highlights coursework and a project that
+          demonstrate relevant skills. If you’re a high school student or recent grad, you might include advanced
+          classes
+          (AP/IB courses), clubs, or a senior project. The key is to show that your time in school helped you build
+          knowledge and skills that prepare you for the workplace.</p>
+        <p><strong>Pro Tip:</strong> If you have completed any online courses or certifications (e.g., a Google
+          Analytics
+          course, a Coursera certificate), you can include those in your education section or in a separate
+          certifications
+          section. They show initiative and extra skills.</p>
+        <h2 id="skills-section">🛠️ 3. Highlight Transferable Skills</h2>
+        <p>Employers know entry-level candidates won’t have years of job-specific experience, so they pay close
+          attention to
+          skills and attributes you bring. In fact, nearly 90% of employers hiring new graduates are seeking evidence of
+          problem-solving skills on your resume, and almost 80% want to see teamwork
+          skills. Written communication, initiative, a strong work ethic, and technical
+          skills are also highly valued.</p>
+        <p>Make a “Skills” section where you list 5-10 relevant skills. Include a mix of <strong>hard skills</strong>
+          (technical abilities like software proficiency, foreign languages, data analysis, etc.) and <strong>soft
+            skills</strong> (like communication, leadership, teamwork, time management). But don’t just present a bland
+          list—provide context or examples for at least a few of them to make them credible:</p>
+        <ul>
+          <li><strong>Communication:</strong> Led classroom presentations and peer tutoring sessions.</li>
+          <li><strong>Organization:</strong> Managed a full course load while captain of the swim team, meeting all
+            deadlines.</li>
+          <li><strong>Problem-Solving:</strong> Built a scheduling app for the school tutoring center to improve
+            efficiency.
+          </li>
+          <li><strong>Leadership:</strong> Vice President of Marketing Club – coordinated a team of 5 to run a campus
+            event
+            with 200+ attendees.</li>
+        </ul>
+        <p>Each bullet ties a skill to a real experience or accomplishment. This helps hiring managers picture you using
+          the
+          skill. Use strong action verbs (“led”, “managed”, “built”, “coordinated”) to start your skill examples. If you
+          have specific technical skills, you can list those without an example (e.g., Java, Adobe Photoshop, HTML/CSS,
+          Fluent in Spanish).</p>
+        <p><strong>Pro Tip:</strong> Review the job descriptions of positions you’re applying for and take note of the
+          skills they emphasize. If you have those skills, be sure to include them
+          (using the same keywords) in your skills section or elsewhere in your resume. Tailoring your skill set to each
+          job
+          can significantly increase your chances of getting noticed.</p>
+        <h2 id="projects-section">📁 4. Showcase Projects and Internship Experience</h2>
+        <p>Just because you weren’t paid doesn’t mean your work isn’t valuable! Projects can demonstrate your hands-on
+          experience and initiative. Create a “Projects” section (or you can title it “Relevant Projects” or “Academic
+          Projects”) to showcase significant projects you’ve completed during school or on your own. This can also
+          include
+          internships or freelance gigs if you have them.</p>
+        <p>Think of projects that required skills similar to what a job would require. For example:</p>
+        <ul>
+          <li><strong>Academic Projects:</strong> Did you do a capstone project, a lab research project, a group
+            presentation, or a big assignment that is relevant to your field? Describe what you did.</li>
+          <li><strong>Internship or Volunteer Projects:</strong> Maybe you interned at a local business or volunteered
+            to
+            build a website for a nonprofit. That counts as experience.</li>
+          <li><strong>Hackathons/Competitions:</strong> Participating in a hackathon or case competition where you built
+            or
+            created something is great to mention.</li>
+        </ul>
+        <p>Treat each project like a mini job entry. Give it a title, mention when or for how long you worked on it, and
+          bullet points detailing what you did and what the result was. Focus on outcomes, numbers, or impact if
+          possible.
+          For example:</p>
+        <blockquote>
+          <p>“Designed and launched a budgeting app prototype in a 10-day university hackathon; placed 3rd out of 22
+            teams
+            for user experience and innovation.”</p>
+        </blockquote>
+        <p>This example shows what was done (budgeting app prototype), the context (university hackathon), and the
+          outcome
+          (3rd place out of 22 teams). It’s specific and achievement-oriented.</p>
+        <p>Another example: if you did a research project, you could say, “Conducted a biology experiment on plant
+          growth
+          over 8 weeks; co-authored a 10-page report and presented findings to a class of 30.” Even though it’s
+          academic, it
+          shows communication and initiative.</p>
+        <p>If you had an internship, list it here or in its own “Experience” section. Include the company/organization
+          name,
+          your role (Intern, etc.), location, and dates, just like a job, and add bullets for your contributions. For
+          instance, “Marketing Intern, XYZ Company – Created 12 social media content pieces and increased Twitter
+          engagement
+          by 15% in two months.”</p>
+        <h2 id="personal-projects">📁 5. Include Personal Projects</h2>
+        <p>Personal projects are things you pursued on your own time out of interest or passion. They can be a powerful
+          addition to a no-experience resume because they show self-motivation and curiosity. If you’ve created
+          something
+          meaningful on your own, consider giving it its own spotlight.</p>
+        <p>Examples of personal projects:</p>
+        <ul>
+          <li>Coding your own website or game.</li>
+          <li>Starting a blog or YouTube channel about a topic you love (and maybe building an audience).</li>
+          <li>Designing a personal logo/brand, or creating art/graphic design pieces and compiling a portfolio.</li>
+          <li>Building a DIY project like a robot, a custom PC, or anything tangible that involved significant effort.
+          </li>
+          <li>Writing an eBook or extensive research paper independently.</li>
+        </ul>
+        <p>When adding personal projects, you can either include them under “Projects” or have a separate section called
+          “Personal Projects.” Provide a name/title for each project, and if possible, a date or year. Use one or two
+          bullet
+          points to describe what it is and what you achieved or learned. For example:</p>
+        <blockquote>
+          <p>“Developed a personal finance blog (2024) – Wrote 20+ articles on budgeting and investing for young adults;
+            attracted over 5,000 readers in the first year through social media promotion.”</p>
+        </blockquote>
+        <blockquote>
+          <p>“Self-published a short fantasy novel on Amazon – Managed the writing, editing, and cover design process;
+            received 50+ reviews with a 4.5★ average rating.”</p>
+        </blockquote>
+        <p>The key is to show outcomes (readers, downloads, completion of a complex task, etc.) to prove that your
+          personal
+          project wasn’t just a half-hearted attempt. Even if the project didn’t “win” anything or attract thousands of
+          users, it shows you took initiative to build something from scratch. That’s hugely appealing to employers
+          looking
+          for potential.</p>
+        <p><strong>Pro Tip:</strong> If you don’t have a personal project, think about starting one! It could be as
+          simple
+          as a GitHub repository where you share code samples or a small business idea you experiment with. Not only do
+          you
+          learn a ton, but it also becomes great resume fodder and talking points in interviews.</p>
+        <h2 id="volunteer-section">🌍 6. Add Volunteer Work</h2>
+        <p>Volunteer work can absolutely count as real experience. It demonstrates your values, commitment, and often
+          leadership skills. Employers appreciate candidates who give back to their communities and pick up skills along
+          the
+          way. So, if you have volunteered, create a section for “Volunteer Experience” or incorporate it under a
+          broader
+          “Experience” section.</p>
+        <p>List it similarly to a job: <strong>Role – Organization – Dates</strong>. If your role was just “Volunteer,”
+          you
+          can still specify what you did (e.g., Fundraiser, Tutor, Event Volunteer). Then add a couple of bullet points
+          about your responsibilities and achievements:</p>
+        <ul>
+          <li>“Organized a charity 5K run for the local animal shelter, attracting 200 participants and raising $5,000.”
+          </li>
+          <li>“Volunteered 8 hours/week at a community center, mentoring elementary school kids in reading and math.”
+          </li>
+          <li>“Led a team of 4 volunteers in a beach cleanup initiative; collected 300 lbs of waste and received local
+            media
+            coverage.”</li>
+        </ul>
+        <p>These examples show leadership (organized an event, led a team) and impact (funds raised, hours committed,
+          tangible results). Quantifying your volunteer work—like number of people helped or hours contributed—gives it
+          weight.</p>
+        <p><strong>Insider Insight:</strong> As one HR expert notes, writing a resume with little or no experience
+          doesn’t
+          have to be frustrating. Focus on the transferable skills you’ve gained through volunteering, hobbies, or
+          school
+          projects. Even small jobs like babysitting or mowing lawns can prove your dependability, punctuality, and
+          problem-solving skills. In other words, don’t undervalue any experience where
+          you put in effort and learned something.</p>
+        <h2 id="extracurricular-section">🏅 7. Highlight Extracurricular Activities</h2>
+        <p>Extracurricular activities, like clubs, sports, student government, or community groups, can showcase
+          important
+          qualities that employers appreciate. Through these activities, you might have honed teamwork, leadership, time
+          management, and more. Consider a section for “Extracurricular Activities” or “Leadership &amp; Activities” on
+          your
+          resume if you were actively involved in school or community organizations.</p>
+        <p>You can format it as a simple list or include brief details for key roles:</p>
+        <ul>
+          <li><strong>Treasurer, Business Club (2023 – Present):</strong> Managed a $2,000 annual budget, organized
+            fundraising events, and oversaw club expenditures.</li>
+          <li><strong>Member, Debate Team (2022 – 2024):</strong> Competed in 10+ debates; honed public speaking and
+            argumentation skills, winning 3 regional awards.</li>
+          <li><strong>Varsity Soccer Team (2019 – 2021):</strong> Practiced 5 days a week, balanced athletics with
+            academics, and developed strong teamwork and discipline.</li>
+        </ul>
+        <p>If you held a leadership position (captain, president, officer, etc.), make sure to highlight that and any
+          achievements under your tenure (e.g., “increased membership by 30%” or “won X championship”). Even if you were
+          just a member, including one or two of the most impressive activities can round out your resume and provide
+          talking points. </p>
+        <p>Extracurriculars demonstrate that you’re well-rounded and engaged. For entry-level candidates, sometimes
+          something like being an Eagle Scout, a black belt in martial arts, or a concert pianist can spark an interview
+          conversation because it’s interesting and speaks to your discipline or passion. Just be sure to keep it
+          relevant—focus on activities that have some relation to the skills the job needs or that highlight positive
+          traits
+          (teamwork, leadership, creativity, etc.).</p>
+        <h2 id="certifications-section">🧠 8. Add Certifications and Online Courses</h2>
+        <p>If you have any certifications or completed online courses, especially those relevant to the job, create a
+          section to list them. Additional credentials show that you’ve gone beyond the basic education to up-skill
+          yourself.</p>
+        <p>For example:</p>
+        <ul>
+          <li><strong>Google Data Analytics Professional Certificate</strong> – Coursera (2024)</li>
+          <li><strong>Certified Nursing Assistant (CNA)</strong> – State of California, License #123456 (2023)</li>
+          <li><strong>Front-End Web Development Course</strong> – freeCodeCamp (Completed 2025)</li>
+        </ul>
+        <p>Include the name of the certification or course, the provider or accrediting body, and the date (or expected
+          date). You can also include certifications in things like CPR/First Aid, language proficiency tests, or any
+          software (e.g., “Adobe Certified Associate”).</p>
+        <p>These credentials can sometimes make a difference if an ATS or hiring manager is looking for a specific
+          keyword.
+          Plus, they demonstrate your willingness to learn new things on your own time—a trait every employer loves.</p>
+        <p>Not having formal work experience means you’re likely doing a lot of learning; highlighting these self-driven
+          educational accomplishments can only strengthen your resume.</p>
+        <h2 id="ats-format">🧾 9. Use an ATS-Friendly Format</h2>
+        <p>All your hard work writing great content won’t matter if the company’s Applicant Tracking System can’t read
+          your
+          resume. ATS software is used by many employers to automatically scan and filter resumes. In fact, over 98% of
+          Fortune 500 companies use ATS to manage applicants, and about 75% of recruiters or hiring managers use some
+          form
+          of ATS in their process. More importantly, studies suggest 70% of resumes
+          might never be seen by human eyes due to ATS filtering. So, let’s make sure
+          your resume makes it through!</p>
+        <p>Here are key tips for an ATS-friendly resume:</p>
+        <ul>
+          <li>✅ <strong>Simple layout:</strong> Use a single-column format without tables or text boxes. Stick to
+            standard
+            margins and line spacing. Fancy multi-column designs or graphics can confuse ATS parsing.</li>
+          <li>✅ <strong>Standard fonts:</strong> Use common, easy-to-read fonts (Calibri, Arial, Times New Roman, etc.).
+            Avoid ornate or script fonts. Keep font size between 10 and 12 for body text.</li>
+          <li>✅ <strong>Clear headings:</strong> Label each section clearly (Work Experience, Education, Skills,
+            Projects,
+            etc.). An ATS looks for familiar section titles to organize your info. Don’t get too creative with naming.
+          </li>
+          <li>✅ <strong>No images or unusual formatting:</strong> Avoid headshot photos, logos, or decorative elements.
+            Also, remove any embedded charts or graphs. Use plain text for everything (bullet points are fine;
+            text-based
+            symbols are okay, but avoid emoji or wingdings in the actual resume file).</li>
+          <li>✅ <strong>File type matters:</strong> Submit your resume as a <code>.docx</code> or <code>.pdf</code>
+            file,
+            unless instructed otherwise. These formats are typically ATS-friendly. If you use fancy design software,
+            make
+            sure to export to PDF without any layers.</li>
+          <li>✅ <strong>Use keywords thoughtfully:</strong> The ATS will scan for keywords that match the job
+            description.
+            For example, if the job posting mentions “project management” or “Excel”, make sure those exact phrases
+            appear
+            in your resume (assuming you have those skills). Incorporate relevant keywords in your summary, skills, or
+            project descriptions naturally. This improves your chances of passing the initial filter.</li>
+        </ul>
+        <p>By following these guidelines, your resume will be both human-readable and machine-readable. Always
+          double-check
+          the final layout: is everything aligned left (which is safest for ATS), do section titles stand out, and is
+          all
+          important text actually text (and not part of an image)? </p>
+        <p>One more thing: some ATS software may have trouble with PDFs, so if you want to be extra safe and the
+          application
+          allows it, you might upload a .docx version. However, most modern ATS handle PDFs just fine.</p>
+        <p>Use an ATS scan tool (many are available online) if you want to be sure. It can tell you if something is
+          unreadable or if you’re missing keywords. Remember, the goal is to avoid being in that pile of resumes the ATS
+          filters out before anyone even considers your qualifications.</p>
+        <h2 id="ai-help">🤖 Use AI and Online Tools to Refine Your Resume</h2>
+        <p>Feeling overwhelmed? The good news is, you have technology on your side. There are several online tools and
+          AI-powered resources that can make resume writing easier and more effective:</p>
+        <ul>
+          <li><strong>AI Resume Builders:</strong> Take advantage of AI tools like <a href="https://resumaticai.com"
+              target="_blank">ResumaticAI</a> to jumpstart your resume. You input your details (education, skills,
+            projects,
+            etc.), and the AI helps generate well-worded bullet points and organizes your resume in a professional
+            format.
+            It’s like having a virtual resume coach. ResumaticAI, for example, can analyze your drafts, suggest stronger
+            action verbs, and ensure your formatting is ATS-compliant.</li>
+          <li><strong>ATS optimization tools:</strong> Websites such as Jobscan, Resume Worded, or even LinkedIn’s
+            resume
+            checker can compare your resume against a target job description. They’ll tell you which keywords you’re
+            missing
+            and how to improve the match. This is extremely useful when you’re applying online, as it boosts your chance
+            to
+            get past filters.</li>
+          <li><strong>Spellcheck and grammar tools:</strong> A simple yet crucial step—run your resume through a spell
+            checker and tools like Grammarly. They can catch typos or grammatical mistakes you might have missed. An
+            error-free resume reflects well on your professionalism.</li>
+          <li><strong>Templates and design helpers:</strong> If formatting isn’t your strength, consider using a clean
+            resume template from Microsoft Word, Google Docs, or Canva. Just be sure to choose a template without fancy
+            graphics or multiple columns. The content you put in is what matters most; templates just give you a head
+            start
+            on a neat layout.</li>
+        </ul>
+        <p>While these tools can significantly improve your resume, remember that they complement your input—they don’t
+          replace it. You still need to ensure everything on your resume is accurate and truly represents you. Use AI
+          suggestions as a draft, then refine in your own voice. And don’t rely on any single tool blindly; use your
+          judgment to decide what advice to implement.</p>
+        <h2 id="checklist">📋 Quick Resume Checklist</h2>
+        <ul>
+          <li>✅ <strong>Engaging summary</strong> – Does your summary effectively highlight your strengths and state
+            your
+            goal?</li>
+          <li>✅ <strong>Education is detailed</strong> – Did you list relevant courses, projects, GPA (if impressive),
+            and
+            any honors?</li>
+          <li>✅ <strong>Skills are relevant</strong> – Are you showcasing the key skills (especially ones listed in the
+            job
+            posting) and backing them up with examples?</li>
+          <li>✅ <strong>Experience sections included</strong> – Did you include projects, volunteer work, internships,
+            or
+            extracurriculars that demonstrate your abilities?</li>
+          <li>✅ <strong>Use of action verbs</strong> – Do your bullet points start with strong verbs and focus on
+            achievements/results?</li>
+          <li>✅ <strong>Additional info</strong> – Did you add any certifications, online courses, or awards that could
+            give
+            you an edge?</li>
+          <li>✅ <strong>ATS-friendly format</strong> – Is your resume clean, easy to read, and free of any elements that
+            might trip up an ATS?</li>
+          <li>✅ <strong>Proofreading done</strong> – Have you checked for spelling/grammar errors and asked someone to
+            review it?</li>
+          <li>✅ <strong>Tailored to the job</strong> – Did you tweak your resume to align with the specific job you’re
+            applying to (using relevant keywords and emphasizing the most pertinent skills)?</li>
+        </ul>
+        <h2 id="final-tips">✨ Final Thoughts</h2>
+        <p><strong>You don’t need a long work history to craft a compelling resume. What you need is self-awareness and
+            strategy.</strong> Think about what makes you a great candidate – it could be your academic achievements,
+          your
+          eagerness to learn, or the dedication you’ve shown in extracurricular activities. <strong>Every professional
+            starts somewhere</strong>, and employers hiring for entry-level roles understand that. They’re not expecting
+          polished veterans; they’re looking for potential, attitude, and willingness to grow.</p>
+        <p>Writing a resume with no experience is also a chance to reflect on what you have done so far. You might
+          realize
+          you have more skills and experiences than you thought! Maybe you’ve never had a “real” job, but you have led
+          group
+          projects, volunteered, or taught yourself valuable skills. Those are all resume-worthy.</p>
+        <p>Stay confident and be truthful. As one recruiter advised, it’s better to be honest about your experience than
+          to
+          exaggerate. Hiring managers can often see through fluff. Instead, focus on
+          genuine achievements – no matter how small – and explain why they matter.</p>
+        <p>Finally, remember that your first resume is a living document. Keep updating it as you gain new experiences,
+          skills, or education. Tailor it to each application, keep learning from each job or interview process, and
+          don’t
+          get discouraged by rejection – every “no” is one step closer to “yes.” With a well-crafted resume in hand,
+          you’re
+          already ahead of many of your peers.</p>
+        <p>👉 <strong>Ready to take the next step?</strong> Use this guide as your starting point, and build a resume
+          that
+          you’re proud of. Good luck with your job search – and congratulations on putting yourself out there!</p>
+        <div class="share-article" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);">
+          <h3>Share this article</h3>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;">
+            <a href="#" id="share-twitter-bottom" rel="noopener"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;"
+              target="_blank">
+              <i class="fab fa-x-twitter"></i> Twitter/X
+            </a>
+            <a href="#" id="share-linkedin-bottom" rel="noopener"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;"
+              target="_blank">
+              <i class="fab fa-linkedin"></i> LinkedIn
+            </a>
+            <a href="#" id="share-fb-bottom" rel="noopener"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;"
+              target="_blank">
+              <i class="fab fa-facebook"></i> Facebook
+            </a>
+            <a href="#" id="copy-link-bottom"
+              style="text-decoration:none; padding:.5rem .8rem; border:1px solid var(--border); border-radius:12px; display:inline-flex; align-items:center; gap:8px;">
+              <i class="fa-regular fa-copy"></i> Copy link
+            </a>
+          </div>
+        </div>
+        <section id="read-next">
+          <h2>📚 Read Next</h2>
+          <ul>
+            <li><a href="/blog/Resume-objective">Resume Summary vs. Objective</a></li>
+            <li><a href="/blog/Power-words">Boost Your Resume with Power Words</a></li>
+            <li><a href="/blog/tailorresumejob">How to Tailor Your Resume to a Job Description</a></li>
+          </ul>
+        </section>
 
-    <!-- Social Share Buttons -->
-    <div class="share-section">
-      <h3>📢 Share This Article</h3>
-      <div class="share-buttons">
-        <a href="https://twitter.com/intent/tweet?text=How%20to%20Write%20a%20Resume%20With%20No%20Experience&url={{ request.url }}"
-          class="share-btn twitter" target="_blank" rel="noopener">
-          <i class="fab fa-twitter"></i> Twitter
-        </a>
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url }}" class="share-btn linkedin"
-          target="_blank" rel="noopener">
-          <i class="fab fa-linkedin"></i> LinkedIn
-        </a>
-        <a id="facebook-share" href="#" class="share-btn facebook" target="_blank" rel="noopener">
-          <i class="fab fa-facebook"></i> Facebook
-        </a>
-
+        <section id="faq">
+          <h2>❓ No-Experience Resume FAQ</h2>
+          <h3>Should I include a GPA?</h3>
+          <p>Include it if ≥3.5 or if the role emphasizes academics. Otherwise, skip.</p>
+          <h3>What if I really have nothing?</h3>
+          <p>Create experience: a small project, a course certificate, or a volunteer role. Then add it.</p>
+          <h3>PDF or DOCX?</h3>
+          <p>Either is fine if text-based. When uncertain, submit DOCX.</p>
+        </section>
       </div>
-    </div>
-
-    <!-- Related Articles -->
-    <div class="related-articles">
-      <h3>📚 Related Articles</h3>
-      <div class="article-grid">
-        <a href="/blog/Resume_objective" class="article-card">
-          <h4>Resume Summary vs. Objective Guide</h4>
-          <p>Perfect for entry-level candidates - learn when to use each</p>
-        </a>
-        <a href="/blog/toptenmistakes" class="article-card">
-          <h4>Top 10 Resume Mistakes to Avoid</h4>
-          <p>Common pitfalls that could hurt your first impression</p>
-        </a>
-        <a href="/blog/Power_words" class="article-card">
-          <h4>Power Words for Your Resume</h4>
-          <p>Make your limited experience sound more impressive</p>
-        </a>
-      </div>
-    </div>
-
-    <!-- Call-to-Action -->
-    <div class="cta-box">
-      <h3>🌟 Ready to Build Your First Resume?</h3>
-      <p>Don't let lack of experience hold you back. Use ResumaticAI to create a professional resume that highlights
-        your potential and gets you noticed.</p>
-      <a href="/" class="btn">🚀 Create My First Resume</a>
-    </div>
-  </article>
-
-  <!-- Back to Top Button -->
-  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
-    <i class="fas fa-arrow-up"></i>
-  </button>
-
-  <!-- JavaScript for Enhanced UX -->
+    </article>
+  </main>
+  <button aria-label="Back to top" class="to-top" id="to-top"><i class="fa-solid fa-arrow-up"></i> Top</button>
+  <script></script>
   <script>
-    // Reading Progress Bar
-    function updateReadingProgress() {
-      const article = document.querySelector('.blog-post');
-      const progressBar = document.getElementById('reading-progress');
+    // Reading progress
+    const progressBar = document.getElementById('reading-progress');
+    const toTop = document.getElementById('to-top');
+    const tocList = document.getElementById('toc-list');
+    const headings = Array.from(document.querySelectorAll('#article-root h2'));
 
-      if (article && progressBar) {
-        const articleHeight = article.offsetHeight;
-        const windowHeight = window.innerHeight;
-        const scrollTop = window.pageYOffset;
-        const progress = (scrollTop / (articleHeight - windowHeight)) * 100;
-
-        progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
-      }
+    function onScroll() {
+      const doc = document.documentElement;
+      const total = doc.scrollHeight - doc.clientHeight;
+      const scrolled = (doc.scrollTop / total) * 100;
+      progressBar.style.width = Math.min(100, Math.max(0, scrolled)) + '%';
+      toTop.classList.toggle('show', window.pageYOffset > 320);
+      highlightActiveHeading();
     }
-
-    // Back to Top Button
-    function toggleBackToTop() {
-      const backToTop = document.getElementById('back-to-top');
-      if (window.pageYOffset > 300) {
-        backToTop.style.display = 'flex';
-      } else {
-        backToTop.style.display = 'none';
-      }
-    }
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     // Smooth scroll to top
-    document.getElementById('back-to-top').addEventListener('click', function () {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    });
+    toTop.addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-    // Table of Contents smooth scrolling
-    document.querySelectorAll('.toc a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
+    // Build TOC from existing h2 IDs (preserves your anchors)
+    function buildTOC() {
+      const frag = document.createDocumentFragment();
+      headings.forEach(h => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '#' + (h.id || h.textContent.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+        if (!h.id) { h.id = a.href.split('#')[1]; }
+        a.textContent = h.textContent.replace(/^[^a-zA-Z0-9]+\s*/, '');
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        li.appendChild(a);
+        frag.appendChild(li);
+      });
+      tocList.innerHTML = '';
+      tocList.appendChild(frag);
+      highlightActiveHeading();
+    }
+
+    // Active link highlighting
+    function highlightActiveHeading() {
+      const pos = window.scrollY + 120; // offset for sticky nav
+      let currentId = null;
+      headings.forEach(h => { if (h.offsetTop <= pos) currentId = h.id; });
+      tocList.querySelectorAll('a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + currentId));
+    }
+
+    // Share buttons
+    function initShare() {
+      const url = window.location.href;
+      const text = encodeURIComponent(document.querySelector('.post-title').textContent);
+      document.getElementById('share-twitter').href = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`;
+      document.getElementById('share-linkedin').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+      document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      document.getElementById('copy-link').addEventListener('click', (e) => {
+        e.preventDefault(); navigator.clipboard.writeText(url).then(() => {
+          const btn = e.currentTarget; btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!'; setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy link'; }, 1400);
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { buildTOC(); initShare(); onScroll(); });
+
+    // Bottom share buttons
+    document.addEventListener('DOMContentLoaded', () => {
+      const url = window.location.href;
+      const text = encodeURIComponent(document.querySelector('.post-title').textContent);
+      document.getElementById('share-twitter-bottom').href = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`;
+      document.getElementById('share-linkedin-bottom').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+      document.getElementById('share-fb-bottom').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+      document.getElementById('copy-link-bottom').addEventListener('click', (e) => {
         e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
+        navigator.clipboard.writeText(url).then(() => {
+          const btn = e.currentTarget;
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy link';
+          }, 1400);
+        });
       });
     });
-
-    // Event listeners
-    window.addEventListener('scroll', function () {
-      updateReadingProgress();
-      toggleBackToTop();
-    });
-
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', function () {
-      updateReadingProgress();
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const currentUrl = window.location.href;
-      const facebookLink = document.getElementById("facebook-share");
-      facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
-    });
-
   </script>
+</body>
+
+</html>

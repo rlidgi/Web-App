@@ -1,6 +1,7 @@
 <!-- filepath: templates/my_revisions.html -->
 <!DOCTYPE html>
 <html lang="en">
+<script defer src="/static/js/script.js"></script>
 
 <head>
 
@@ -13,6 +14,11 @@
 
         gtag('config', 'G-KRPLMCR73G');
     </script>
+
+
+    <!-- TrustBox script -->
+    <script type="text/javascript" src="//widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js" async></script>
+    <!-- End TrustBox script -->
 
 
     <meta charset="UTF-8">
@@ -116,16 +122,106 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
         }
+
+        /* Mobile menu styles */
+        .mobile-menu {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #3B82F6;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
     </style>
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans"
     style="background-image: url('/static/images/bg13.png'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
 
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6 hidden" id="mobileMenu">
+        <div class="flex justify-between items-center mb-8">
+
+            <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="space-y-4">
+            <a class="block text-gray-600 hover:text-primary" href="/">Home</a>
+            <a class="block text-gray-600 hover:text-primary" href="/blog">Blog</a>
+            <a class="block text-gray-600 hover:text-primary" href="/about">About</a>
+            <a class="block text-gray-600 hover:text-primary" href="/contact">Contact</a>
+            {% if user and user.is_authenticated %}
+            <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/logout">
+                Logout
+            </a>
+            {% else %}
+            <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/login">
+                Login
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <!-- Main Navigation -->
+    <header role="banner">
+        <nav aria-label="Main navigation" class="bg-white shadow-sm sticky top-0 z-50" role="navigation">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-20 items-center">
+                    <div class="flex items-center">
+                        <a class="flex items-center" href="/">
+
+                            <span class="sr-only">Resumatic AI</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/">Home</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/blog">Blog</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors" href="/about">About</a>
+                        <a class="nav-link text-gray-600 hover:text-primary transition-colors"
+                            href="/contact">Contact</a>
+                        {% if user and user.is_authenticated %}
+                        <a href="/logout" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                            Logout
+                        </a>
+                        {% else %}
+                        <a href="/login" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                            Login
+                        </a>
+                        {% endif %}
+                    </div>
+                    <button aria-expanded="false" aria-label="Toggle menu"
+                        class="md:hidden text-gray-600 hover:text-gray-900" id="menuButton">
+                        <i aria-hidden="true" class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
     <!-- Header Section -->
     <div class="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-10">
         <div class="max-w-6xl mx-auto px-4 py-4">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center">
                 <div class="flex items-center space-x-3">
                     <div
                         class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
@@ -139,11 +235,6 @@
                         <p class="text-sm text-gray-600">Track your resume improvement journey</p>
                     </div>
                 </div>
-                <a href="/"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                    <i class="fas fa-arrow-left mr-2"></i>
-                    Back to Home
-                </a>
             </div>
         </div>
     </div>
@@ -396,6 +487,36 @@
         {% endif %}
     </div>
 
+    <!-- Review CTA -->
+    <div class="max-w-6xl mx-auto p-4 mt-12 mb-10">
+        <div
+            class="rounded-lg shadow-lg p-8 text-center bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200">
+            <div
+                class="inline-flex items-center px-3 py-1 mb-3 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">
+                <i class="fas fa-heart mr-1 text-emerald-600"></i>
+                We value your feedback
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-800 mb-2">Enjoying ResumaticAI?</h2>
+            <div class="flex justify-center mb-3" aria-hidden="true">
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+                <i class="fas fa-star text-amber-400 text-xl mx-0.5"></i>
+            </div>
+            <p class="text-gray-700 mb-5">If we helped, a quick Trustpilot review makes a big difference.</p>
+
+            <!-- TrustBox widget - Review Collector -->
+            <div class="trustpilot-widget" data-locale="en-US" data-template-id="56278e9abfbbba0bdcd568bc"
+                data-businessunit-id="68c642f02962c7c6cf071fa0" data-style-height="52px" data-style-width="100%"
+                data-token="53409e14-dcae-4ea5-8520-489b71c06646">
+                <a href="https://www.trustpilot.com/review/resumaticai.com" target="_blank"
+                    rel="noopener">Trustpilot</a>
+            </div>
+            <!-- End TrustBox widget -->
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="mt-16 py-8 border-t border-gray-200 bg-white/80 backdrop-blur-sm">
         <div class="max-w-5xl mx-auto px-6 text-center">
@@ -405,6 +526,8 @@
             </p>
         </div>
     </footer>
+
+
 </body>
 
 </html>

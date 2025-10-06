@@ -4,23 +4,45 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Blog | Resumatic AI - Resume Enhancement Tips & Career Advice</title>
-    <meta content="Blog | Resumatic AI - Resume Enhancement Tips & Career Advice" name="title" />
-    <meta
-        content="Explore our blog for expert tips on resume writing, career development, and job search strategies. Learn how to optimize your resume with AI-powered tools and stay ahead in your career."
-        name="description" />
-    <meta
-        content="resume tips, career advice, job search strategies, resume writing, ATS optimization, career development, professional growth, resume enhancement, job application tips"
-        name="keywords" />
-
-
-    <meta property="og:title" content="Blog articles" />
-    <meta property="og:description" content="Blog articles on resumes" />
-    <meta property="og:url" content="https://resumaticai.com/blog" />
-    <meta property="og:type" content="article" />
-    <meta property="og:image" content="https://resumaticai.com/static/images/logo23.png" />
-
     <meta property="fb:app_id" content="2405626099815308" />
+
+    <!-- Enhanced SEO Meta Tags -->
+    <title>Blog | Resumatic AI - Resume Enhancement Tips & Career Advice</title>
+    <meta name="title" content="Blog | Resumatic AI - Resume Enhancement Tips & Career Advice" />
+    <meta name="description"
+        content="Explore our blog for expert tips on resume writing, career development, and job search strategies. Learn how to optimize your resume with AI-powered tools and stay ahead in your career." />
+
+
+    <!-- Author and Language -->
+    <meta name="author" content="ResumaticAI" />
+    <meta name="language" content="English" />
+    <meta name="robots" content="index, follow" />
+    <meta name="revisit-after" content="7 days" />
+
+    <!-- Enhanced Open Graph Meta Tags -->
+    <meta property="og:title" content="ResumaticAI Blog - Expert Resume & Career Advice" />
+    <meta property="og:description"
+        content="Discover expert tips on resume writing, ATS optimization, career development, and job search strategies. Stay ahead in your career with our comprehensive guides." />
+    <meta property="og:url" content="https://resumaticai.com/blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://resumaticai.com/static/images/logo23_small.png" />
+    <meta property="og:site_name" content="ResumaticAI" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Enhanced Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ResumaticAI Blog - Expert Resume & Career Advice" />
+    <meta name="twitter:description"
+        content="Discover expert tips on resume writing, ATS optimization, career development, and job search strategies." />
+    <meta name="twitter:image" content="https://resumaticai.com/static/images/logo23_small.png" />
+    <meta name="twitter:site" content="@ResumaticAI" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://resumaticai.com/blog" />
+
+    <!-- Additional SEO Meta Tags -->
+    <meta name="theme-color" content="#4F46E5" />
+    <meta name="msapplication-TileColor" content="#4F46E5" />
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-KRPLMCR73G"></script>
@@ -115,7 +137,7 @@
                 <div class="flex items-center">
                     <a class="flex items-center" href="/">
                         <img alt="Resumatic AI Logo" class="h-8 w-auto"
-                            src="{{ url_for('static', filename='images/logo23.png') }}" />
+                            src="{{ url_for('static', filename='images/logo23_small.png') }}" />
                         <span class="sr-only">Resumatic AI</span>
                     </a>
                 </div>
@@ -141,9 +163,48 @@
                     </a>
                     {% endif %}
                 </div>
+
+                <button aria-expanded="false" aria-label="Toggle menu"
+                    class="md:hidden text-gray-600 hover:text-gray-900" id="menuButton">
+                    <i class="fas fa-bars"></i>
+                </button>
+
             </div>
         </div>
-    </nav> <!-- Main Content -->
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6 hidden" id="mobileMenu">
+        <div class="flex justify-between items-center mb-8">
+            <img alt="Logo" class="h-12 w-auto" src="/static/images/logo23_small.png" />
+            <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <nav class="space-y-4">
+            <a class="block text-gray-600 hover:text-primary" href="/#features">Features</a>
+            <a class="block text-gray-600 hover:text-primary" href="/#how-it-works">How it Works</a>
+            <a class="block text-gray-600 hover:text-primary" href="/blog">Blog</a>
+            <a class="block text-gray-600 hover:text-primary" href="/about">About</a>
+            <a class="block text-gray-600 hover:text-primary" href="/">Home</a>
+            <a class="block text-gray-600 hover:text-primary" href="/#faq">FAQ</a>
+            {% if user %}
+            <a href="/my_revisions"
+                class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center">
+                <i class="fas fa-user mr-2"></i>My Account
+            </a>
+            <a href="/logout" class="block px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center mt-2">
+                Logout
+            </a>
+            {% else %}
+            <a href="/login" class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center">
+                Login
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -185,7 +246,7 @@
         <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-12">
             <div class="md:flex">
                 <div class="md:w-1/2">
-                    <img src="{{ url_for('static', filename='images/blog.png') }}" alt="Featured Blog Post"
+                    <img src="{{ url_for('static', filename='images/robot.png') }}" alt="Featured Blog Post"
                         class="featured-post-image" />
                 </div>
                 <div class="p-8 md:w-1/2">
@@ -212,7 +273,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             <!-- Blog Post 1 -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
-
+                <img src="{{ url_for('static', filename='images/vs.png') }}" alt="Resume Summary vs Objective Analysis"
+                    class="w-full h-48 object-cover">
                 <div class="p-6">
                     <div class="text-primary font-semibold text-sm mb-2">Resume Writing</div>
                     <h3 class="text-xl font-bold mb-2">Resume Summary vs. Objective: Which Should You Use in 2025?</h3>
@@ -233,6 +295,8 @@
 
             <!-- Blog Post 2 -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
+                <img src="{{ url_for('static', filename='images/power.jpg') }}" alt="Power Words for Resume"
+                    class="w-full h-48 object-cover">
                 <div class="p-6">
                     <div class="text-primary font-semibold text-sm mb-2">Resume Writing</div>
                     <h3 class="text-xl font-bold mb-2">Power Words to Use in Your Resume (And Ones to Avoid)</h3>
@@ -253,6 +317,8 @@
 
             <!-- Blog Post 3 -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
+                <img src="{{ url_for('static', filename='images/noexperience.jpg') }}"
+                    alt="AI Resume Writing for Beginners" class="w-full h-48 object-cover">
                 <div class="p-6">
                     <div class="text-primary font-semibold text-sm mb-2">Career Development</div>
                     <h3 class="text-xl font-bold mb-2">How to Write a Resume With No Work Experience</h3>
@@ -273,6 +339,8 @@
 
             <!-- Blog Post 4 -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden blog-card">
+                <img src="{{ url_for('static', filename='images/format.webp') }}" alt="Resume Format Examples 2025"
+                    class="w-full h-48 object-cover">
                 <div class="p-6">
                     <div class="text-primary font-semibold text-sm mb-2">Resume Writing</div>
                     <h3 class="text-xl font-bold mb-2">Best Resume Formats for 2025 (With Examples)</h3>
@@ -322,7 +390,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                     <img alt="Logo" class="h-8 w-auto mb-4"
-                        src="{{ url_for('static', filename='images/logo23.png') }}" />
+                        src="{{ url_for('static', filename='images/logo23_small.png') }}" />
                     <p class="text-gray-500">Empowering job seekers with AI-enhanced resumes.</p>
                 </div>
                 <div>
@@ -384,6 +452,9 @@
             });
         });
     </script>
+
+    <script defer src="/static/js/script.js"></script>
+
 </body>
 
 </html>
