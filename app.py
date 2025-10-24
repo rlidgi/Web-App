@@ -35,6 +35,36 @@ from azure.identity import DefaultAzureCredential
 
 app = Flask(__name__)
 
+
+#####################
+# ---- Make `current_user` available in all Jinja templates ----
+try:
+    from flask_login import LoginManager, current_user as flask_login_current_user, AnonymousUserMixin
+
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    @app.context_processor
+    def inject_current_user():
+        # This exposes the real Flask-Login current_user to Jinja
+        return dict(current_user=flask_login_current_user)
+
+except Exception:
+    # Flask-Login not installed/configured: provide a safe dummy
+    class _Anon:
+        is_authenticated = False
+    @app.context_processor
+    def inject_current_user():
+        return dict(current_user=_Anon())
+
+
+
+################################
+
+
+
+
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -212,6 +242,10 @@ def load_user(user_id):
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
+    # Clear any lingering flash messages
+    session.pop('_flashes', None)
+
     return render_template("login.html")
 
 @app.route("/logout")
@@ -232,6 +266,9 @@ def logout():
 
 @app.route("/login/google")
 def google_login():
+    # Clear any lingering flash messages
+    session.pop('_flashes', None)
+
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     
@@ -503,6 +540,12 @@ def index():
     return render_template("index.html", year=current_year, user=current_user)
 
 
+@app.route("/start")
+def start():
+    current_year = datetime.now().year
+    return render_template("start.html", year=current_year, user=current_user)
+
+
 
 @app.route("/results", methods=["POST"])
 #login_required
@@ -574,12 +617,14 @@ def results_route():
         print(f"=== CONVERSION TRACKED ===")
         print(f"Conversion info: {conversion_info}")
         
-        return render_template("result.html", 
-                                original_resume=resume_text, 
-                                revised_resume=revised_resume, 
-                                feedback=feedback, 
-                                job_description=job_description,
-                                error=None)
+        # Store data in session and redirect (Post/Redirect/Get) to prevent resubmission on back
+        session['results_data'] = {
+            'original_resume': resume_text,
+            'revised_resume': revised_resume,
+            'feedback': feedback,
+            'job_description': job_description,
+        }
+        return redirect(url_for('results_get'))
     except Exception as e:
         import traceback
         print("=== ERROR IN revise_resume_route ===")
@@ -593,6 +638,20 @@ def results_route():
 
 
 
+@app.route("/results", methods=["GET"])
+def results_get():
+    data = session.pop('results_data', None)
+    if not data:
+        # No data to show; send the user to the homepage
+        return redirect(url_for('index'))
+    return render_template(
+        "result.html",
+        original_resume=data.get('original_resume', ''),
+        revised_resume=data.get('revised_resume', ''),
+        feedback=data.get('feedback', {}),
+        job_description=data.get('job_description', ''),
+        error=None
+    )
 @app.route("/termsprivacy")
 def termsprivacy():
     return redirect(url_for('terms_privacy'), code=301)
@@ -1048,6 +1107,13 @@ def sitemap():
 @app.route("/download_resume_docx", methods=["POST"])
 #@login_required
 def download_resume_docx():
+    # If not authenticated, redirect to Google login to ensure gated downloads
+    try:
+        if not current_user.is_authenticated:
+            return redirect(url_for('google_login'))
+    except Exception:
+        # In case flask-login context isn't available, fall back to login route
+        return redirect(url_for('google_login'))
     revised_resume = request.form.get('resume')
     if not revised_resume:
         flash("No revised resume found for download.", 'danger')
@@ -1902,6 +1968,156 @@ def add_robots_headers(response):
     except Exception:
         pass
     return response
+
+
+
+
+#########################################################
+#################TEMPLATES
+'''
+# --- imports (single set) ---
+from flask import Flask, render_template, request, send_file, abort, url_for, redirect, jsonify
+from io import BytesIO
+import os
+
+
+
+# Optional: nicer DOCX output if available
+try:
+    from docx import Document
+except Exception:
+    Document = None
+
+# ---- Template registry (IDs match the gallery data) ----
+TEMPLATES = {
+    "modern-citrus": {"name": "Modern Citrus", "style": "Modern"},
+    "modern-slate": {"name": "Modern Slate", "style": "Modern"},
+    "modern-aurora": {"name": "Modern Aurora", "style": "Modern"},
+    "classic-elegant": {"name": "Classic Elegant", "style": "Classic"},
+    "classic-simplicity": {"name": "Classic Simplicity", "style": "Classic"},
+    "classic-structure": {"name": "Classic Structure", "style": "Classic"},
+    "creative-pastel": {"name": "Creative Pastel", "style": "Creative"},
+    "creative-neo": {"name": "Creative Neo", "style": "Creative"},
+    "creative-spark": {"name": "Creative Spark", "style": "Creative"},
+}
+
+def get_template_or_404(tid: str):
+    t = TEMPLATES.get(tid)
+    if not t:
+        abort(404, f"Unknown template id: {tid}")
+    return t
+
+# ---- Pages ----
+@app.route("/resume-templates", endpoint="resume_templates")
+def resume_templates_view():
+    return render_template("resume_templates.html")
+
+@app.route("/builder", endpoint="resume_builder")
+def resume_builder():
+    tpl = request.args.get("template", "")
+    t = TEMPLATES.get(tpl)
+    return render_template("builder.html", template_id=tpl, template_meta=t)
+
+# Optional alias if old links use /app/builder
+@app.route("/app/builder", endpoint="resume_builder_alias")
+def resume_builder_alias():
+    qs = request.query_string.decode("utf-8")
+    target = url_for("resume_builder")
+    return redirect(f"{target}?{qs}" if qs else target, code=302)
+
+# ---- Minimal export endpoints ----
+@app.post("/export/docx")
+def export_docx():
+    data = request.get_json(force=True)
+    tpl_id = data.get("template")
+    t = get_template_or_404(tpl_id)
+
+    name = data.get("name", "")
+    title = data.get("title", "")
+    summary = data.get("summary", "")
+    exp = data.get("experience", []) or []
+    skills = data.get("skills", []) or []
+
+    bio = BytesIO()
+    if Document:
+        doc = Document()
+        doc.add_heading(name or "Your Name", 0)
+        if title:
+            doc.add_paragraph(title)
+        doc.add_paragraph(f"Template: {t['name']} ({t['style']})")
+        doc.add_heading("Summary", level=1)
+        doc.add_paragraph(summary or "")
+        doc.add_heading("Experience", level=1)
+        for item in exp:
+            p = doc.add_paragraph()
+            p.add_run(item.get("role", "Role")).bold = True
+            company = item.get("company", "Company")
+            years = item.get("years", "")
+            p.add_run(f" — {company}" + (f" ({years})" if years else ""))
+            for b in item.get("bullets", []):
+                doc.add_paragraph(b, style="List Bullet")
+        if skills:
+            doc.add_heading("Skills", level=1)
+            doc.add_paragraph(", ".join(skills))
+        doc.save(bio)
+    else:
+        bio.write(
+            f"{name}\n{title}\nTemplate: {t['name']} ({t['style']})\n\nSummary:\n{summary}\n".encode("utf-8")
+        )
+    bio.seek(0)
+    return send_file(
+        bio,
+        as_attachment=True,
+        download_name=f"{tpl_id}.docx",
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    )
+
+@app.post("/export/pdf")
+def export_pdf():
+    # Tiny placeholder PDF. For production: WeasyPrint / wkhtmltopdf / ReportLab.
+    data = request.get_json(force=True)
+    tpl_id = data.get("template")
+    t = get_template_or_404(tpl_id)
+    name = data.get("name", "")
+    title = data.get("title", "")
+    text = f"{name} — {title} | {t['name']} ({t['style']})".replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+    buf = BytesIO()
+    buf.write(b"%PDF-1.4\n%\xe2\xe3\xcf\xd3\n")
+    objs = []
+    objs.append("1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n")
+    objs.append("2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n")
+    objs.append("3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 5 0 R >> >> /MediaBox [0 0 612 792] /Contents 4 0 R >>\nendobj\n")
+    stream = f"BT /F1 18 Tf 72 720 Td ({text}) Tj ET"
+    objs.append(f"4 0 obj\n<< /Length {len(stream)} >>\nstream\n{stream}\nendstream\nendobj\n")
+    objs.append("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n")
+
+    offsets = []
+    for o in objs:
+        offsets.append(buf.tell())
+        buf.write(o.encode("utf-8"))
+    xref = buf.tell()
+    buf.write(f"xref\n0 {len(objs)+1}\n".encode("utf-8"))
+    buf.write(b"0000000000 65535 f \n")
+    for off in offsets:
+        buf.write(f"{off:010d} 00000 n \n".encode("utf-8"))
+    buf.write(f"trailer\n<< /Size {len(objs)+1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF".encode("utf-8"))
+    buf.seek(0)
+    return send_file(buf, as_attachment=True, download_name=f"{tpl_id}.pdf", mimetype="application/pdf")
+
+from jinja2 import TemplateNotFound
+import os
+
+@app.route("/", endpoint="home")
+def home():
+    # Serve index.html if present; otherwise fall back to the gallery
+    try:
+        return render_template("index.html")
+    except TemplateNotFound:
+        return redirect(url_for("resume_templates"))
+
+##########################################
+'''
 
 if __name__ == "__main__":
     app.run(debug=True, host='127.0.0.1', port=5000)
