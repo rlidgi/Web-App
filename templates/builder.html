@@ -1,0 +1,154 @@
+<!-- templates/builder.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Resume Builder | ResumaticAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+  <nav class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <a href="/" class="font-semibold text-gray-900">ResumaticAI</a>
+      <a href="{{ url_for('resume_templates') }}" class="text-sm text-gray-600 hover:text-black">Back to Templates</a>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto p-6 grid md:grid-cols-2 gap-6">
+    <section class="bg-white rounded-2xl border p-5 space-y-4">
+      <h1 class="text-xl font-bold">Resume Builder</h1>
+      <p class="text-gray-600 text-sm">
+        Template: <span class="font-medium">{{ (template_meta.name if template_meta else template_id) or "(none)"
+          }}</span>
+        <span class="ml-2 text-xs px-2 py-0.5 rounded-full border">{{ (template_meta.style if template_meta else
+          "Unknown") }}</span>
+      </p>
+
+      <div class="grid gap-3">
+        <input id="name" class="border rounded-md px-3 py-2" placeholder="Full name" />
+        <input id="title" class="border rounded-md px-3 py-2" placeholder="Professional title (e.g., Data Analyst)" />
+        <textarea id="summary" class="border rounded-md px-3 py-2" rows="4"
+          placeholder="Brief professional summary"></textarea>
+      </div>
+
+      <div class="space-y-2">
+        <h2 class="text-sm font-semibold">Experience (quick entries)</h2>
+        <div id="exp-list" class="space-y-2"></div>
+        <button id="add-exp" class="text-sm px-3 py-1.5 rounded-md border bg-white hover:bg-gray-50">+ Add
+          Experience</button>
+      </div>
+
+      <div class="space-y-2">
+        <h2 class="text-sm font-semibold">Skills (comma-separated)</h2>
+        <input id="skills" class="border rounded-md px-3 py-2" placeholder="Python, SQL, Tableau" />
+      </div>
+
+      <div class="flex gap-2 pt-2">
+        <button id="export-docx" class="px-4 py-2 rounded-md bg-indigo-600 text-white hover:bg-indigo-500">Export
+          DOCX</button>
+        <button id="export-pdf" class="px-4 py-2 rounded-md border">Export PDF</button>
+      </div>
+    </section>
+
+    <aside class="bg-white rounded-2xl border p-5">
+      <h2 class="text-sm font-semibold">Live Preview</h2>
+      <div id="preview" class="mt-3 text-sm text-gray-800 space-y-3">
+        <div><span id="p-name" class="font-bold text-lg"></span> <span id="p-title" class="text-gray-600"></span></div>
+        <div><span class="text-xs text-gray-500">Template:</span>
+          <span id="p-template">{{ (template_meta.name if template_meta else template_id) or "(none)" }}</span>
+        </div>
+        <div>
+          <div class="font-semibold">Summary</div>
+          <div id="p-summary" class="text-gray-700"></div>
+        </div>
+        <div>
+          <div class="font-semibold">Experience</div>
+          <ul id="p-exp" class="list-disc ml-5"></ul>
+        </div>
+        <div>
+          <div class="font-semibold">Skills</div>
+          <div id="p-skills" class="text-gray-700"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const templateId = new URLSearchParams(location.search).get("template") || "{{ template_id or '' }}";
+
+    const $ = s => document.querySelector(s);
+    const nameI = $("#name"), titleI = $("#title"), summaryI = $("#summary"), skillsI = $("#skills");
+    const pName = $("#p-name"), pTitle = $("#p-title"), pSummary = $("#p-summary"), pSkills = $("#p-skills"), pExp = $("#p-exp");
+    const expList = $("#exp-list");
+
+    function addExpRow(val = {}) {
+      const wrap = document.createElement("div");
+      wrap.className = "grid sm:grid-cols-3 gap-2";
+      wrap.innerHTML = `
+        <input class="role border rounded-md px-2 py-1" placeholder="Role (e.g., Analyst)" value="${val.role || ""}">
+        <input class="company border rounded-md px-2 py-1" placeholder="Company" value="${val.company || ""}">
+        <input class="years border rounded-md px-2 py-1" placeholder="Years (e.g., 2022–2024)" value="${val.years || ""}">
+        <textarea class="bullets sm:col-span-3 border rounded-md px-2 py-1" rows="2" placeholder="Bullets (one per line)">${(val.bullets || []).join("\\n")}</textarea>
+      `;
+      expList.appendChild(wrap);
+      sync();
+    }
+
+    function getData() {
+      const exps = Array.from(expList.children).map(r => {
+        const role = r.querySelector(".role").value.trim();
+        const company = r.querySelector(".company").value.trim();
+        const years = r.querySelector(".years").value.trim();
+        const bullets = r.querySelector(".bullets").value.split("\\n").filter(Boolean).map(s => s.trim());
+        return { role, company, years, bullets };
+      });
+      return {
+        template: templateId,
+        name: nameI.value.trim(),
+        title: titleI.value.trim(),
+        summary: summaryI.value.trim(),
+        skills: skillsI.value.split(",").map(s => s.trim()).filter(Boolean),
+        experience: exps
+      };
+    }
+
+    function sync() {
+      const d = getData();
+      pName.textContent = d.name || "Your Name";
+      pTitle.textContent = d.title ? " — " + d.title : "";
+      pSummary.textContent = d.summary || "(Write a concise 2–3 sentence summary highlighting impact.)";
+      pExp.innerHTML = (d.experience || []).map(e => `<li><b>${e.role || "Role"}</b> — ${e.company || "Company"} ${e.years ? "(" + e.years + ")" : ""}${e.bullets?.length ? "<ul class='list-disc ml-5'>" + e.bullets.map(b => `<li>${b}</li>`).join("") + "</ul>" : ""}</li>`).join("");
+      pSkills.textContent = (d.skills || []).join(", ");
+    }
+
+    nameI.addEventListener("input", sync);
+    titleI.addEventListener("input", sync);
+    summaryI.addEventListener("input", sync);
+    skillsI.addEventListener("input", sync);
+    $("#add-exp").addEventListener("click", () => { addExpRow(); });
+
+    $("#export-docx").addEventListener("click", async () => {
+      const res = await fetch("/export/docx", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(getData()) });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement("a"), { href: url, download: (templateId || "resume") + ".docx" });
+      a.click(); URL.revokeObjectURL(url);
+    });
+    $("#export-pdf").addEventListener("click", async () => {
+      const res = await fetch("/export/pdf", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(getData()) });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement("a"), { href: url, download: (templateId || "resume") + ".pdf" });
+      a.click(); URL.revokeObjectURL(url);
+    });
+
+    // start with one experience row for convenience
+    addExpRow();
+    sync();
+  </script>
+</body>
+
+</html>

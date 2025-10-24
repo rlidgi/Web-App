@@ -1,8 +1,8 @@
 {
-  "total_visits": 622,
+  "total_visits": 660,
   "facebook_ad_visits": 0,
-  "organic_visits": 144,
-  "total_conversions": 39,
+  "organic_visits": 179,
+  "total_conversions": 81,
   "facebook_ad_conversions": 0,
   "daily_stats": {
     "2025-07-22": {
@@ -301,27 +301,137 @@
       "other": 0,
       "conversions": 0,
       "facebook_ad_conversions": 0
+    },
+    "2025-10-06": {
+      "total": 0,
+      "facebook_ad": 0,
+      "organic": 0,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 6,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-07": {
+      "total": 1,
+      "facebook_ad": 0,
+      "organic": 1,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 11,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-08": {
+      "total": 5,
+      "facebook_ad": 0,
+      "organic": 4,
+      "direct": 1,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 0,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-13": {
+      "total": 4,
+      "facebook_ad": 0,
+      "organic": 4,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 7,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-15": {
+      "total": 23,
+      "facebook_ad": 0,
+      "organic": 23,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 10,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-16": {
+      "total": 1,
+      "facebook_ad": 0,
+      "organic": 1,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 0,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-19": {
+      "total": 1,
+      "facebook_ad": 0,
+      "organic": 1,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 0,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-21": {
+      "total": 2,
+      "facebook_ad": 0,
+      "organic": 0,
+      "direct": 2,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 5,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-23": {
+      "total": 0,
+      "facebook_ad": 0,
+      "organic": 0,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 1,
+      "facebook_ad_conversions": 0
+    },
+    "2025-10-24": {
+      "total": 1,
+      "facebook_ad": 0,
+      "organic": 1,
+      "direct": 0,
+      "search": 0,
+      "social": 0,
+      "other": 0,
+      "conversions": 2,
+      "facebook_ad_conversions": 0
     }
   },
   "utm_campaigns": {},
   "referrer_data": {
     "direct": {
-      "count": 478,
+      "count": 481,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-10-01"
+      "last_seen": "2025-10-21"
     },
     "http://127.0.0.1:5000/": {
-      "count": 113,
+      "count": 121,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-09-20"
+      "last_seen": "2025-10-19"
     },
     "http://127.0.0.1:5000/my_revisions": {
-      "count": 4,
+      "count": 25,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-09-20"
+      "last_seen": "2025-10-15"
     },
     "http://127.0.0.1:5000/blog/ats-optimization": {
       "count": 4,
@@ -354,17 +464,41 @@
       "last_seen": "2025-07-25"
     },
     "http://127.0.0.1:5000/results": {
-      "count": 2,
+      "count": 3,
       "conversions": 0,
       "conversion_rate": 0.0,
-      "last_seen": "2025-08-23"
+      "last_seen": "2025-10-07"
     },
     "http://127.0.0.1:5000/view_revision/2afe36b4-c09a-4490-9927-4d7b011f0bde": {
       "count": 1,
       "conversions": 0,
       "conversion_rate": 0.0,
       "last_seen": "2025-08-09"
+    },
+    "http://127.0.0.1:5000/view_revision/e1646e7d-ec87-4ca7-9a98-354eb6f77f5b": {
+      "count": 2,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-10-13"
+    },
+    "http://127.0.0.1:5000/view_revision/ce99193b-27c1-4a87-8518-ff416cfb0146": {
+      "count": 1,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-10-13"
+    },
+    "http://127.0.0.1:5000/view_revision/6e2e0d6f-ed87-437e-891a-51a4e9111b3b": {
+      "count": 1,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-10-15"
+    },
+    "http://127.0.0.1:5000/view_revision/b0ac72ff-3331-4aae-a1a6-d7bf2f7586cb": {
+      "count": 1,
+      "conversions": 0,
+      "conversion_rate": 0.0,
+      "last_seen": "2025-10-24"
     }
   },
-  "last_updated": "2025-10-01"
+  "last_updated": "2025-10-24"
 }

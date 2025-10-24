@@ -56,7 +56,7 @@
     <meta property="fb:app_id" content="2405626099815308" />
 
     <!-- Primary Meta Tags -->
-    <title>AI Resume Builder & ATS Optimizer | Resumatic AI</title>
+    <title>Resumatic AI - AI Resume Builder & ATS Optimizer</title>
     <meta content="AI Resume Builder & ATS Optimizer | Resumatic AI" name="title" />
     <meta
         content="Build a job-winning resume with AI. Instant enhancements, ATS optimization, and professional formatting. Secure, no signup needed."
@@ -78,7 +78,7 @@
     <!-- Open Graph / Facebook -->
     <meta content="website" property="og:type" />
     <meta content="https://resumaticai.com/" property="og:url" />
-    <meta content="AI Resume Builder & ATS Optimizer | Resumatic AI" property="og:title" />
+    <meta content="Resumatic AI - AI Resume Builder & ATS Optimizer" property="og:title" />
     <meta
         content="Build a job-winning resume with AI. Instant enhancements, ATS optimization, and professional formatting. Secure, no signup needed."
         property="og:description" />
@@ -105,6 +105,7 @@
       "name": "Resumatic AI",
       "applicationCategory": "Career Development Tool",
       "operatingSystem": "All",
+      "image": "https://resumaticai.com/static/images/logo23_small.png",
       "description": "The free AI-powered resume enhancement tool that helps job seekers improve their resumes instantly with ATS optimization and professional formatting.",
       "url": "https://resumaticai.com/",
       "offers": {
@@ -132,7 +133,30 @@
         "ats optimization"
       ]
     }
-  </script>
+    </script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "url": "https://resumaticai.com/",
+  "name": "Resumatic AI",
+  "alternateName": "ResumaticAI"
+}
+</script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Resumatic AI",
+  "url": "https://resumaticai.com/",
+  "logo": "https://resumaticai.com/static/images/logo23_small.png"
+}
+</script>
+
+
+    </script>
     <!-- FAQ Structured Data -->
     <script type="application/ld+json">
     {
@@ -1254,13 +1278,25 @@
                         it Works</a>
                     <a href="/blog"
                         class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Blog</a>
+
+                    <!-- comment out templates                 <a href="/resume-templates" class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Templates</a>
+
+
+          -->
+
                     <a href="/about"
                         class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">About</a>
                     <a href="#faq"
                         class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">FAQ</a>
                     {% if user and user.is_authenticated %}
-                    <a href="/logout"
-                        class="px-3 py-1.5 rounded-md bg-primary text-white hover:bg-primary/90 shadow-sm ring-1 ring-primary/20 transition-colors">Logout</a>
+                    <a href="/my_revisions" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        <i class="fas fa-user mr-2"></i>My Account
+                    </a>
+                    <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                        Logout
+                    </a>
+
                     {% else %}
                     <a href="/login"
                         class="px-3 py-1.5 rounded-md bg-primary text-white hover:bg-primary/90 shadow-sm ring-1 ring-primary/20 transition-colors">Login</a>
@@ -1279,19 +1315,7 @@
             </div>
         </div>
 
-        <div
-            class="site-announcement relative w-full text-center bg-yellow-500 text-white py-3 px-4 text-base sm:text-lg font-semibold ring-1 ring-yellow-600/30 shadow-md">
-            <div class="max-w-7xl mx-auto px-4 flex items-center justify-center gap-3">
-                <i class="fas fa-exclamation-triangle"></i>
-                <span>Sincere apologies for the recent technical issues with the site. All issues are now
-                    resolved.</span>
-                <button type="button" aria-label="Dismiss"
-                    class="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white"
-                    onclick="this.closest('.site-announcement').classList.add('hidden')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        </div>
+
     </nav>
 
 
@@ -1385,7 +1409,12 @@
                 href="#faq">FAQ</a>
 
             {% if current_user.is_authenticated %}
-            <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/logout">
+            <a class="block px-4 py-2 bg-purple-500 text-white rounded hover:bg-blue-600 text-center"
+                href="/my_revisions">
+                <i class="fas fa-user mr-2"></i>My Account
+            </a>
+            <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center mt-2"
+                href="/logout">
                 Logout
             </a>
             {% else %}
@@ -1431,18 +1460,15 @@
                         </div>
 
                         <div class="flex justify-center">
-                            <button
-                                class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl cta-pulse {% if user and user.is_authenticated %}user-logged-in{% endif %}"
-                                id="getStartedButton1" type="button">
+                            <a href="/start"
+                                class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl cta-pulse {% if user and user.is_authenticated %}user-logged-in{% endif %}">
                                 <span class="hidden sm:inline">{% if user and user.is_authenticated %}Create Your Resume
-                                    Now{% else
-                                    %}Get Started Now{% endif %}</span>
+                                    Now{% else %}Get Started Now{% endif %}</span>
                                 <span class="sm:hidden">{% if user and user.is_authenticated %}Create Resume{% else
-                                    %}Get Started{%
-                                    endif %}</span>
+                                    %}Get Started{% endif %}</span>
                                 <i
                                     class="fas fa-arrow-right ml-2 sm:ml-3 group-hover:translate-x-1 transition-transform"></i>
-                            </button>
+                            </a>
                         </div>
 
                         <div class="flex flex-wrap gap-8 pt-4">
@@ -1828,12 +1854,11 @@
                                     Join thousands of professionals who have enhanced their resumes and accelerated
                                     their careers.
                                 </p>
-                                <button
-                                    class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl cta-pulse {% if user and user.is_authenticated %}user-logged-in{% endif %}"
-                                    id="getStartedButton" type="button">
+                                <a href="/start"
+                                    class="group inline-flex items-center justify-center px-8 py-4 sm:px-10 sm:py-5 text-lg sm:text-xl font-bold rounded-xl sm:rounded-2xl text-white bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl cta-pulse {% if user and user.is_authenticated %}user-logged-in{% endif %}">
                                     Start Now
                                     <i class="fas fa-rocket ml-3"></i>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -2525,7 +2550,7 @@
                             class="group w-12 h-12 bg-gray-700 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg">
                             <i class="fab fa-linkedin-in text-xl group-hover:text-white"></i>
                         </a>
-                        <a href="#"
+                        <a href="https://www.instagram.com/resumaticai/"
                             class="group w-12 h-12 bg-gray-700 hover:bg-pink-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg">
                             <i class="fab fa-instagram text-xl group-hover:text-white"></i>
                         </a>
@@ -2660,34 +2685,25 @@
 
         </footer>
 
+        <!-- Mobile: keep /start; Desktop: intercept /start to scroll -->
         <script>
-            // Function to handle button click based on auth status
-            function handleGetStartedClick() {
-                const resumeForm = document.getElementById('resume-form');
-                if (resumeForm) {
-                    resumeForm.scrollIntoView({ behavior: 'smooth' });
+            document.addEventListener('DOMContentLoaded', function () {
+                // Intercept CTA links to /start on non-mobile to scroll to form
+                var isMobile = (window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches)
+                    || (window.matchMedia && window.matchMedia('(max-width: 820px)').matches);
+                if (!isMobile) {
+                    document.querySelectorAll('a[href="/start"]').forEach(function (a) {
+                        a.addEventListener('click', function (e) {
+                            var form = document.getElementById('resume-form');
+                            if (form && form.scrollIntoView) {
+                                e.preventDefault();
+                                form.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        });
+                    });
                 }
-            }
 
-            // Add click event listener to Get Started button
-            document.addEventListener('DOMContentLoaded', function () {
-                const getStartedButton = document.getElementById('getStartedButton');
-                if (getStartedButton) {
-                    getStartedButton.addEventListener('click', handleGetStartedClick);
-                }
-            });
-
-            // Add click event listener to Get Started button
-            document.addEventListener('DOMContentLoaded', function () {
-                const getStartedButton1 = document.getElementById('getStartedButton1');
-                if (getStartedButton1) {
-                    getStartedButton1.addEventListener('click', handleGetStartedClick);
-                }
-            });
-        </script>
-        <script>
-            // Mobile-only: tap on "seemingly clickable" elements scrolls to resume form
-            document.addEventListener('DOMContentLoaded', function () {
+                // Mobile-only: tap on "seemingly clickable" elements scrolls to resume form
                 var isTouchMobile = (window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches) ||
                     (window.matchMedia && window.matchMedia('(max-width: 820px)').matches);
 
@@ -3136,7 +3152,13 @@
                             try {
                                 const clamped = Math.max(0, Math.min(100, pct));
                                 if (fill) fill.style.width = clamped + '%';
-                                if (label) label.textContent = clamped + '%';
+                                if (label) {
+                                    if (clamped >= 96 && clamped < 100) {
+                                        label.textContent = 'Almost there…';
+                                    } else {
+                                        label.textContent = clamped + '%';
+                                    }
+                                }
                             } catch (_) { /* no-op */ }
                         }
 
@@ -3155,14 +3177,25 @@
                             try {
                                 let rafId;
                                 let startTs = 0;
+                                let oscillate = false;
                                 const loop = (ts) => {
                                     if (!startTs) startTs = ts;
                                     const elapsed = ts - startTs;
-                                    // Ease towards 99% over time, starting at 20%
-                                    // Using exponential ease: p = 20 + 79 * (1 - e^{-t/2000})
-                                    const target = Math.min(99, Math.floor(20 + 79 * (1 - Math.exp(-elapsed / 2000))))
-                                    const current = parseInt((label && label.textContent || '0').replace('%', ''), 10) || 0;
-                                    if (target > current) setProgress(target);
+                                    if (!oscillate) {
+                                        // Ease towards 99% over time, starting at 20%
+                                        // Using exponential ease: p = 20 + 79 * (1 - e^{-t/2000})
+                                        const target = Math.min(99, Math.floor(20 + 79 * (1 - Math.exp(-elapsed / 2000))));
+                                        setProgress(target);
+                                        if (target >= 96) {
+                                            oscillate = true;
+                                            if (subtitle) subtitle.textContent = 'Finalizing your results…';
+                                        }
+                                    } else {
+                                        // Gentle oscillation between ~97% and ~99% to show activity
+                                        const width = 98 + 1 * Math.sin(ts / 450);
+                                        if (fill) fill.style.width = Math.max(97, Math.min(99, width)).toFixed(2) + '%';
+                                        if (label && label.textContent !== 'Almost there…') label.textContent = 'Almost there…';
+                                    }
                                     rafId = requestAnimationFrame(loop);
                                 };
                                 rafId = requestAnimationFrame(loop);
