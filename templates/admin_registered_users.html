@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Users</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+            background: #f8fafc;
+            color: #0f172a;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 32px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .meta {
+            color: #475569;
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f1f5f9;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+        }
+
+        .google {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .facebook {
+            background: #e9d5ff;
+            color: #6b21a8;
+        }
+
+        .other {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .actions {
+            margin: 16px 0;
+        }
+
+        a.btn {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        a.btn:hover {
+            background: #1d4ed8;
+        }
+    </style>
+    <link rel="canonical" href="https://resumaticai.com/admin/registered_users">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Admin list of registered users with emails and revision counts.">
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');</script>
+    <script defer src="https://kit.fontawesome.com/a2e0e6ad4b.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="/static/images/favicon2.ico">
+    <link rel="apple-touch-icon" href="/static/images/favicon2.ico">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="format-detection" content="telephone=no">
+</head>
+
+<body>
+    <div class="container">
+        <div class="actions">
+            <a class="btn" href="/admin/stats"><i class="fas fa-arrow-left" style="margin-right:8px"></i>Back to Admin
+                Dashboard</a>
+            <a class="btn" style="margin-left:8px;background:#16a34a" href="/admin/registered_users.csv"><i
+                    class="fas fa-file-csv" style="margin-right:8px"></i>Download CSV</a>
+        </div>
+        <h1>Registered Users</h1>
+        <div class="meta">Total: {{ users|length }} • Table: {{ request.args.get('table') or 'ResumeRevisions' }}</div>
+        <form method="get" action="" style="margin: 12px 0;">
+            <label for="table">Table name:</label>
+            <input type="text" id="table" name="table" value="{{ request.args.get('table') or '' }}"
+                placeholder="ResumeRevisions" style="padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px">
+            <button class="btn" type="submit" style="margin-left:6px">Switch</button>
+            {% if request.args.get('table') %}
+            <a class="btn" href="/admin/registered_users" style="margin-left:6px;background:#475569">Reset</a>
+            {% endif %}
+            <a class="btn" style="margin-left:8px;background:#16a34a"
+                href="/admin/registered_users.csv{% if request.query_string %}?{{ request.query_string.decode('utf-8') }}{% endif %}"><i
+                    class="fas fa-file-csv" style="margin-right:8px"></i>Download CSV</a>
+            <a class="btn" style="margin-left:8px;background:#0ea5e9"
+                href="/admin/registered_users.json{% if request.query_string %}?{{ request.query_string.decode('utf-8') }}{% endif %}">JSON</a>
+        </form>
+        {% if users %}
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Provider</th>
+                    <th>Revisions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td
+                        style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                        {{ u.id }}</td>
+                    <td>{{ u.name or '—' }}</td>
+                    <td>{{ u.email or '—' }}</td>
+                    <td><span class="badge {{ u.provider }}">{{ u.provider|capitalize }}</span></td>
+                    <td>{{ u.revisions }}</td>
+                    <td>
+                        {% if u.provider in ['google','facebook'] %}
+                        <a href="/my_revisions" title="View sample (requires impersonation)">View</a>
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No registered users found.</p>
+        {% endif %}
+    </div>
+</body>
+
+</html>
+
+
+
+

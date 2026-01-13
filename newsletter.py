@@ -37,7 +37,16 @@ class NewsletterGenerator:
     """Generates newsletter content using OpenAI"""
     
     def __init__(self):
-        self.client = OpenAI()
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable not set")
+        
+        # Configure timeout and retry for Azure reliability
+        self.client = OpenAI(
+            api_key=api_key,
+            timeout=60.0,
+            max_retries=3
+        )
         
     def generate_newsletter_content(self, month: str, year: int, custom_topics: Optional[List[str]] = None) -> Dict[str, str]:
         """

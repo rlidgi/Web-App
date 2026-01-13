@@ -165,6 +165,70 @@
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans"
     style="background-image: url('/static/images/bg13.png'); background-size: cover; background-repeat: no-repeat; background-attachment: fixed;">
 
+    <!-- Download Feedback Modal -->
+    <div id="downloadFeedbackModal" class="fixed inset-0 bg-black/60 z-[9999] hidden items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-5 py-4 border-b">
+                <h3 class="font-semibold text-lg text-gray-800">How was your resume?</h3>
+                <button id="downloadFeedbackClose" class="text-gray-500 hover:text-gray-800" aria-label="Close">&times;</button>
+            </div>
+            <div class="p-5 space-y-4">
+                <p class="text-sm text-gray-600">Your feedback helps us improve ResumaticAI.</p>
+                <div class="space-y-2">
+                    <div class="text-sm font-medium text-gray-800">Overall, how satisfied are you?</div>
+                    <div id="downloadStars" class="flex items-center gap-1" role="radiogroup" aria-label="Rating">
+                        <input type="radio" name="download_rating" id="download_rating_1" value="1" class="hidden">
+                        <label for="download_rating_1" data-value="1" class="cursor-pointer text-gray-300 text-2xl p-1">
+                            <i class="fas fa-star"></i>
+                        </label>
+                        <input type="radio" name="download_rating" id="download_rating_2" value="2" class="hidden">
+                        <label for="download_rating_2" data-value="2" class="cursor-pointer text-gray-300 text-2xl p-1">
+                            <i class="fas fa-star"></i>
+                        </label>
+                        <input type="radio" name="download_rating" id="download_rating_3" value="3" class="hidden">
+                        <label for="download_rating_3" data-value="3" class="cursor-pointer text-gray-300 text-2xl p-1">
+                            <i class="fas fa-star"></i>
+                        </label>
+                        <input type="radio" name="download_rating" id="download_rating_4" value="4" class="hidden">
+                        <label for="download_rating_4" data-value="4" class="cursor-pointer text-gray-300 text-2xl p-1">
+                            <i class="fas fa-star"></i>
+                        </label>
+                        <input type="radio" name="download_rating" id="download_rating_5" value="5" class="hidden">
+                        <label for="download_rating_5" data-value="5" class="cursor-pointer text-gray-300 text-2xl p-1">
+                            <i class="fas fa-star"></i>
+                        </label>
+                    </div>
+                    <div id="downloadStarText" class="text-xs text-gray-500 mt-1 h-4"></div>
+                    <div class="mt-3 space-y-2">
+                        <div class="text-sm font-medium text-gray-800">Compared to your original resume, this is:</div>
+                        <div id="downloadComparisonGroup" class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <label class="inline-flex items-center gap-2 cursor-pointer border rounded-full px-3 py-1 text-sm text-gray-700 border-gray-300 transition-colors">
+                                <input type="radio" name="download_comparison" value="improved" class="accent-blue-600">
+                                <span class="text-sm">Improved</span>
+                            </label>
+                            <label class="inline-flex items-center gap-2 cursor-pointer border rounded-full px-3 py-1 text-sm text-gray-700 border-gray-300 transition-colors">
+                                <input type="radio" name="download_comparison" value="same" class="accent-blue-600">
+                                <span class="text-sm">About the same</span>
+                            </label>
+                            <label class="inline-flex items-center gap-2 cursor-pointer border rounded-full px-3 py-1 text-sm text-gray-700 border-gray-300 transition-colors">
+                                <input type="radio" name="download_comparison" value="worse" class="accent-blue-600">
+                                <span class="text-sm">Worse</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label for="downloadFeedbackComment" class="block text-sm font-medium text-gray-800 mb-1">Anything we could improve?</label>
+                    <textarea id="downloadFeedbackComment" class="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3" placeholder="Optional"></textarea>
+                </div>
+            </div>
+            <div class="px-5 py-4 border-t flex items-center justify-end gap-2">
+                <button id="downloadFeedbackSkip" class="px-4 py-2 text-gray-700 hover:text-gray-900">Maybe later</button>
+                <button id="downloadFeedbackSubmit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Send feedback</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Menu -->
     <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6 hidden" id="mobileMenu">
         <div class="flex justify-between items-center mb-8">
@@ -480,10 +544,10 @@
                     improve it!
                 </p>
                 <div class="space-y-4">
-                    <a href="/"
+                    <a href="/?scroll_to_form=true#resume-form"
                         class="inline-flex items-center px-6 py-3 btn-primary text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200">
                         <i class="fas fa-upload mr-2"></i>
-                        Upload Your Resume
+                        Submit resume
                     </a>
                     <div class="text-sm text-gray-500">
                         <i class="fas fa-info-circle mr-1"></i>
@@ -535,6 +599,150 @@
         </div>
     </footer>
 
+
+    <script>
+        // Feedback modal for my_revisions downloads (anchors), non-blocking
+        (function () {
+            var modal = document.getElementById('downloadFeedbackModal');
+            var closeBtn = document.getElementById('downloadFeedbackClose');
+            var submitBtn = document.getElementById('downloadFeedbackSubmit');
+            var skipBtn = document.getElementById('downloadFeedbackSkip');
+            var ratingInputs = document.querySelectorAll('input[name="download_rating"]');
+            var commentInput = document.getElementById('downloadFeedbackComment');
+            var starContainer = document.getElementById('downloadStars');
+            var starLabels = starContainer ? starContainer.querySelectorAll('label[data-value]') : null;
+            var comparisonInputs = document.querySelectorAll('input[name="download_comparison"]');
+            var starText = document.getElementById('downloadStarText');
+            var comparisonLabels = document.querySelectorAll('#downloadComparisonGroup > label');
+
+            function openModal() {
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            function closeModal() {
+                if (!modal) return;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            function updateStars(val) {
+                if (!starLabels) return;
+                for (var i = 0; i < starLabels.length; i++) {
+                    var starVal = parseInt(starLabels[i].getAttribute('data-value'), 10);
+                    if (starVal <= val) {
+                        starLabels[i].classList.remove('text-gray-300');
+                        starLabels[i].classList.add('text-amber-400');
+                    } else {
+                        starLabels[i].classList.remove('text-amber-400');
+                        starLabels[i].classList.add('text-gray-300');
+                    }
+                }
+                updateStarText(val);
+            }
+            function updateStarText(val) {
+                if (!starText) return;
+                var map = {1:'Very dissatisfied',2:'Dissatisfied',3:'Neutral',4:'Satisfied',5:'Very satisfied'};
+                var n = parseInt(val || '0', 10);
+                starText.textContent = map[n] || '';
+            }
+            function getSelectedRating() {
+                for (var i = 0; i < ratingInputs.length; i++) {
+                    if (ratingInputs[i].checked) return ratingInputs[i].value;
+                }
+                return '';
+            }
+            function getSelectedComparison() {
+                for (var i = 0; i < comparisonInputs.length; i++) {
+                    if (comparisonInputs[i].checked) return comparisonInputs[i].value;
+                }
+                return '';
+            }
+            function sendFeedback(rating, comment) {
+                try {
+                    fetch('/api/feedback/download', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            rating: rating || '',
+                            comment: (comment || '').slice(0, 500),
+                            comparison: getSelectedComparison() || ''
+                        })
+                    }).catch(function () { /* ignore errors */ });
+                } catch (e) { /* ignore */ }
+            }
+
+            if (starLabels && starLabels.length) {
+                for (var i = 0; i < starLabels.length; i++) {
+                    starLabels[i].addEventListener('click', function () {
+                        var val = parseInt(this.getAttribute('data-value'), 10);
+                        var radio = document.getElementById('download_rating_' + val);
+                        if (radio) radio.checked = true;
+                        updateStars(val);
+                    });
+                    starLabels[i].addEventListener('mouseenter', function () {
+                        var val = parseInt(this.getAttribute('data-value'), 10);
+                        updateStars(val);
+                    });
+                    starLabels[i].addEventListener('mouseleave', function () {
+                        var selected = parseInt(getSelectedRating() || '0', 10);
+                        updateStars(selected);
+                    });
+                }
+                updateStars(parseInt(getSelectedRating() || '0', 10));
+            }
+            function updateComparisonStyles() {
+                if (!comparisonLabels || !comparisonLabels.length) return;
+                for (var i = 0; i < comparisonLabels.length; i++) {
+                    var input = comparisonLabels[i].querySelector('input[name="download_comparison"]');
+                    var isActive = input && input.checked;
+                    comparisonLabels[i].classList.toggle('bg-blue-50', isActive);
+                    comparisonLabels[i].classList.toggle('border-blue-300', isActive);
+                    comparisonLabels[i].classList.toggle('text-blue-800', isActive);
+                    comparisonLabels[i].classList.toggle('border-gray-300', !isActive);
+                    comparisonLabels[i].classList.toggle('text-gray-700', !isActive);
+                }
+            }
+            if (comparisonInputs && comparisonInputs.length) {
+                for (var j = 0; j < comparisonInputs.length; j++) {
+                    comparisonInputs[j].addEventListener('change', updateComparisonStyles);
+                }
+                updateComparisonStyles();
+            }
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (skipBtn) skipBtn.addEventListener('click', closeModal);
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) closeModal();
+                });
+            }
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function () {
+                    var rating = getSelectedRating();
+                    var comment = commentInput ? commentInput.value : '';
+                    sendFeedback(rating, comment);
+                    closeModal();
+                });
+            }
+
+            // Attach to all revision download links
+            var downloadLinks = document.querySelectorAll('a[href^="/download_revision/"]');
+            var lastDownloadClickTs = 0;
+            function tryOpenModalAfterDelay(startTs){
+                // Only open if at least ~7s passed since the click that scheduled this
+                var now = Date.now();
+                if ((now - startTs) >= 12000) {
+                    openModal();
+                }
+            }
+            downloadLinks.forEach(function (a) {
+                a.addEventListener('click', function () {
+                    // Page is login-protected; always show modal non-blocking
+                    lastDownloadClickTs = Date.now();
+                    setTimeout(function(){ tryOpenModalAfterDelay(lastDownloadClickTs); }, 12000);
+                });
+            });
+        })();
+    </script>
 
 </body>
 

@@ -13,6 +13,14 @@
         gtag('config', 'G-KRPLMCR73G');
     </script>
 
+    <!-- Clarity tracking code for https://resumaticai.com/ -->
+    <script defer>
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i + "?ref=bwt";
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "sjihir10df");
+    </script>
 
 
     <meta property="og:title" content="About - Resumatic AI" />
@@ -49,6 +57,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         crossorigin="anonymous">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         .logo img {
@@ -105,24 +114,82 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-            <div class="container">
+        <!-- Navigation (matches blog.html) -->
+        <nav class="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16 items-center">
+                    <div class="flex items-center">
+                        <a class="flex items-center" href="/">
+                            <img alt="Resumatic AI Logo" class="h-8 w-auto"
+                                src="{{ url_for('static', filename='images/logo23_small.png') }}" />
+                            <span class="sr-only">Resumatic AI</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a class="text-gray-600 hover:text-primary transition-colors" href="/#features">Features</a>
+                        <a class="text-gray-600 hover:text-primary transition-colors" href="/#how-it-works">How it
+                            Works</a>
+                        <a class="text-gray-600 hover:text-primary transition-colors" href="/blog">Blog</a>
+                        <a class="text-primary font-semibold" href="/about">About</a>
+                        <a class="text-gray-600 hover:text-primary transition-colors" href="/">
+                            <i class="fas fa-home mr-2"></i>Home
+                        </a>
+                        <a class="text-gray-600 hover:text-primary transition-colors" href="/#faq">FAQ</a>
+                        {% if user %}
+                        <a href="/my_revisions" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            <i class="fas fa-user mr-2"></i>My Account
+                        </a>
+                        <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                        {% else %}
+                        <a href="/login" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        </a>
+                        {% endif %}
+                    </div>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto nav-links">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">
-                                <i class="bi bi-house me-1"></i>Home
-                            </a>
-                        </li>
+                    <button aria-expanded="false" aria-label="Toggle menu"
+                        class="md:hidden text-gray-600 hover:text-gray-900" id="menuButton">
+                        <i class="fas fa-bars"></i>
+                    </button>
 
-                    </ul>
                 </div>
             </div>
         </nav>
+        <div class="h-16"></div>
+
+        <!-- Mobile Menu (matches blog.html) -->
+        <div class="mobile-menu fixed top-0 right-0 h-full w-64 bg-white shadow-lg z-50 p-6 hidden" id="mobileMenu">
+            <div class="flex justify-between items-center mb-8">
+                <img alt="Logo" class="h-12 w-auto" src="/static/images/logo23_small.png" />
+                <button class="text-gray-500 hover:text-gray-900" id="closeMenu">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <nav class="space-y-4">
+                <a class="block text-gray-600 hover:text-primary" href="/#features">Features</a>
+                <a class="block text-gray-600 hover:text-primary" href="/#how-it-works">How it Works</a>
+                <a class="block text-gray-600 hover:text-primary" href="/blog">Blog</a>
+                <a class="block text-gray-600 hover:text-primary" href="/about">About</a>
+                <a class="block text-gray-600 hover:text-primary" href="/">Home</a>
+                <a class="block text-gray-600 hover:text-primary" href="/#faq">FAQ</a>
+                {% if user %}
+                <a href="/my_revisions"
+                    class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center">
+                    <i class="fas fa-user mr-2"></i>My Account
+                </a>
+                <a href="/logout"
+                    class="block px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center mt-2">
+                    Logout
+                </a>
+                {% else %}
+                <a href="/login" class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center">
+                    Login
+                </a>
+                {% endif %}
+            </nav>
+        </div>
     </header>
 
     <main>
@@ -144,7 +211,7 @@
 
                             <button class="btn btn-outline-light btn-lg" onclick="window.location.href='/blog'">
                                 <i class="bi bi-journal-text me-2"></i>
-                                Read Our Blog
+                                Read Our Blog Page
                             </button>
 
                         </div>
@@ -166,15 +233,30 @@
                                     <i class="bi bi-book section-icon text-primary"></i>
                                     <h2 class="h3 fw-bold text-primary">Our Story</h2>
                                 </div>
-                                <p class="lead text-center">
-                                    Resumatic AI was born out of frustration: too many qualified people were being
-                                    overlooked due
-                                    to avoidable resume mistakes. We saw the opportunity to change that. Resumatic AI
-                                    was
-                                    created to level the playing field and empower every job seeker with tools that were
-                                    once
-                                    only accessible to professional career coaches and consultants.
+                                <p class="lead text" style="text-indent: 40px;">
+                                    Hey there 👋, I’m Yaron! Currently, I am pursuing a PhD degree in the area of
+                                    MachineLearning and Artificial Intelligence. I have extensive experience in the
+                                    natural
+                                    language processing space, which, in recent years, has garnered much of the world's
+                                    attention, with the advent of large language models, most notably of which is
+                                    ChatGPT. I am incredibly excited about being involved in this space at this pivotal
+                                    time.</p>
+                                <p class="lead text" style="text-indent: 40px;">
+                                    My expertise in the emerging field of natural language processing places me among a
+                                    select group of practitioners currently working at the forefront of this space. I’m
+                                    excited to offer resume assistance that goes far beyond using tools like ChatGPT.
+                                    The guidance you receive is the result of my expertise in finding the right
+                                    combination of a finely tuned model specifically suited for resume enhancement along
+                                    with crucial prompt engineering.
                                 </p>
+                                <p class="lead text" style="text-indent: 40px;">
+                                    ResumaticAI is currently supported by ads on some pages, which allows us to offer
+                                    our core services completely free of charge. The app has recently launched and we
+                                    are still in the process of gathering feedback from users, so look out for upcoming
+                                    improvements and updates. We also plan to offer paid plans with premium features,
+                                    but expect to continue providing a free resume revision as a preview of our service.
+                                </p>
+
                             </div>
                         </div>
                     </div>
@@ -194,13 +276,12 @@
                                     <h2 class="h3 fw-bold text-success">Our Mission</h2>
                                 </div>
                                 <p class="lead text-center">
-                                    At Resumatic AI, we are dedicated to helping job seekers optimize their resumes
-                                    through
-                                    cutting-edge artificial intelligence. By combining advanced language processing with
-                                    deep
-                                    industry expertise, our platform transforms ordinary resumes into powerful,
-                                    job-winning
-                                    career tools.
+                                    At Resumatic AI, our mission is to help job seekers optimize their resumes
+                                    and provide the opportunity to reach their career goals. We have made available what
+                                    we believe to be
+                                    a truly comprehensive, one-stop solution helping you
+                                    land
+                                    your next job.
                                 </p>
                             </div>
                         </div>

@@ -1,13 +1,15 @@
-﻿from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify
+﻿from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify, Response
 from io import BytesIO
 import PyPDF2
 import pdfplumber
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 import mammoth
 import logging
  # ...existing code...
 import pdfplumber
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 import mammoth
 import logging
 
@@ -26,12 +28,14 @@ from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
 from flask_login import LoginManager, login_required, login_user, logout_user, UserMixin, current_user
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+from typing import Optional
 import openai
 import os
 import json
 from docx import Document
 from azure.data.tables import TableServiceClient
 from azure.identity import DefaultAzureCredential
+from urllib.parse import urlparse, urljoin
 
 app = Flask(__name__)
 
@@ -72,6 +76,73 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY') or 'a-very-secret-random-key'
 
+# ---- Server-side sessions (prevents oversized cookie session issues) ----
+# Without this, Flask stores the entire `session` in a signed cookie (~4KB limit).
+# We now store larger structures (e.g., template_data.structured_resume), which can
+# cause session updates to silently fail and show stale data after submitting a new resume.
+try:
+    from flask_session import Session
+
+    app.config.setdefault("SESSION_TYPE", os.getenv("SESSION_TYPE", "filesystem"))
+    app.config.setdefault("SESSION_PERMANENT", False)
+    app.config.setdefault("SESSION_USE_SIGNER", True)
+    app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)
+    app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
+    app.config.setdefault("SESSION_REFRESH_EACH_REQUEST", False)
+
+    if app.config["SESSION_TYPE"] == "filesystem":
+        session_dir = os.path.join(app.root_path, "flask_session")
+        os.makedirs(session_dir, exist_ok=True)
+        app.config.setdefault("SESSION_FILE_DIR", session_dir)
+
+    Session(app)
+    logger.info(f"Server-side sessions enabled (SESSION_TYPE={app.config['SESSION_TYPE']})")
+except Exception as e:
+    try:
+        logger.warning(f"Flask-Session not enabled; falling back to cookie sessions: {str(e)}")
+    except Exception:
+        pass
+
+
+def _is_safe_next_url(target: str) -> bool:
+    """Allow only same-host redirects (prefer relative paths) to avoid open redirects."""
+    try:
+        if not target:
+            return False
+        # Disallow scheme-relative URLs
+        if target.startswith("//"):
+            return False
+        # Relative path is OK
+        if target.startswith("/"):
+            return True
+        # Otherwise require same host
+        ref_url = urlparse(request.host_url)
+        test_url = urlparse(urljoin(request.host_url, target))
+        return test_url.scheme in ("http", "https") and ref_url.netloc == test_url.netloc
+    except Exception:
+        return False
+
+
+def _set_auth_next_from_request() -> None:
+    """Capture ?next=... into session for use after login/oauth completes."""
+    try:
+        nxt = request.args.get("next", "").strip()
+        if nxt and _is_safe_next_url(nxt):
+            session["auth_next"] = nxt
+    except Exception:
+        pass
+
+
+def _pop_auth_next() -> Optional[str]:
+    """Pop a safe next URL from session, if any."""
+    try:
+        nxt = session.pop("auth_next", None)
+        if nxt and _is_safe_next_url(nxt):
+            return nxt
+    except Exception:
+        pass
+    return None
+
 # Ensure HTTPS URLs in sitemap and external links
 app.config['PREFERRED_URL_SCHEME'] = 'https'
 
@@ -83,6 +154,25 @@ app.config['UPLOAD_FOLDER'] = 'temp_uploads'
 import os
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+
+
+def _append_google_signup_csv(user_id: str, name: str, email: str, created_at_iso: str) -> None:
+    """Append a record of a new Google signup to google_signups.csv.
+
+    Columns: timestamp_iso, user_id, name, email
+    """
+    try:
+        import csv
+        filename = 'google_signups.csv'
+        file_exists = os.path.exists(filename)
+        with open(filename, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(['timestamp_iso', 'user_id', 'name', 'email'])
+            writer.writerow([created_at_iso or datetime.now(timezone.utc).isoformat(), user_id or '', name or '', (email or '').strip().lower()])
+    except Exception as e:
+        logger.error(f"Failed to append google signup CSV: {str(e)}")
 
 
 
@@ -165,17 +255,32 @@ ADMIN_EMAILS = ["yaronyaronlid@gmail.com"]
 # User storage file
 USERS_FILE = "users_data.json"
 
+# Password reset tokens storage
+RESET_TOKENS_FILE = "reset_tokens.json"
+RESET_TOKEN_EXPIRY_HOURS = 24  # Tokens expire after 24 hours
+
 
 
 class User(UserMixin):
-    def __init__(self, id, name, email, is_new=False, created_at=None):
+    def __init__(self, id, name, email, password_hash=None, is_new=False, created_at=None):
         self.id = id
         self.name = name
         self.email = email
+        self.password_hash = password_hash
         self.is_new = is_new
         self.created_at = created_at or datetime.now(timezone.utc).isoformat()
         # Determine if the user is an admin based on their email
         self.is_admin = email in ADMIN_EMAILS
+    
+    def set_password(self, password):
+        """Hash and set password"""
+        self.password_hash = generate_password_hash(password)
+    
+    def check_password(self, password):
+        """Check if provided password matches hash"""
+        if not self.password_hash:
+            return False
+        return check_password_hash(self.password_hash, password)
     
     def to_dict(self):
         """Convert user to dictionary for JSON storage"""
@@ -183,6 +288,7 @@ class User(UserMixin):
             'id': self.id,
             'name': self.name,
             'email': self.email,
+            'password_hash': self.password_hash,
             'created_at': self.created_at,
             'is_admin': self.is_admin
         }
@@ -194,6 +300,7 @@ class User(UserMixin):
             id=data['id'],
             name=data['name'],
             email=data['email'],
+            password_hash=data.get('password_hash'),
             created_at=data.get('created_at')
         )
         return user
@@ -216,7 +323,7 @@ def save_users():
         users_data = {user_id: user.to_dict() for user_id, user in users.items()}
         with open(USERS_FILE, 'w', encoding='utf-8') as f:
             json.dump(users_data, f, indent=2, ensure_ascii=False)
-        print(f"✅ Saved {len(users)} users to persistent storage")
+        print(f"Saved {len(users)} users to persistent storage")
     except Exception as e:
         print(f"Error saving users: {e}")
 
@@ -226,11 +333,11 @@ def add_user(user):
     """Add a user and save to persistent storage"""
     users[user.id] = user
     save_users()
-    print(f"✅ Added user: {user.name} ({user.email})")
+    print(f"Added user: {user.name} ({user.email})")
 
 # Load existing users on startup
 users = load_users()
-print(f"📊 Loaded {len(users)} users from persistent storage")
+print(f"Loaded {len(users)} users from persistent storage")
 
 
 
@@ -238,15 +345,326 @@ print(f"📊 Loaded {len(users)} users from persistent storage")
 def load_user(user_id):
     return users.get(user_id)
 
-@app.route("/login")
+@app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        # If already logged in and a next is provided, honor it.
+        _set_auth_next_from_request()
+        nxt = _pop_auth_next()
+        return redirect(nxt or url_for('index'))
 
     # Clear any lingering flash messages
     session.pop('_flashes', None)
 
+    # Capture intended return URL for post-auth redirect
+    _set_auth_next_from_request()
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'login':
+            # Handle email/password login
+            email = request.form.get('email', '').strip().lower()
+            password = request.form.get('password', '')
+            
+            if not email or not password:
+                flash('Please enter both email and password.', 'danger')
+                return render_template("login.html")
+            
+            # Find user by email
+            user = None
+            for user_id, u in users.items():
+                if u.email.lower() == email:
+                    user = u
+                    break
+            
+            if user and user.password_hash and user.check_password(password):
+                login_user(user)
+                # Save pending revision if it exists
+                pending = session.pop('pending_revision', None)
+                if pending:
+                    import uuid
+                    save_resume_revision(
+                        user.id,
+                        str(uuid.uuid4()),
+                        pending['revised_resume'],
+                        feedback=pending.get('feedback'),
+                        original_resume=pending.get('original_resume')
+                    )
+                flash('You have been successfully logged in!', 'success')
+                nxt = _pop_auth_next()
+                return redirect(nxt or url_for('my_revisions'))
+            else:
+                flash('Invalid email or password.', 'danger')
+                return render_template("login.html")
+        
+        elif action == 'register':
+            # Handle email/password registration
+            name = request.form.get('name', '').strip()
+            email = request.form.get('email', '').strip().lower()
+            password = request.form.get('password', '')
+            confirm_password = request.form.get('confirm_password', '')
+            
+            # Validation
+            if not name or not email or not password:
+                flash('Please fill in all fields.', 'danger')
+                return render_template("login.html")
+            
+            if len(password) < 8:
+                flash('Password must be at least 8 characters long.', 'danger')
+                return render_template("login.html")
+            
+            if password != confirm_password:
+                flash('Passwords do not match.', 'danger')
+                return render_template("login.html")
+            
+            # Check if email already exists
+            for user_id, u in users.items():
+                if u.email.lower() == email:
+                    flash('An account with this email already exists. Please login instead.', 'danger')
+                    return render_template("login.html")
+            
+            # Create new user
+            import uuid
+            user_id = f"email_{uuid.uuid4().hex[:16]}"
+            user = User(user_id, name, email, is_new=True)
+            user.set_password(password)
+            add_user(user)
+            
+            # Persist profile to Azure Users table
+            try:
+                upsert_user_profile_azure(user)
+            except Exception:
+                pass
+            
+            login_user(user)
+            flash('Account created successfully! Welcome to ResumaticAI!', 'success')
+            
+            # Save pending revision if it exists
+            pending = session.pop('pending_revision', None)
+            if pending:
+                save_resume_revision(
+                    user.id,
+                    str(uuid.uuid4()),
+                    pending['revised_resume'],
+                    feedback=pending.get('feedback'),
+                    original_resume=pending.get('original_resume')
+                )
+            
+            nxt = _pop_auth_next()
+            return redirect(nxt or url_for('my_revisions'))
+
     return render_template("login.html")
+
+# Password Reset Functions
+def load_reset_tokens():
+    """Load reset tokens from JSON file"""
+    try:
+        if os.path.exists(RESET_TOKENS_FILE):
+            with open(RESET_TOKENS_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return {}
+    except Exception as e:
+        logger.error(f"Error loading reset tokens: {e}")
+        return {}
+
+def save_reset_tokens(tokens):
+    """Save reset tokens to JSON file"""
+    try:
+        with open(RESET_TOKENS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(tokens, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        logger.error(f"Error saving reset tokens: {e}")
+
+def generate_reset_token():
+    """Generate a secure random token for password reset"""
+    import secrets
+    return secrets.token_urlsafe(32)
+
+def send_password_reset_email(email, token, user_name):
+    """Send password reset email to user"""
+    try:
+        _load_email_config_if_missing()
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+        smtp_port = int(os.getenv('SMTP_PORT', '587'))
+        auth_email = os.getenv('NEWSLETTER_EMAIL', '').strip()
+        auth_password = os.getenv('NEWSLETTER_PASSWORD', '').strip().replace(' ', '')
+        
+        if not auth_email or not auth_password:
+            raise ValueError('Email credentials not configured. Set NEWSLETTER_EMAIL and NEWSLETTER_PASSWORD.')
+        
+        # Generate reset URL
+        reset_url = url_for('reset_password', token=token, _external=True)
+        
+        # Create email
+        subject = 'Reset Your Password - ResumaticAI'
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #2563eb;">Reset Your Password</h2>
+                <p>Hello {user_name},</p>
+                <p>We received a request to reset your password for your ResumaticAI account.</p>
+                <p>Click the button below to reset your password:</p>
+                <div style="margin: 30px 0;">
+                    <a href="{reset_url}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
+                </div>
+                <p>Or copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; color: #666;">{reset_url}</p>
+                <p>This link will expire in 24 hours.</p>
+                <p>If you didn't request a password reset, please ignore this email.</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                <p style="color: #666; font-size: 12px;">ResumaticAI Team</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        text_body = f"""
+Reset Your Password - ResumaticAI
+
+Hello {user_name},
+
+We received a request to reset your password for your ResumaticAI account.
+
+Click the link below to reset your password:
+{reset_url}
+
+This link will expire in 24 hours.
+
+If you didn't request a password reset, please ignore this email.
+
+ResumaticAI Team
+        """
+        
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = subject
+        msg['From'] = f"ResumaticAI <{auth_email}>"
+        msg['To'] = email
+        
+        msg.attach(MIMEText(text_body, 'plain'))
+        msg.attach(MIMEText(html_body, 'html'))
+        
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(auth_email, auth_password)
+        server.send_message(msg)
+        server.quit()
+        
+        logger.info(f"Password reset email sent to {email}")
+        return True
+    except Exception as e:
+        logger.error(f"Error sending password reset email: {str(e)}")
+        return False
+
+@app.route("/forgot-password", methods=['GET', 'POST'])
+def forgot_password():
+    """Handle forgot password requests"""
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        
+        if not email:
+            flash('Please enter your email address.', 'danger')
+            return render_template("forgot_password.html")
+        
+        # Find user by email
+        user = None
+        for user_id, u in users.items():
+            if u.email.lower() == email:
+                user = u
+                break
+        
+        # Always show success message (security: don't reveal if email exists)
+        flash('If an account exists with that email, a password reset link has been sent.', 'success')
+        
+        if user and user.password_hash:  # Only send if user has password (email signup)
+            # Generate reset token
+            token = generate_reset_token()
+            expiry_time = datetime.now(timezone.utc).timestamp() + (RESET_TOKEN_EXPIRY_HOURS * 3600)
+            
+            # Save token
+            tokens = load_reset_tokens()
+            tokens[token] = {
+                'user_id': user.id,
+                'email': user.email,
+                'expires_at': expiry_time
+            }
+            save_reset_tokens(tokens)
+            
+            # Send email
+            send_password_reset_email(user.email, token, user.name)
+        
+        return redirect(url_for('login'))
+    
+    return render_template("forgot_password.html")
+
+@app.route("/reset-password/<token>", methods=['GET', 'POST'])
+def reset_password(token):
+    """Handle password reset with token"""
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    
+    # Load tokens
+    tokens = load_reset_tokens()
+    
+    if token not in tokens:
+        flash('Invalid or expired reset link. Please request a new password reset.', 'danger')
+        return redirect(url_for('forgot_password'))
+    
+    token_data = tokens[token]
+    current_time = datetime.now(timezone.utc).timestamp()
+    
+    # Check if token expired
+    if current_time > token_data['expires_at']:
+        # Remove expired token
+        del tokens[token]
+        save_reset_tokens(tokens)
+        flash('This reset link has expired. Please request a new password reset.', 'danger')
+        return redirect(url_for('forgot_password'))
+    
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        
+        # Validation
+        if not password or not confirm_password:
+            flash('Please fill in both password fields.', 'danger')
+            return render_template("reset_password.html", token=token, valid=True)
+        
+        if len(password) < 8:
+            flash('Password must be at least 8 characters long.', 'danger')
+            return render_template("reset_password.html", token=token, valid=True)
+        
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return render_template("reset_password.html", token=token, valid=True)
+        
+        # Get user and update password
+        user_id = token_data['user_id']
+        user = users.get(user_id)
+        
+        if user:
+            user.set_password(password)
+            add_user(user)  # Save updated password
+            
+            # Remove used token
+            del tokens[token]
+            save_reset_tokens(tokens)
+            
+            flash('Your password has been reset successfully! Please login with your new password.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('User not found. Please contact support.', 'danger')
+            return redirect(url_for('login'))
+    
+    return render_template("reset_password.html", token=token, valid=True)
 
 @app.route("/logout")
 @login_required
@@ -271,6 +689,9 @@ def google_login():
 
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+
+    # Capture intended return URL for post-auth redirect
+    _set_auth_next_from_request()
     
     if USE_ENV_CREDENTIALS:
         # Use environment variables for credentials
@@ -314,7 +735,8 @@ def google_login():
 @app.route("/login/google/authorized")
 def google_callback():
     if current_user.is_authenticated:
-        return redirect(url_for('my_revisions'))
+        nxt = _pop_auth_next()
+        return redirect(nxt or url_for('my_revisions'))
     
     if USE_ENV_CREDENTIALS:
         # Use environment variables for credentials
@@ -368,6 +790,17 @@ def google_callback():
     is_new = user_id not in users
     user = User(user_id, user_info["name"], user_info.get("email", ""), is_new=is_new)
     add_user(user)  # Use add_user to save persistently
+    # Record only first-time Google signups
+    try:
+        if is_new and str(user_id).isdigit():
+            _append_google_signup_csv(user.id, user.name, user.email, user.created_at)
+    except Exception:
+        pass
+    # Persist profile to Azure Users table
+    try:
+        upsert_user_profile_azure(user)
+    except Exception:
+        pass
     login_user(user)
     # Save pending revision if it exists
     pending = session.pop('pending_revision', None)
@@ -380,7 +813,8 @@ def google_callback():
             feedback=pending.get('feedback'),
             original_resume=pending.get('original_resume')
         )
-    return redirect(url_for('my_revisions'))
+    nxt = _pop_auth_next()
+    return redirect(nxt or url_for('my_revisions'))
     
 
 @app.route("/login/facebook/authorized")
@@ -398,20 +832,35 @@ def facebook_callback():
     is_new = user_id not in users
     user = User(user_id, fb_info["name"], fb_info.get("email", ""), is_new=is_new)
     add_user(user)  # Use add_user to save persistently
+    # Persist profile to Azure Users table
+    try:
+        upsert_user_profile_azure(user)
+    except Exception:
+        pass
     login_user(user)
-    return redirect(url_for("index"))
+    nxt = _pop_auth_next()
+    return redirect(nxt or url_for("index"))
 
 
 
 
 
 from openai import OpenAI
-client = OpenAI()
 
 def revise_resume(resume_text, job_description=None):
     try:
         # Initialize the client inside the function to avoid blocking startup
-        client = OpenAI()
+        # Explicitly pass API key to handle Azure environment
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable not set")
+        
+        # Configure timeout and other parameters for Azure reliability
+        client = OpenAI(
+            api_key=api_key,
+            timeout=60.0,  # 60 second timeout
+            max_retries=3  # Retry up to 3 times on transient errors
+        )
 
         # Build the prompt with optional job description
         job_desc_section = ""
@@ -464,8 +913,11 @@ Respond with ONLY the JSON object, no markdown formatting or additional text."""
                 messages=[{"role": "user", "content": prompt}]
             )
         except Exception as e:
-            print(f"OpenAI API Error: {str(e)}")
-            raise ValueError("Failed to connect to OpenAI API. Please try again later.")
+            error_msg = str(e)
+            print(f"OpenAI API Error: {error_msg}")
+            logger.error(f"OpenAI API Error details: {type(e).__name__}: {error_msg}")
+            # Re-raise with more details for debugging
+            raise ValueError(f"Failed to connect to OpenAI API: {error_msg}")
 
         raw_content = response.choices[0].message.content
         print("=== GPT RESPONSE ===")
@@ -537,7 +989,8 @@ def index():
         app.logger.info("Homepage visit already tracked in session, skipping duplicate")
     
     current_year = datetime.now().year
-    return render_template("index.html", year=current_year, user=current_user)
+    scroll_to_form = (request.args.get('scroll_to_form', '').lower() == 'true')
+    return render_template("index.html", year=current_year, user=current_user, scroll_to_form=scroll_to_form)
 
 
 @app.route("/start")
@@ -562,8 +1015,13 @@ def results_route():
                 try:
                     resume_text = extract_text_from_file(file)
                     print(f"Extracted text length: {len(resume_text)}")
+                    if not resume_text or not resume_text.strip():
+                        logger.warning("Uploaded file parsed but contained no extractable text")
+                        flash("The text could not be extracted from the file possibly due to its formatting. Another option is to copy the resume text and paste it in the provided text area.", 'danger')
+                        return redirect(url_for('index', scroll_to_form='true'))
                 except Exception as e:
-                    flash(f"Error processing uploaded file: {str(e)}", 'danger')
+                    logger.error(f"Upload processing failed: {str(e)}")
+                    flash("Your file could not be processed possibly due to its formatting. Another option is to copy  the resume text and paste it in the provided text area.", 'danger')
                     return redirect(url_for('index', scroll_to_form='true'))
         
         # If no file uploaded, check for text input  
@@ -618,12 +1076,15 @@ def results_route():
         print(f"Conversion info: {conversion_info}")
         
         # Store data in session and redirect (Post/Redirect/Get) to prevent resubmission on back
+        # IMPORTANT: clear template_data so the template viewer/PDF uses the new submission
+        session.pop('template_data', None)
         session['results_data'] = {
             'original_resume': resume_text,
             'revised_resume': revised_resume,
             'feedback': feedback,
             'job_description': job_description,
         }
+        session.modified = True
         return redirect(url_for('results_get'))
     except Exception as e:
         import traceback
@@ -640,18 +1101,725 @@ def results_route():
 
 @app.route("/results", methods=["GET"])
 def results_get():
-    data = session.pop('results_data', None)
+    data = session.get('results_data', None)
     if not data:
-        # No data to show; send the user to the homepage
+        # No data to show; notify and send the user to the homepage
+        flash("Your file could not be processed (possibly due to formatting). Please copy the resume text and paste it into the provided text area.", 'danger')
         return redirect(url_for('index'))
-    return render_template(
+    # Keep data in session for template selection
+    # session.pop would remove it, so we use session.get and keep it available
+    resp = app.make_response(render_template(
         "result.html",
         original_resume=data.get('original_resume', ''),
         revised_resume=data.get('revised_resume', ''),
         feedback=data.get('feedback', {}),
         job_description=data.get('job_description', ''),
         error=None
+    ))
+    # Prevent the browser from caching a previous results page
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    resp.headers["Expires"] = "0"
+    return resp
+
+@app.route("/api/parse-resume-for-template", methods=["POST"])
+def parse_resume_for_template():
+    """Parse resume and store structured data in session for template viewing"""
+    try:
+        data = request.get_json()
+        template_name = data.get('template', 'modern')
+        
+        # Validate template name
+        valid_templates = ['modern', 'professional', 'minimal', 'creative']
+        if template_name not in valid_templates:
+            return jsonify({"success": False, "error": "Invalid template name"}), 400
+        
+        revised_resume = ""
+
+        # 1) Preferred: results_data from the immediate /results flow
+        results_data = session.get('results_data') or {}
+        if isinstance(results_data, dict):
+            revised_resume = (results_data.get('revised_resume') or "").strip()
+
+        # 2) Fallback: pending_revision (for anonymous users, stored at submission time)
+        if not revised_resume:
+            pending = session.get('pending_revision') or {}
+            if isinstance(pending, dict):
+                revised_resume = (pending.get('revised_resume') or "").strip()
+
+        # 3) Fallback: logged-in user’s latest saved revision
+        if not revised_resume:
+            try:
+                if current_user.is_authenticated:
+                    revs = get_user_revisions(current_user.id)
+                    if revs and isinstance(revs, list):
+                        revised_resume = (revs[0].get('resume_content') or "").strip()
+            except Exception:
+                revised_resume = ""
+
+        if not revised_resume:
+            return jsonify({
+                "success": False,
+                "error": "Resume data not found. Please generate a resume (or open a saved revision) before viewing templates."
+            }), 404
+        
+        # Parse resume to get structured data
+        parsed_result = parse_resume(revised_resume)
+        structured_resume = parsed_result.get('resume', {})
+        
+        # Store in session for template viewer
+        session['template_data'] = {
+            'structured_resume': structured_resume,
+            'template_name': template_name,
+            'revised_resume': revised_resume  # Keep original text as fallback
+        }
+        
+        return jsonify({
+            "success": True,
+            "template": template_name
+        })
+        
+    except Exception as e:
+        logger.error(f"Error parsing resume for template: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/template-data", methods=["GET"])
+def get_template_data():
+    """Get structured resume data for template viewer"""
+    requested_template = (request.args.get("template") or "").strip() or None
+
+    def _get_revised_resume_from_anywhere() -> str:
+        # 1) Immediate /results flow
+        rd = session.get("results_data") or {}
+        if isinstance(rd, dict):
+            rr = (rd.get("revised_resume") or "").strip()
+            if rr:
+                return rr
+
+        # 2) Anonymous flow stored at submission
+        pr = session.get("pending_revision") or {}
+        if isinstance(pr, dict):
+            rr = (pr.get("revised_resume") or "").strip()
+            if rr:
+                return rr
+
+        # 3) Logged-in user’s latest saved revision
+        try:
+            if current_user.is_authenticated:
+                revs = get_user_revisions(current_user.id)
+                if revs and isinstance(revs, list):
+                    rr = (revs[0].get("resume_content") or "").strip()
+                    if rr:
+                        return rr
+        except Exception:
+            pass
+
+        return ""
+
+    def _ensure_template_data(template_name: str) -> dict | None:
+        td = session.get("template_data")
+        if isinstance(td, dict) and td.get("structured_resume"):
+            # If caller asked for a different template name, update it.
+            if template_name and td.get("template_name") != template_name:
+                td["template_name"] = template_name
+                session["template_data"] = td
+            return td
+
+        revised_resume = _get_revised_resume_from_anywhere()
+        if not revised_resume:
+            return None
+
+        parsed_result = parse_resume(revised_resume)
+        structured_resume = parsed_result.get("resume", {}) if isinstance(parsed_result, dict) else {}
+        if not structured_resume:
+            return None
+
+        td = {
+            "structured_resume": structured_resume,
+            "template_name": template_name,
+            "revised_resume": revised_resume,
+        }
+        session["template_data"] = td
+        return td
+
+    template_data = session.get('template_data')
+    if not template_data:
+        template_data = _ensure_template_data(requested_template or "modern")
+        if not template_data:
+            return jsonify({
+                "error": "Template data not found. Please generate a resume (or open a saved revision) before viewing templates."
+            }), 404
+    
+    return jsonify({
+        "success": True,
+        "resume": template_data['structured_resume'],
+        "template": template_data['template_name'],
+        "revised_resume": template_data.get('revised_resume', '')
+    })
+
+
+def _get_template_pdf_response(template_name_override=None):
+    """
+    Build and return an inline PDF response for the current session's template resume.
+    Shared by the /api/template-pdf routes.
+    """
+    # Ensure template_data exists even on refresh/deep-link (avoid relying on prior /api/template-data call)
+    template_data = session.get("template_data")
+    if not template_data:
+        # Reuse the same logic as /api/template-data by calling it internally.
+        # (Avoid duplicating parsing logic here.)
+        try:
+            # best-effort: try to populate template_data
+            requested = (template_name_override or "modern").strip()
+            # Inline reconstruction similar to get_template_data()
+            rd = session.get("results_data") or {}
+            pr = session.get("pending_revision") or {}
+            revised_resume = ""
+            if isinstance(rd, dict):
+                revised_resume = (rd.get("revised_resume") or "").strip()
+            if not revised_resume and isinstance(pr, dict):
+                revised_resume = (pr.get("revised_resume") or "").strip()
+            if not revised_resume:
+                if current_user.is_authenticated:
+                    revs = get_user_revisions(current_user.id)
+                    if revs and isinstance(revs, list):
+                        revised_resume = (revs[0].get("resume_content") or "").strip()
+            if not revised_resume:
+                return "Template data not found. Please generate a resume first.", 404
+
+            parsed_result = parse_resume(revised_resume)
+            structured_resume = parsed_result.get("resume", {}) if isinstance(parsed_result, dict) else {}
+            if not structured_resume:
+                return "Template data not found. Please generate a resume first.", 404
+
+            template_data = {
+                "structured_resume": structured_resume,
+                "template_name": requested,
+                "revised_resume": revised_resume,
+            }
+            session["template_data"] = template_data
+        except Exception:
+            return "Template data not found. Please generate a resume first.", 404
+
+    structured = template_data.get("structured_resume") or {}
+    template_name = (template_name_override or template_data.get("template_name") or "resume").strip()
+
+    # Prefer: render the actual React resume and print it to PDF using headless Chromium.
+    # This preserves colors, fonts, and layout (print_background=True) and matches the site.
+    #
+    # We also auto-fit to ONE Letter page by applying print-only "compaction" + zoom scaling.
+    # Use:
+    # - ?simple=1  => force the legacy ReportLab output
+    # - ?onepage=0 => allow natural pagination
+    if (request.args.get("simple") or "").strip().lower() not in ("1", "true", "yes"):
+        try:
+            from urllib.parse import urljoin
+            from playwright.sync_api import sync_playwright
+
+            host = request.host.split(":")[0]
+            base_url = request.host_url  # includes trailing slash
+            # Standalone view is white background + just the resume content.
+            resume_url = urljoin(
+                base_url,
+                f"/react/template-viewer/{template_name}?standalone=1"
+            )
+
+            # Forward cookies (critical: template data is session-backed)
+            cookie_list = []
+            for k, v in (request.cookies or {}).items():
+                cookie_list.append({
+                    "name": k,
+                    "value": v,
+                    "domain": host,
+                    "path": "/",
+                })
+
+            # CSS px are 96 per inch. Letter = 8.5x11 => 816x1056 CSS px.
+            page_w_px = 816
+            page_h_px = 1056
+
+            # Print margins for the resume content (do NOT use padding).
+            # These margins apply to the resume root container so the content isn't flush to the page edge.
+            margin_top_in = 0.25
+            margin_side_in = 0.25
+            mt_px = int(round(margin_top_in * 96))
+            mx_px = int(round(margin_side_in * 96))
+
+            avail_w = page_w_px - (2 * mx_px)
+            avail_h = page_h_px - mt_px
+
+            one_page = (request.args.get("onepage") or "").strip().lower() not in ("0", "false", "no")
+
+            fit_css = f"""
+              /* Force a deterministic print canvas */
+              @page {{ size: letter; margin: 0 !important; }}
+              html, body {{
+                width: {page_w_px}px !important;
+                height: {page_h_px}px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                overflow: hidden !important;
+              }}
+              #templatePrintRoot {{
+                box-sizing: border-box !important;
+                width: {avail_w}px !important;
+                max-width: {avail_w}px !important;
+                margin: {mt_px}px {mx_px}px 0 {mx_px}px !important;
+                padding: 0 !important;
+              }}
+              /* Templates often center/limit width. Remove those constraints for PDF. */
+              #templatePrintRoot .mx-auto {{ margin-left: 0 !important; margin-right: 0 !important; }}
+              #templatePrintRoot .max-w-3xl,
+              #templatePrintRoot .max-w-4xl,
+              #templatePrintRoot .max-w-5xl,
+              #templatePrintRoot .max-w-6xl,
+              #templatePrintRoot .max-w-7xl {{ max-width: none !important; width: 100% !important; }}
+              /* Remove visual-only chrome that wastes space */
+              #templatePrintRoot * {{
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }}
+              #templatePrintRoot .shadow,
+              #templatePrintRoot .shadow-sm,
+              #templatePrintRoot .shadow-md,
+              #templatePrintRoot .shadow-lg,
+              #templatePrintRoot .shadow-xl {{
+                box-shadow: none !important;
+              }}
+              /* Many templates use rounded corners; flatten for print to maximize usable area */
+              #templatePrintRoot .rounded,
+              #templatePrintRoot .rounded-lg,
+              #templatePrintRoot .rounded-xl,
+              #templatePrintRoot .rounded-2xl {{
+                border-radius: 0 !important;
+              }}
+
+              /* Compaction presets: progressively reduce padding/spacing/font sizes */
+              :root[data-pdf-compact="1"] #templatePrintRoot .p-12 {{ padding: 32px !important; }}
+              :root[data-pdf-compact="1"] #templatePrintRoot .p-8 {{ padding: 22px !important; }}
+              :root[data-pdf-compact="1"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 22px !important; }}
+              :root[data-pdf-compact="1"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 16px !important; }}
+              :root[data-pdf-compact="1"] #templatePrintRoot .mb-8 {{ margin-bottom: 18px !important; }}
+
+              :root[data-pdf-compact="2"] #templatePrintRoot .p-12 {{ padding: 26px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .p-8 {{ padding: 18px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .p-5 {{ padding: 14px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .p-4 {{ padding: 12px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 18px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 12px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .mb-8 {{ margin-bottom: 14px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .mb-6 {{ margin-bottom: 12px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .text-5xl {{ font-size: 40px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .text-4xl {{ font-size: 32px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .text-xl {{ font-size: 18px !important; }}
+              :root[data-pdf-compact="2"] #templatePrintRoot .text-lg {{ font-size: 16px !important; }}
+
+              :root[data-pdf-compact="3"] #templatePrintRoot .p-12 {{ padding: 20px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .p-8 {{ padding: 14px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .p-5 {{ padding: 12px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .p-4 {{ padding: 10px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 12px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 10px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 8px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .mb-8 {{ margin-bottom: 10px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .mb-6 {{ margin-bottom: 9px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .mb-5 {{ margin-bottom: 8px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .text-5xl {{ font-size: 34px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .text-4xl {{ font-size: 28px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .text-2xl {{ font-size: 20px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .text-xl {{ font-size: 16px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .text-lg {{ font-size: 15px !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .leading-loose {{ line-height: 1.35 !important; }}
+              :root[data-pdf-compact="3"] #templatePrintRoot .leading-relaxed {{ line-height: 1.30 !important; }}
+
+              :root[data-pdf-compact="4"] #templatePrintRoot .p-12 {{ padding: 16px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .p-8 {{ padding: 12px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .p-5 {{ padding: 10px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .p-4 {{ padding: 8px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 10px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 8px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 7px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .mb-8 {{ margin-bottom: 8px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .mb-6 {{ margin-bottom: 7px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .mb-5 {{ margin-bottom: 6px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .text-5xl {{ font-size: 30px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .text-4xl {{ font-size: 24px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .text-2xl {{ font-size: 18px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .text-xl {{ font-size: 15px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .text-lg {{ font-size: 14px !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .leading-loose {{ line-height: 1.25 !important; }}
+              :root[data-pdf-compact="4"] #templatePrintRoot .leading-relaxed {{ line-height: 1.22 !important; }}
+
+              /* Level 5: very aggressive (still tries to preserve look) */
+              :root[data-pdf-compact="5"] #templatePrintRoot .p-12 {{ padding: 12px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .p-8 {{ padding: 10px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .p-5 {{ padding: 8px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .p-4 {{ padding: 6px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 8px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 7px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 6px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .mb-8 {{ margin-bottom: 6px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .mb-6 {{ margin-bottom: 6px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .mb-5 {{ margin-bottom: 5px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .text-5xl {{ font-size: 26px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .text-4xl {{ font-size: 22px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .text-2xl {{ font-size: 16px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .text-xl {{ font-size: 14px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .text-lg {{ font-size: 13px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .text-base {{ font-size: 12.5px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .text-sm {{ font-size: 11.5px !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .leading-loose {{ line-height: 1.18 !important; }}
+              :root[data-pdf-compact="5"] #templatePrintRoot .leading-relaxed {{ line-height: 1.16 !important; }}
+
+              /* Level 6: last resort before vertical squeeze */
+              :root[data-pdf-compact="6"] #templatePrintRoot .p-12 {{ padding: 10px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .p-8 {{ padding: 8px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .p-5 {{ padding: 7px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .p-4 {{ padding: 5px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 6px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 6px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 5px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .mb-8 {{ margin-bottom: 5px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .mb-6 {{ margin-bottom: 5px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .mb-5 {{ margin-bottom: 4px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .text-5xl {{ font-size: 24px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .text-4xl {{ font-size: 20px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .text-2xl {{ font-size: 15px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .text-xl {{ font-size: 13px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .text-lg {{ font-size: 12.5px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .text-base {{ font-size: 12px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .text-sm {{ font-size: 11px !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .leading-loose {{ line-height: 1.12 !important; }}
+              :root[data-pdf-compact="6"] #templatePrintRoot .leading-relaxed {{ line-height: 1.12 !important; }}
+            """
+
+            with sync_playwright() as p:
+                browser = p.chromium.launch()
+                ctx = browser.new_context(viewport={"width": page_w_px, "height": page_h_px})
+                if cookie_list:
+                    ctx.add_cookies(cookie_list)
+                page = ctx.new_page()
+                page.goto(resume_url, wait_until="networkidle", timeout=60_000)
+                page.wait_for_selector("#templatePrintRoot", timeout=60_000)
+                page.emulate_media(media="print")
+                page.add_style_tag(content=fit_css)
+
+                if one_page:
+                    fit_result = page.evaluate(
+                        """({availW, availH}) => {
+                          const rootWrap = document.getElementById('templatePrintRoot');
+                          const root = rootWrap?.firstElementChild;
+                          if (!rootWrap || !root) return null;
+
+                          // Ensure stable layout
+                          rootWrap.style.overflow = 'hidden';
+                          root.style.zoom = '1';
+                          root.style.transform = '';
+                          root.style.transformOrigin = 'top left';
+                          document.documentElement.dataset.pdfCompact = '0';
+
+                          const levels = ['0','1','2','3','4','5','6'];
+                          // Prefer: minimal distortion. We choose the level that yields the highest required sy (closest to 1).
+                          let best = { level: '0', zoom: 1, sy: 1, reqSy: 1, w: 0, h: 0, fits: false };
+
+                          for (const level of levels) {
+                            document.documentElement.dataset.pdfCompact = level;
+                            root.style.zoom = '1';
+                            root.style.transform = '';
+                            // force reflow
+                            root.getBoundingClientRect();
+
+                            let rect = root.getBoundingClientRect();
+                            const w0 = Math.max(1, rect.width);
+                            const h0 = Math.max(1, rect.height);
+                            // Always fill width (avoid left/right whitespace).
+                            let zoom = Math.min(1, (availW / w0) * 0.999);
+                            zoom = Math.max(0.45, zoom);
+                            root.style.zoom = String(zoom);
+
+                            rect = root.getBoundingClientRect();
+                            const reqSy = Math.min(1, (availH / Math.max(1, rect.height)) * 0.999);
+                            const sy = reqSy; // Always fit (may be < 1 for very long resumes)
+                            if (sy < 1) {
+                              root.style.transform = `scale(1, ${sy})`;
+                              rect = root.getBoundingClientRect();
+                            }
+
+                            const fits = rect.width <= availW + 1 && rect.height <= availH + 1;
+                            // Prefer: higher reqSy (less squeeze), then higher zoom (bigger).
+                            const better =
+                              (reqSy > best.reqSy + 1e-6) ||
+                              (Math.abs(reqSy - best.reqSy) < 1e-6 && zoom > best.zoom + 1e-6);
+                            if (better) best = { level, zoom, sy, reqSy, w: rect.width, h: rect.height, fits };
+                            // If we reach a "good enough" fit with minimal squeeze, stop early.
+                            if (fits && reqSy >= 0.92) return best;
+                          }
+
+                          // Use best attempt if nothing fit perfectly (should be rare)
+                          document.documentElement.dataset.pdfCompact = best.level;
+                          root.style.zoom = String(best.zoom);
+                          root.style.transform = best.sy !== 1 ? `scale(1, ${best.sy})` : '';
+                          const rect2 = root.getBoundingClientRect();
+                          const fits2 = rect2.width <= availW + 1 && rect2.height <= availH + 1;
+                          return { ...best, w: rect2.width, h: rect2.height, fits: fits2 };
+                        }""",
+                        {"availW": avail_w, "availH": avail_h},
+                    )
+                    # Always force a 1-page fit by construction (zoom + sy). If the browser still reports overflow
+                    # due to rounding, reduce sy slightly.
+                    if isinstance(fit_result, dict) and not fit_result.get("fits"):
+                        page.evaluate(
+                            """() => {
+                              const rootWrap = document.getElementById('templatePrintRoot');
+                              const root = rootWrap?.firstElementChild;
+                              if (!root) return;
+                              const cur = (root.style.transform || '').match(/scale\\(1,\\s*([0-9.]+)\\)/);
+                              if (!cur) return;
+                              const sy = Math.max(0.5, parseFloat(cur[1]) * 0.995);
+                              root.style.transform = `scale(1, ${sy})`;
+                            }"""
+                        )
+
+                pdf_bytes = page.pdf(
+                    format="Letter",
+                    print_background=True,
+                    margin={"top": "0", "right": "0", "bottom": "0", "left": "0"},
+                    prefer_css_page_size=True,
+                )
+                browser.close()
+
+            buf = BytesIO(pdf_bytes)
+            buf.seek(0)
+            filename = f"{template_name or 'resume'}.pdf"
+            resp = send_file(buf, mimetype="application/pdf", as_attachment=False, download_name=filename)
+            resp.headers["Content-Disposition"] = f'inline; filename="{filename}"'
+            resp.headers["X-Content-Type-Options"] = "nosniff"
+            resp.headers["X-PDF-Engine"] = "playwright-chromium"
+            return resp
+        except Exception as e:
+            try:
+                logger.error(f"Playwright PDF render failed: {str(e)}")
+            except Exception:
+                pass
+            return (
+                "High-fidelity PDF rendering failed. "
+                f"Details: {str(e)}\n\n"
+                "If you want the basic black-and-white PDF, open this URL with '?simple=1'.",
+                500,
+            )
+
+    # Try to generate a proper PDF with ReportLab.
+    try:
+        from reportlab.lib.pagesizes import letter
+        from reportlab.lib.units import inch
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.enums import TA_CENTER
+        from reportlab.lib import colors
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
+    except Exception:
+        return (
+            "PDF export is not available because the server PDF dependency is missing. "
+            "Install 'reportlab' and restart the server.",
+            500,
+        )
+
+    def s(v):
+        return (v or "").strip() if isinstance(v, str) else (str(v).strip() if v is not None else "")
+
+    name = s(structured.get("name"))
+    email = s(structured.get("email"))
+    phone = s(structured.get("phone"))
+    location = s(structured.get("location"))
+    summary = s(structured.get("summary"))
+
+    experience = structured.get("experience") or []
+    education = structured.get("education") or []
+    projects = structured.get("projects") or []
+    certifications = structured.get("certifications") or []
+    skills = structured.get("skills") or []
+    custom_sections = structured.get("custom_sections") or []
+
+    buf = BytesIO()
+    doc = SimpleDocTemplate(
+        buf,
+        pagesize=letter,
+        leftMargin=0.65 * inch,
+        rightMargin=0.65 * inch,
+        topMargin=0.6 * inch,
+        bottomMargin=0.6 * inch,
+        title=(name or "Resume"),
+        author=(name or ""),
     )
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name="HeaderName", parent=styles["Title"], alignment=TA_CENTER, spaceAfter=6))
+    styles.add(ParagraphStyle(name="HeaderMeta", parent=styles["Normal"], alignment=TA_CENTER, textColor=colors.grey))
+    styles.add(ParagraphStyle(name="SectionHeading", parent=styles["Heading2"], spaceBefore=14, spaceAfter=6))
+    styles.add(ParagraphStyle(name="ItemTitle", parent=styles["Heading4"], spaceBefore=4, spaceAfter=2))
+    styles.add(ParagraphStyle(name="Small", parent=styles["Normal"], fontSize=9, leading=11))
+
+    def join_meta(parts):
+        parts = [p for p in parts if p]
+        return "  •  ".join(parts)
+
+    story = []
+
+    # Header
+    story.append(Paragraph(name or "Resume", styles["HeaderName"]))
+    meta = join_meta([email, phone, location])
+    if meta:
+        story.append(Paragraph(meta, styles["HeaderMeta"]))
+    story.append(Spacer(1, 10))
+
+    # Summary
+    if summary:
+        story.append(Paragraph("Summary", styles["SectionHeading"]))
+        story.append(Paragraph(summary.replace("\n", "<br/>"), styles["Normal"]))
+
+    # Experience
+    if isinstance(experience, list) and experience:
+        story.append(Paragraph("Experience", styles["SectionHeading"]))
+        for item in experience:
+            if not isinstance(item, dict):
+                continue
+            title = s(item.get("title"))
+            company = s(item.get("company"))
+            duration = s(item.get("duration"))
+            heading = " — ".join([p for p in [title, company] if p])
+            if duration:
+                heading = f"{heading} ({duration})" if heading else duration
+            if heading:
+                story.append(Paragraph(heading, styles["ItemTitle"]))
+
+            desc = s(item.get("description"))
+            if desc:
+                bullets = [b.strip("• \t") for b in desc.splitlines() if b.strip()]
+                if len(bullets) > 1:
+                    story.append(
+                        ListFlowable(
+                            [ListItem(Paragraph(b, styles["Normal"]), leftIndent=12) for b in bullets],
+                            bulletType="bullet",
+                            leftIndent=14,
+                            bulletFontName="Helvetica",
+                            bulletFontSize=9,
+                        )
+                    )
+                else:
+                    story.append(Paragraph(desc.replace("\n", "<br/>"), styles["Normal"]))
+
+    # Education
+    if isinstance(education, list) and education:
+        story.append(Paragraph("Education", styles["SectionHeading"]))
+        for item in education:
+            if not isinstance(item, dict):
+                continue
+            degree = s(item.get("degree"))
+            inst = s(item.get("institution"))
+            year = s(item.get("year"))
+            details = s(item.get("details"))
+
+            heading = " — ".join([p for p in [degree, inst] if p])
+            if year:
+                heading = f"{heading} ({year})" if heading else year
+            if heading:
+                story.append(Paragraph(heading, styles["ItemTitle"]))
+            if details:
+                story.append(Paragraph(details.replace("\n", "<br/>"), styles["Normal"]))
+
+    # Projects
+    if isinstance(projects, list) and projects:
+        story.append(Paragraph("Projects", styles["SectionHeading"]))
+        for item in projects:
+            if not isinstance(item, dict):
+                continue
+            title = s(item.get("title"))
+            desc = s(item.get("description"))
+            if title:
+                story.append(Paragraph(title, styles["ItemTitle"]))
+            if desc:
+                story.append(Paragraph(desc.replace("\n", "<br/>"), styles["Normal"]))
+
+    # Skills
+    if isinstance(skills, list) and skills:
+        story.append(Paragraph("Skills", styles["SectionHeading"]))
+        story.append(Paragraph(", ".join([s(x) for x in skills if s(x)]), styles["Normal"]))
+
+    # Certifications
+    if isinstance(certifications, list) and certifications:
+        story.append(Paragraph("Certifications", styles["SectionHeading"]))
+        story.append(
+            ListFlowable(
+                [ListItem(Paragraph(s(c), styles["Normal"]), leftIndent=12) for c in certifications if s(c)],
+                bulletType="bullet",
+                leftIndent=14,
+                bulletFontName="Helvetica",
+                bulletFontSize=9,
+            )
+        )
+
+    # Custom sections
+    if isinstance(custom_sections, list) and custom_sections:
+        for sec in custom_sections:
+            if not isinstance(sec, dict):
+                continue
+            heading = s(sec.get("heading"))
+            if not heading:
+                continue
+            story.append(Paragraph(heading, styles["SectionHeading"]))
+            items = sec.get("items") or []
+            for it in items:
+                if not isinstance(it, dict):
+                    continue
+                t = s(it.get("title"))
+                sub = s(it.get("subtitle"))
+                date = s(it.get("date"))
+                content = s(it.get("content"))
+                line = " — ".join([p for p in [t, sub] if p])
+                if date:
+                    line = f"{line} ({date})" if line else date
+                if line:
+                    story.append(Paragraph(line, styles["ItemTitle"]))
+                if content:
+                    story.append(Paragraph(content.replace("\n", "<br/>"), styles["Normal"]))
+
+    # Always build at least something
+    if not story:
+        story = [Paragraph("No resume content found.", styles["Normal"])]
+
+    doc.build(story)
+    buf.seek(0)
+
+    filename = f"{template_name or 'resume'}.pdf"
+    resp = send_file(buf, mimetype="application/pdf", as_attachment=False, download_name=filename)
+    resp.headers["Content-Disposition"] = f'inline; filename="{filename}"'
+    resp.headers["X-Content-Type-Options"] = "nosniff"
+    resp.headers["X-PDF-Engine"] = "reportlab"
+    return resp
+
+
+@app.get("/api/template-pdf")
+def get_template_pdf():
+    """
+    Return an inline PDF for the currently-viewed template resume.
+
+    This is intentionally server-generated (real application/pdf) so the user can open it
+    in a new tab without relying on the client-side "Save as PDF"/print-dialog flow.
+    """
+    return _get_template_pdf_response(request.args.get("template"))
+
+
+@app.get("/api/template-pdf/<template_name>.pdf")
+def get_template_pdf_named(template_name):
+    """
+    Same as /api/template-pdf, but with a .pdf URL for maximum compatibility.
+    """
+    return _get_template_pdf_response(template_name)
+
 @app.route("/termsprivacy")
 def termsprivacy():
     return redirect(url_for('terms_privacy'), code=301)
@@ -718,6 +1886,14 @@ BLOG_POSTS_METADATA = {
         'og_description': 'Choose the perfect resume format for 2025 with our comprehensive guide and real examples.',
         'og_image': 'https://resumaticai.com/static/images/format.webp'
     },
+    'resume-format-2026': {
+        'title': 'Best Resume Formats for 2026 (With Examples) | ResumaticAI',
+        'meta_description': 'See the best resume formats for 2026 with ATS-friendly examples. Learn when to use reverse-chronological vs. combination formats, how to structure skills, and whether to use PDF or DOCX.',
+        'keywords': 'resume format 2026, resume templates, resume examples, resume layout, career stages, resume design',
+        'og_title': 'Best Resume Formats for 2026: Complete Guide',
+        'og_description': 'ATS-friendly resume formats, layout rules, and examples for 2026.',
+        'og_image': 'https://resumaticai.com/static/images/format.webp'
+    },
     'toptenmistakes': {
         'title': 'Top 10 Resume Mistakes to Avoid in 2025 | ResumaticAI',
         'meta_description': 'Learn the most common resume mistakes that can cost you job opportunities and how to avoid them in 2025.',
@@ -750,7 +1926,8 @@ def blog_post(post):
         "resume-summary-examples": "Resume-objective",
         "no-experience": "no-experience",
         "power-words": "Power-words",
-        "resume-format-2025": "resume-format-2025",
+    "resume-format-2025": "resume-format-2026",
+    "resume-format-2026": "resume-format-2026",
         "tailorresumejob": "tailorresumejob",
     }
 
@@ -770,26 +1947,50 @@ def blog_post(post):
     # Get metadata for the blog post using the canonical slug
     post_metadata = BLOG_POSTS_METADATA.get(canonical_slug, {})
 
-    return render_template(
-        f"{canonical_slug}.html",
-        year=current_year,
-        user=current_user if current_user.is_authenticated else None,
-        post_metadata=post_metadata,
-    )
+    try:
+        return render_template(
+            f"{canonical_slug}.html",
+            year=current_year,
+            user=current_user if current_user.is_authenticated else None,
+            post_metadata=post_metadata,
+        )
+    except TemplateNotFound:
+        # Fallback: if 2026 slug is requested but template file not present, use 2025 template
+        file_slug = canonical_slug
+        if canonical_slug == 'resume-format-2026':
+            file_slug = 'resume-format-2025'
+        return render_template(
+            f"{file_slug}.html",
+            year=current_year,
+            user=current_user if current_user.is_authenticated else None,
+            post_metadata=post_metadata,
+        )
 
 @app.route("/templates")
 def templates():
-    client_templates=OpenAI()
+    # Explicitly pass API key to handle Azure environment
+    api_key = os.getenv('OPENAI_API_KEY')
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY environment variable not set")
+    
+    # Configure timeout and retry for Azure reliability
+    client_templates = OpenAI(
+        api_key=api_key,
+        timeout=60.0,
+        max_retries=3
+    )
     prompt= f'''Please create a python dictionary with the section names of the provided resume 
     as keys and the associated content as values.'''
     try:
-            response = client.chat.completions.create(
+            response = client_templates.chat.completions.create(
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt}]
             )
     except Exception as e:
-            print(f"OpenAI API Error: {str(e)}")
-            raise ValueError("Failed to connect to OpenAI API. Please try again later.")
+            error_msg = str(e)
+            print(f"OpenAI API Error: {error_msg}")
+            logger.error(f"OpenAI API Error details: {type(e).__name__}: {error_msg}")
+            raise ValueError(f"Failed to connect to OpenAI API: {error_msg}")
 
     resume_data = response.choices[0].message.content
     resume_data = request.json.get('resume_data')
@@ -1005,6 +2206,27 @@ def admin_stats():
     try:
         # Get comprehensive analytics data
         analytics_data = analytics.get_full_analytics()
+        # Load recent feedback submissions from CSV (if present)
+        feedback_rows = []
+        try:
+            import csv
+            feedback_path = 'download_feedback.csv'
+            if os.path.exists(feedback_path):
+                with open(feedback_path, 'r', encoding='utf-8', newline='') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        feedback_rows.append({
+                            'timestamp_iso': row.get('timestamp_iso', ''),
+                            'user_id': row.get('user_id', ''),
+                            'user_email': row.get('user_email', ''),
+                            'rating': row.get('rating', ''),
+                            'comment': row.get('comment', ''),
+                            'comparison': row.get('comparison', ''),
+                        })
+                # Keep only the last 100, newest first
+                feedback_rows = feedback_rows[-100:][::-1]
+        except Exception as e:
+            app.logger.warning(f"Failed to read download_feedback.csv: {str(e)}")
         
         # Debug logging to help troubleshoot
         app.logger.info(f"Analytics data structure: {type(analytics_data)}")
@@ -1015,11 +2237,33 @@ def admin_stats():
         
         return render_template("admin_stats.html", 
                              analytics=analytics_data, 
-                             user=current_user)
+                             user=current_user,
+                             feedback_rows=feedback_rows)
     except Exception as e:
         app.logger.error(f"Error loading statistics: {str(e)}")
         flash(f"Error loading statistics: {str(e)}", "danger")
         return redirect(url_for("index"))
+
+@app.route('/admin/feedback.csv')
+@login_required
+def admin_feedback_csv():
+    """Download raw feedback CSV (admin only)."""
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    try:
+        path = 'download_feedback.csv'
+        if not os.path.exists(path):
+            # Return an empty CSV with header for convenience
+            from io import StringIO, BytesIO
+            buf = StringIO("timestamp_iso,user_id,user_email,rating,comment,comparison\n")
+            data = buf.getvalue().encode('utf-8')
+            bio = BytesIO(data)
+            bio.seek(0)
+            return send_file(bio, mimetype='text/csv', as_attachment=True, download_name='download_feedback.csv')
+        return send_file(path, mimetype='text/csv', as_attachment=True, download_name='download_feedback.csv')
+    except Exception as e:
+        app.logger.error(f"Failed to serve feedback CSV: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
 
 
 # Health check endpoint for Azure App Service
@@ -1077,7 +2321,7 @@ def sitemap():
         'Resume-objective',
         'no-experience',
         'Power-words',
-        'resume-format-2025',
+        'resume-format-2026',
         'tailorresumejob'
     ]
     
@@ -1107,13 +2351,13 @@ def sitemap():
 @app.route("/download_resume_docx", methods=["POST"])
 #@login_required
 def download_resume_docx():
-    # If not authenticated, redirect to Google login to ensure gated downloads
+    # If not authenticated, redirect to login to ensure gated downloads
     try:
         if not current_user.is_authenticated:
-            return redirect(url_for('google_login'))
+            return redirect(url_for('login'))
     except Exception:
         # In case flask-login context isn't available, fall back to login route
-        return redirect(url_for('google_login'))
+        return redirect(url_for('login'))
     revised_resume = request.form.get('resume')
     if not revised_resume:
         flash("No revised resume found for download.", 'danger')
@@ -1132,23 +2376,77 @@ def download_resume_docx():
     )
 
 
+@app.route('/api/feedback/download', methods=['POST'])
+@login_required
+def feedback_download_api():
+    """Collect quick feedback after a logged-in user clicks to download a resume."""
+    try:
+        data = request.get_json(silent=True) or {}
+        rating = str(data.get('rating', '')).strip()
+        comment = str(data.get('comment', '')).strip()
+        comparison = str(data.get('comparison', '')).strip()
+        # Persist minimally to CSV; avoids DB schema work
+        import csv
+        from datetime import datetime, timezone
+        filename = 'download_feedback.csv'
+        file_exists = os.path.exists(filename)
+        with open(filename, 'a', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            if not file_exists:
+                writer.writerow(['timestamp_iso', 'user_id', 'user_email', 'rating', 'comment', 'comparison'])
+            writer.writerow([
+                datetime.now(timezone.utc).isoformat(),
+                getattr(current_user, 'id', ''),
+                getattr(current_user, 'email', ''),
+                rating,
+                comment[:500],
+                comparison
+            ])
+        return jsonify({'status': 'ok'}), 200
+    except Exception as e:
+        logger.error(f"feedback_download_api error: {str(e)}")
+        return jsonify({'status': 'error'}), 500
+
 # Azure Table Storage setup
 AZURE_TABLE_NAME = os.getenv('AZURE_TABLE_NAME', 'ResumeRevisions')
 AZURE_STORAGE_ACCOUNT = os.getenv('AZURE_STORAGE_ACCOUNT')
 
-def get_table_client():
+def get_table_client(table_name: str = None):
     connection_string = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
     if connection_string:
         service = TableServiceClient.from_connection_string(conn_str=connection_string)
     else:
         credential = DefaultAzureCredential()
         service = TableServiceClient(endpoint=f"https://{AZURE_STORAGE_ACCOUNT}.table.core.windows.net", credential=credential)
-    table_client = service.get_table_client(AZURE_TABLE_NAME)
+    table_client = service.get_table_client(table_name or AZURE_TABLE_NAME)
     try:
         table_client.create_table()
     except Exception:
         pass  # Table may already exist
     return table_client
+
+# Azure Users table helpers
+AZURE_USERS_TABLE = os.getenv('AZURE_USERS_TABLE', 'Users')
+
+def get_users_table_client():
+    return get_table_client(AZURE_USERS_TABLE)
+
+def upsert_user_profile_azure(user_obj: 'User') -> None:
+    try:
+        table_client = get_users_table_client()
+        provider = "google" if str(user_obj.id).isdigit() else ("facebook" if str(user_obj.id).startswith("facebook_") else "other")
+        entity = {
+            'PartitionKey': str(user_obj.id),
+            'RowKey': 'profile',
+            'name': user_obj.name or '',
+            'email': user_obj.email or '',
+            'created_at': user_obj.created_at,
+            'is_admin': bool(getattr(user_obj, 'is_admin', False)),
+            'provider': provider,
+        }
+        table_client.upsert_entity(entity)
+    except Exception as e:
+        logger.error(f"Failed to upsert user profile to Azure: {str(e)}")
 
 # Save a revision to Azure Table Storage
 def save_resume_revision(user_id, revision_id, resume_content, feedback=None, original_resume=None, notes=None):
@@ -1263,6 +2561,200 @@ def update_notes(revision_id):
         flash('Error updating notes. Please try again.', 'danger')
         
     return redirect(url_for('my_revisions'))
+
+#############################################
+# Admin: Registered Users from Azure Revisions
+#############################################
+
+def _collect_registered_users(table_override: str = None):
+    """Collect distinct users from Azure Table revisions with counts and basic profile."""
+    table_client = get_table_client(table_override)
+    counts = {}
+    # Ensure we iterate through all pages
+    pager = table_client.list_entities(select=["PartitionKey"])
+    for entity in pager:
+        uid = entity.get("PartitionKey")
+        if not uid:
+            continue
+        counts[uid] = counts.get(uid, 0) + 1
+
+    results = []
+    for uid, n in counts.items():
+        user_obj = users.get(uid)
+        email = getattr(user_obj, "email", "") if user_obj else ""
+        name = getattr(user_obj, "name", "") if user_obj else ""
+        provider = "google" if str(uid).isdigit() else ("facebook" if str(uid).startswith("facebook_") else "other")
+        results.append({
+            "id": uid,
+            "email": email,
+            "name": name,
+            "provider": provider,
+            "revisions": n,
+        })
+
+    results.sort(key=lambda x: x["revisions"], reverse=True)
+    return results
+
+@app.route('/admin/registered_users.json')
+@login_required
+def registered_users_json():
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    data = _collect_registered_users(request.args.get('table') or None)
+    return jsonify({"users": data})
+
+@app.route('/admin/registered_users')
+@login_required
+def registered_users_view():
+    if not getattr(current_user, "is_admin", False):
+        flash("You do not have permission to view this page.", "danger")
+        return redirect(url_for("index"))
+    data = _collect_registered_users()
+    return render_template('admin_registered_users.html', users=data)
+
+@app.route('/admin/registered_users.csv')
+@login_required
+def registered_users_csv():
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    rows = _collect_registered_users(request.args.get('table') or None)
+    # Build CSV in-memory
+    lines = ["id,name,email,provider,revisions"]
+    for r in rows:
+        # naive CSV escaping for commas and quotes
+        def esc(v):
+            s = str(v or "")
+            if any(c in s for c in [',','"','\n','\r']):
+                s = '"' + s.replace('"','""') + '"'
+            return s
+        line = ",".join([esc(r["id"]), esc(r["name"]), esc(r["email"]), esc(r["provider"]), str(r["revisions"])])
+        lines.append(line)
+    csv_data = "\n".join(lines) + "\n"
+    return Response(csv_data, mimetype='text/csv', headers={
+        'Content-Disposition': 'attachment; filename=registered_users.csv'
+    })
+
+@app.route('/admin/google_emails.json')
+@login_required
+def google_emails_json():
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    # Read directly from persistent users file to include all registered users
+    try:
+        data = {}
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        emails = sorted({
+            (u.get('email') or '').strip().lower()
+            for u in data.values()
+            if u and u.get('email') and str(u.get('id', '')).isdigit()
+        })
+        return jsonify({"count": len(emails), "emails": emails})
+    except Exception as e:
+        logger.error(f"google_emails_json error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/admin/google_emails.csv')
+@login_required
+def google_emails_csv():
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    # Read directly from persistent users file to include all registered users
+    try:
+        data = {}
+        if os.path.exists(USERS_FILE):
+            with open(USERS_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        emails = sorted({
+            (u.get('email') or '').strip().lower()
+            for u in data.values()
+            if u and u.get('email') and str(u.get('id', '')).isdigit()
+        })
+        csv_data = "email\n" + "\n".join(emails) + "\n"
+        return Response(csv_data, mimetype='text/csv', headers={
+            'Content-Disposition': 'attachment; filename=google_emails.csv'
+        })
+    except Exception as e:
+        logger.error(f"google_emails_csv error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+# Admin: Users from Azure Users table
+@app.route('/admin/users_azure.json')
+@login_required
+def users_azure_json():
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    provider_filter = (request.args.get('provider') or '').strip().lower()
+    try:
+        table_client = get_users_table_client()
+        users_list = []
+        for e in table_client.list_entities():
+            if e.get('RowKey') != 'profile':
+                continue
+            provider = (e.get('provider') or '').lower()
+            if provider_filter and provider != provider_filter:
+                continue
+            users_list.append({
+                'id': e.get('PartitionKey'),
+                'name': e.get('name') or '',
+                'email': e.get('email') or '',
+                'provider': provider or 'other',
+                'created_at': e.get('created_at') or '',
+                'is_admin': bool(e.get('is_admin', False)),
+            })
+        # Sort by created_at desc if present
+        from datetime import datetime
+        def parse_dt(s):
+            try:
+                return datetime.fromisoformat(s)
+            except Exception:
+                return datetime.min
+        users_list.sort(key=lambda x: parse_dt(x.get('created_at') or ''), reverse=True)
+        return jsonify({"count": len(users_list), "users": users_list})
+    except Exception as e:
+        logger.error(f"users_azure_json error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/admin/users_azure.csv')
+@login_required
+def users_azure_csv():
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    provider_filter = (request.args.get('provider') or '').strip().lower()
+    try:
+        table_client = get_users_table_client()
+        rows = []
+        for e in table_client.list_entities():
+            if e.get('RowKey') != 'profile':
+                continue
+            provider = (e.get('provider') or '').lower()
+            if provider_filter and provider != provider_filter:
+                continue
+            rows.append({
+                'id': e.get('PartitionKey'),
+                'name': e.get('name') or '',
+                'email': e.get('email') or '',
+                'provider': provider or 'other',
+                'created_at': e.get('created_at') or '',
+                'is_admin': 'true' if e.get('is_admin', False) else 'false',
+            })
+        def esc(v):
+            s = str(v or "")
+            if any(c in s for c in [',','"','\n','\r']):
+                s = '"' + s.replace('"','""') + '"'
+            return s
+        header = ['id','name','email','provider','created_at','is_admin']
+        lines = [','.join(header)]
+        for r in rows:
+            lines.append(','.join([esc(r[h]) for h in header]))
+        csv_data = "\n".join(lines) + "\n"
+        return Response(csv_data, mimetype='text/csv', headers={
+            'Content-Disposition': 'attachment; filename=users_azure.csv'
+        })
+    except Exception as e:
+        logger.error(f"users_azure_csv error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
 
 def extract_text_from_file(file):
     """Extract text from uploaded file (PDF or DOCX), using fallback for complex Word docs."""
@@ -1794,12 +3286,8 @@ for user_id, user_obj in users.items():
 
 
 def _load_email_config_if_missing() -> None:
-    """Load SMTP creds from newsletter_config.txt if env vars are missing."""
+    """Load/override SMTP creds from newsletter_config.txt into environment."""
     import os
-    cfg_email = os.getenv('NEWSLETTER_EMAIL', '').strip()
-    cfg_pass = os.getenv('NEWSLETTER_PASSWORD', '').strip()
-    if cfg_email and cfg_pass:
-        return
     try:
         if os.path.exists('newsletter_config.txt'):
             with open('newsletter_config.txt', 'r', encoding='utf-8') as f:
@@ -1811,8 +3299,8 @@ def _load_email_config_if_missing() -> None:
                         key, val = line.split('=', 1)
                         key = key.strip()
                         val = val.strip()
-                        if key in ('NEWSLETTER_EMAIL', 'NEWSLETTER_PASSWORD', 'SMTP_SERVER', 'SMTP_PORT') and val:
-                            os.environ.setdefault(key, val)
+                        if key in ('NEWSLETTER_EMAIL', 'NEWSLETTER_PASSWORD', 'SMTP_SERVER', 'SMTP_PORT', 'CONTACT_RECIPIENT') and val:
+                            os.environ[key] = val
     except Exception as e:
         logger.error(f"Failed to load newsletter_config.txt: {str(e)}")
 
@@ -1832,7 +3320,7 @@ def send_contact_email(name: str, sender_email: str, message: str) -> None:
     smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
     smtp_port = int(os.getenv('SMTP_PORT', '587'))
     auth_email = os.getenv('NEWSLETTER_EMAIL', '').strip()
-    auth_password = os.getenv('NEWSLETTER_PASSWORD', '').strip()
+    auth_password = os.getenv('NEWSLETTER_PASSWORD', '').strip().replace(' ', '')
     recipient = os.getenv('CONTACT_RECIPIENT', 'yaronyaronlid@gmail.com').strip()
 
     if not auth_email or not auth_password:
@@ -2118,6 +3606,154 @@ def home():
 
 ##########################################
 '''
+from flask import send_from_directory
+import os
+
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FILE_PATH = os.path.join(BASE_DIR, '610528eb-2434-4e0c-b4c5-1f54f21877ea.html')
+
+
+@app.route('/610528eb-2434-4e0c-b4c5-1f54f21877ea.html')
+def serve_file():
+    return send_from_directory(
+        directory=BASE_DIR,
+        path='610528eb-2434-4e0c-b4c5-1f54f21877ea.html'
+    )
+
+
+
+
+import os
+from flask import send_file
+
+@app.route("/react")
+@app.route("/react/<path:subpath>")
+def react_app(subpath=None):
+    return send_file(os.path.join("static", "react", "index.html"))
+
+
+
+
+# Schema definitions
+RESUME_STRUCTURE_SCHEMA = """
+{
+    "name": "string",
+    "email": "string",
+    "phone": "string",
+    "location": "string",
+    "summary": "string",
+    "experience": [
+        {
+            "title": "string",
+            "company": "string",
+            "duration": "string",
+            "description": "string (bullet points as newline separated text)"
+        }
+    ],
+    "education": [
+        {
+            "degree": "string",
+            "institution": "string",
+            "year": "string"
+        }
+    ],
+    "projects": [
+        {
+            "title": "string",
+            "description": "string",
+            "technologies": "string (comma separated)",
+            "link": "string (optional)"
+        }
+    ],
+    "certifications": [
+        {
+            "name": "string",
+            "issuer": "string",
+            "year": "string"
+        }
+    ],
+    "skills": ["string"],
+    "custom_sections": [
+        {
+            "heading": "string (The original section title, e.g. 'Publications', 'Volunteering', 'Awards')",
+            "items": [
+                {
+                    "title": "string (e.g. Award Name or Role)",
+                    "subtitle": "string (e.g. Organization or Event)",
+                    "date": "string (optional)",
+                    "content": "string (Description or details)"
+                }
+            ]
+        }
+    ]
+}
+"""
+
+
+def parse_resume(revised_resume):
+    try:
+        # Initialize the client inside the function to avoid blocking startup
+        # Explicitly pass API key to handle Azure environment
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable not set")
+        
+        # Configure timeout and other parameters for Azure reliability
+        client = OpenAI(
+            api_key=api_key,
+            timeout=60.0,  # 60 second timeout
+            max_retries=3  # Retry up to 3 times on transient errors
+        )
+        
+        parsing_prompt = f"""
+You are a data extraction engine. 
+Extract structured data from the following RESUME TEXT into the specified JSON format.
+
+Resume Text:
+\"\"\"{revised_resume}\"\"\"
+
+Output Format:
+{RESUME_STRUCTURE_SCHEMA}
+        
+Rules:
+1. Extract the content exactly as written in the source text.
+2. Map standard sections to standard fields.
+3. Map non-standard sections to 'custom_sections'.
+4. Return ONLY valid JSON.
+"""
+        parsing_response = client.chat.completions.create(
+            model="gpt-4o", 
+            messages=[
+                {"role": "system", "content": "You are a data extraction engine. Output only valid JSON."},
+                {"role": "user", "content": parsing_prompt}
+            ],
+            response_format={"type": "json_object"}
+        )
+
+        parsing_content = parsing_response.choices[0].message.content
+        
+        # Remove markdown backticks if present (similar to revise_resume function)
+        if parsing_content.startswith("```"):
+            import re
+            parsing_content = re.sub(r"^```(?:json)?\n", "", parsing_content)
+            parsing_content = re.sub(r"\n```$", "", parsing_content)
+            
+        try:
+            structured_resume = json.loads(parsing_content)
+        except json.JSONDecodeError as e:
+            logging.error(f"JSON Parse Error in parse_resume: {str(e)}")
+            logging.error(f"Raw parsing content: {parsing_content[:500]}...")
+            raise ValueError(f"Failed to parse resume structure: {str(e)}")
+        return {"resume": structured_resume}
+    except Exception as e:
+        logging.error(f"Error in parse_resume: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise
+           
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='127.0.0.1', port=5000)

@@ -48,3 +48,5 @@ python-docx
 PyPDF2
 pdfplumber
 mammoth
+reportlab
+playwright

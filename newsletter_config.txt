@@ -2,21 +2,20 @@
 # Add these to your .env file or environment variables
 
 # Gmail SMTP Configuration (recommended)
-NEWSLETTER_EMAIL=yaronyarolid@gmail.com
-NEWSLETTER_PASSWORD=1Qazxsw2@@
+NEWSLETTER_EMAIL=yaronyaronlid@gmail.com
+NEWSLETTER_PASSWORD=ygiw rhji evux mhzc
 
 # Alternative SMTP providers:
 # For Outlook/Hotmail:
-# NEWSLETTER_EMAIL=your-email@outlook.com
-# NEWSLETTER_PASSWORD=your-password
-# SMTP_SERVER=smtp-mail.outlook.com
-# SMTP_PORT=587
+
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+
+CONTACT_RECIPIENT=ron.lidgi6323@my.riohondo.edu
 
 # For SendGrid:
-# NEWSLETTER_EMAIL=apikey
-# NEWSLETTER_PASSWORD=your-sendgrid-api-key
-# SMTP_SERVER=smtp.sendgrid.net
-# SMTP_PORT=587
+
+
 
 # Setup Instructions:
 # 
