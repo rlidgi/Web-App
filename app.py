@@ -1103,9 +1103,46 @@ def results_route():
 def results_get():
     data = session.get('results_data', None)
     if not data:
-        # No data to show; notify and send the user to the homepage
-        flash("Your file could not be processed (possibly due to formatting). Please copy the resume text and paste it into the provided text area.", 'danger')
-        return redirect(url_for('index'))
+        # Fallbacks so "Back to Results" from the template viewer doesn't dump users on the homepage.
+        # 1) If we still have template_data (set when a template is selected), render results from it.
+        td = session.get('template_data') or {}
+        if isinstance(td, dict) and td.get('revised_resume'):
+            data = {
+                'original_resume': td.get('original_resume', ''),
+                'revised_resume': td.get('revised_resume', ''),
+                'feedback': td.get('feedback', {}) or {},
+                'job_description': td.get('job_description', '') or '',
+            }
+        else:
+            # 2) Anonymous users: pending_revision holds the revised resume + feedback
+            pending = session.get('pending_revision') or {}
+            if isinstance(pending, dict) and pending.get('revised_resume'):
+                data = {
+                    'original_resume': pending.get('original_resume', ''),
+                    'revised_resume': pending.get('revised_resume', ''),
+                    'feedback': pending.get('feedback', {}) or {},
+                    'job_description': '',
+                }
+            else:
+                # 3) Logged-in users: fall back to latest saved revision
+                try:
+                    if current_user.is_authenticated:
+                        revs = get_user_revisions(current_user.id)
+                        if revs and isinstance(revs, list):
+                            rev0 = revs[0]
+                            data = {
+                                'original_resume': rev0.get('original_resume', ''),
+                                'revised_resume': rev0.get('resume_content', ''),
+                                'feedback': rev0.get('feedback', {}) or {},
+                                'job_description': '',
+                            }
+                except Exception:
+                    data = None
+
+        if not data:
+            # No data to show; notify and send the user to the homepage
+            flash("Your file could not be processed (possibly due to formatting). Please copy the resume text and paste it into the provided text area.", 'danger')
+            return redirect(url_for('index'))
     # Keep data in session for template selection
     # session.pop would remove it, so we use session.get and keep it available
     resp = app.make_response(render_template(
@@ -1135,17 +1172,25 @@ def parse_resume_for_template():
             return jsonify({"success": False, "error": "Invalid template name"}), 400
         
         revised_resume = ""
+        original_resume = ""
+        feedback = {}
+        job_description = ""
 
         # 1) Preferred: results_data from the immediate /results flow
         results_data = session.get('results_data') or {}
         if isinstance(results_data, dict):
             revised_resume = (results_data.get('revised_resume') or "").strip()
+            original_resume = (results_data.get('original_resume') or "").strip()
+            feedback = results_data.get('feedback', {}) or {}
+            job_description = (results_data.get('job_description') or "").strip()
 
         # 2) Fallback: pending_revision (for anonymous users, stored at submission time)
         if not revised_resume:
             pending = session.get('pending_revision') or {}
             if isinstance(pending, dict):
                 revised_resume = (pending.get('revised_resume') or "").strip()
+                original_resume = (pending.get('original_resume') or "").strip()
+                feedback = pending.get('feedback', {}) or {}
 
         # 3) Fallback: logged-in user’s latest saved revision
         if not revised_resume:
@@ -1154,6 +1199,8 @@ def parse_resume_for_template():
                     revs = get_user_revisions(current_user.id)
                     if revs and isinstance(revs, list):
                         revised_resume = (revs[0].get('resume_content') or "").strip()
+                        original_resume = (revs[0].get('original_resume') or "").strip()
+                        feedback = revs[0].get('feedback', {}) or {}
             except Exception:
                 revised_resume = ""
 
@@ -1171,7 +1218,11 @@ def parse_resume_for_template():
         session['template_data'] = {
             'structured_resume': structured_resume,
             'template_name': template_name,
-            'revised_resume': revised_resume  # Keep original text as fallback
+            # Keep text for navigation back to /results (comparison view)
+            'original_resume': original_resume,
+            'revised_resume': revised_resume,
+            'feedback': feedback,
+            'job_description': job_description,
         }
         
         return jsonify({
