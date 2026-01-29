@@ -3666,11 +3666,8 @@
                 <a href="/" class="font-semibold text-gray-900"><img alt="Logo" class="h-12 w-auto"
                         src="/static/images/logo23_small.png" loading="lazy" width="64" height="64"></a>
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="#features"
-                        class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Features</a>
-                    <a href="#how-it-works"
-                        class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">How
-                        it Works</a>
+
+
                     <a href="/blog"
                         class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Blog</a>
 
@@ -3682,17 +3679,34 @@
 
                     <a href="/about"
                         class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">About</a>
+                    <a href="/plans"
+                        class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">Pricing</a>
                     <a href="#faq"
                         class="text-gray-700 hover:text-primary underline underline-offset-2 md:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">FAQ</a>
 
                     {% if current_user.is_authenticated %}
                     <a href="/my_revisions"
-                        class="px-3 py-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-600 shadow-sm ring-1 ring-blue-300/50 transition-colors">My Account</a>
+                        class="px-3 py-1.5 rounded-md bg-blue-500 text-white hover:bg-blue-600 shadow-sm ring-1 ring-blue-300/50 transition-colors">My
+                        Account</a>
+                    <a href="/settings" aria-label="Settings" title="Settings"
+                        class="inline-flex items-center justify-center w-10 h-10 rounded-md bg-white text-gray-700 hover:text-gray-900 hover:bg-gray-50 shadow-sm ring-1 ring-gray-200 transition-colors">
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round">
+                            <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+                            <path
+                                d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2.1 2.1 0 0 1-1.5 3.6 2 2 0 0 1-1.4-.6l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2.1 2.1 0 0 1-4.2 0v-.2a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 0 1-1.4.6 2.1 2.1 0 0 1-1.5-3.6l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2.1 2.1 0 0 1 0-4.2h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2.1 2.1 0 0 1 6 3a2 2 0 0 1 1.4.6l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V3a2.1 2.1 0 0 1 4.2 0v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 0 1 20.8 6a2.1 2.1 0 0 1-.6 1.5l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1H21a2.1 2.1 0 0 1 0 4.2h-.2a1.7 1.7 0 0 0-1.6 1Z" />
+                        </svg>
+                    </a>
                     <a href="/logout"
                         class="px-3 py-1.5 rounded-md bg-red-500 text-white hover:bg-red-600 shadow-sm ring-1 ring-red-300/50 transition-colors">Logout</a>
                     {% else %}
                     <a href="/login"
-                        class="px-3 py-1.5 rounded-md bg-primary text-white hover:bg-primary/90 shadow-sm ring-1 ring-primary/20 transition-colors">Login</a>
+                        class="text-blue-600 hover:text-blue-800 hover:underline underline-offset-2 font-semibold transition-colors">Sign
+                        In</a>
+                    <a href="/login"
+                        class="px-4 py-2 rounded-md bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-sm ring-1 ring-purple-300/40 transition-all">Free
+                        Account</a>
                     {% endif %}
 
                 </div>
@@ -3737,21 +3751,19 @@
 
                     <!-- document -->
                     <rect x="34" y="24" width="44" height="62" rx="10" stroke="#4F46E5" stroke-width="3" />
-                    <path d="M44 42h24M44 52h30M44 62h20" stroke="#4F46E5" stroke-width="3"
-                        stroke-linecap="round" opacity=".8" />
+                    <path d="M44 42h24M44 52h30M44 62h20" stroke="#4F46E5" stroke-width="3" stroke-linecap="round"
+                        opacity=".8" />
 
                     <!-- magnifying glass that "scans" -->
                     <g class="scan">
                         <circle cx="78" cy="76" r="14" stroke="#10B981" stroke-width="4" />
                         <path d="M88 86l12 12" stroke="#10B981" stroke-width="4" stroke-linecap="round" />
-                        <path d="M70 76h16" stroke="#10B981" stroke-width="3" stroke-linecap="round"
-                            opacity=".8" />
+                        <path d="M70 76h16" stroke="#10B981" stroke-width="3" stroke-linecap="round" opacity=".8" />
                     </g>
 
                     <!-- sparkles -->
                     <g class="pulse" opacity=".9">
-                        <path d="M26 38l2.2 5.2L34 45l-5.8 1.8L26 52l-2.2-5.2L18 45l5.8-1.8L26 38z"
-                            fill="#F59E0B" />
+                        <path d="M26 38l2.2 5.2L34 45l-5.8 1.8L26 52l-2.2-5.2L18 45l5.8-1.8L26 38z" fill="#F59E0B" />
                         <circle cx="92" cy="34" r="3.5" fill="#3B82F6" />
                     </g>
 
@@ -3843,15 +3855,29 @@
 
 
             {% if current_user.is_authenticated %}
-            <a class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center" href="/my_revisions">
+            <a class="block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center"
+                href="/my_revisions">
                 My Account
+            </a>
+            <a class="block px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded hover:bg-gray-50 text-center mt-2"
+                href="/settings" aria-label="Settings" title="Settings">
+                <span class="inline-flex items-center justify-center w-full">
+                    <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+                        <path
+                            d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2.1 2.1 0 0 1-1.5 3.6 2 2 0 0 1-1.4-.6l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21a2.1 2.1 0 0 1-4.2 0v-.2a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 0 1-1.4.6 2.1 2.1 0 0 1-1.5-3.6l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2.1 2.1 0 0 1 0-4.2h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1A2.1 2.1 0 0 1 6 3a2 2 0 0 1 1.4.6l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V3a2.1 2.1 0 0 1 4.2 0v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 0 1 20.8 6a2.1 2.1 0 0 1-.6 1.5l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1H21a2.1 2.1 0 0 1 0 4.2h-.2a1.7 1.7 0 0 0-1.6 1Z" />
+                    </svg>
+                </span>
             </a>
             <a class="block px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-center mt-2" href="/logout">
                 Logout
             </a>
             {% else %}
-            <a class="block px-4 py-2 bg-primary text-white rounded hover:bg-primary/90 text-center" href="/login">
-                Login
+            <a class="block text-blue-600 hover:text-blue-800 hover:underline underline-offset-2 font-semibold text-center"
+                href="/login">
+                Sign In
             </a>
             {% endif %}
 
@@ -3869,6 +3895,18 @@
             class="relative min-h-screen flex items-center bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
             <!-- Background pattern -->
             <div class="absolute inset-0 hero-pattern"></div>
+            <!-- Enhanced hero backdrop (subtle blobs + mesh pattern) -->
+            <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
+                <!-- Soft color blobs -->
+                <div class="absolute -top-24 -left-24 w-[420px] h-[420px] bg-primary/20 rounded-full blur-3xl"></div>
+                <div class="absolute top-1/3 -right-32 w-[520px] h-[520px] bg-secondary/20 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-40 left-1/3 w-[620px] h-[620px] bg-blue-400/10 rounded-full blur-3xl">
+                </div>
+                <!-- Subtle mesh/dot overlay -->
+                <div
+                    class="absolute inset-0 opacity-[0.18] [background-image:radial-gradient(rgba(79,70,229,0.55)_0.5px,transparent_0.5px)] [background-size:22px_22px]">
+                </div>
+            </div>
 
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
                 <div class="grid lg:grid-cols-2 gap-12 items-center">
@@ -4144,9 +4182,9 @@
                         </div>
 
                         <!-- Steps Process -->
-                        <div class="grid lg:grid-cols-2 gap-16 items-center mb-20">
+                        <div class="grid lg:grid-cols-2 gap-16 items-start mb-20">
                             <!-- Left side - CV Image -->
-                            <div class="relative order-2 lg:order-1 scroll-reveal-left revealed">
+                            <div class="relative order-2 lg:order-1 scroll-reveal-left revealed lg:-mt-8">
                                 <div class="relative">
                                     <!-- Decorative background -->
                                     <div
@@ -4190,14 +4228,257 @@
                                     style="transition-delay: 300ms;">
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            <span class="text-2xl font-bold text-white">1</span>
+                                            class="w-[233px] h-[233px] md:w-[291px] md:h-[291px] bg-transparent rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                            <svg class="upload-icon w-full h-full" xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 800 600" role="img"
+                                                aria-label="Cute uploading a resume animation">
+                                                <style>
+                                                    svg.upload-icon {
+                                                        --ink: #111827;
+                                                        --muted: #6B7280;
+                                                        --track: #E5E7EB;
+                                                        --success: #10B981;
+                                                        --sw: 6;
+                                                    }
+
+                                                    /* Arrow bounce (continuous) */
+                                                    svg.upload-icon #arrow {
+                                                        transform-origin: 400px 220px;
+                                                        animation: step1_arrowBounce 1.2s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step1_arrowBounce {
+
+                                                        0%,
+                                                        100% {
+                                                            transform: translateY(0px);
+                                                        }
+
+                                                        50% {
+                                                            transform: translateY(10px);
+                                                        }
+                                                    }
+
+                                                    /* Paper drop + reset (3.6s loop) */
+                                                    svg.upload-icon #paper {
+                                                        transform-origin: 400px 170px;
+                                                        animation: step1_paperDrop 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step1_paperDrop {
+
+                                                        0%,
+                                                        8.33% {
+                                                            transform: translateY(0px);
+                                                        }
+
+                                                        /* 0ms -> 300ms */
+                                                        33.33% {
+                                                            transform: translateY(40px);
+                                                        }
+
+                                                        /* 1200ms */
+                                                        91.66% {
+                                                            transform: translateY(40px);
+                                                        }
+
+                                                        /* 3300ms */
+                                                        91.67%,
+                                                        100% {
+                                                            transform: translateY(0px);
+                                                        }
+
+                                                        /* instant reset */
+                                                    }
+
+                                                    /* Progress fill scaleX + reset (3.6s loop) */
+                                                    svg.upload-icon #progressFill {
+                                                        transform-origin: 240px 478px;
+                                                        /* left center of bar */
+                                                        transform: scaleX(0);
+                                                        animation: step1_progressFill 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step1_progressFill {
+
+                                                        0%,
+                                                        16.66% {
+                                                            transform: scaleX(0);
+                                                        }
+
+                                                        /* 0ms -> 600ms */
+                                                        55.55% {
+                                                            transform: scaleX(1);
+                                                        }
+
+                                                        /* 2000ms */
+                                                        91.66% {
+                                                            transform: scaleX(1);
+                                                        }
+
+                                                        /* 3300ms */
+                                                        91.67%,
+                                                        100% {
+                                                            transform: scaleX(0);
+                                                        }
+
+                                                        /* instant reset */
+                                                    }
+
+                                                    /* Check appears at 2200ms for 250ms, then hides at reset */
+                                                    svg.upload-icon #check {
+                                                        opacity: 0;
+                                                        transform-origin: 560px 445px;
+                                                        transform: scale(0.7);
+                                                        animation: step1_checkIn 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step1_checkIn {
+
+                                                        0%,
+                                                        61.11% {
+                                                            opacity: 0;
+                                                            transform: scale(0.7);
+                                                        }
+
+                                                        /* 0ms -> 2200ms */
+                                                        68.05% {
+                                                            opacity: 1;
+                                                            transform: scale(1);
+                                                        }
+
+                                                        /* 2450ms */
+                                                        91.66% {
+                                                            opacity: 1;
+                                                            transform: scale(1);
+                                                        }
+
+                                                        /* 3300ms */
+                                                        91.67%,
+                                                        100% {
+                                                            opacity: 0;
+                                                            transform: scale(0.7);
+                                                        }
+
+                                                        /* reset */
+                                                    }
+
+                                                    /* Little “happy wiggle” for the paper face, synced to loop */
+                                                    svg.upload-icon #paperLines {
+                                                        transform-origin: 400px 190px;
+                                                        animation: step1_faceWiggle 3.6s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step1_faceWiggle {
+
+                                                        0%,
+                                                        16.66% {
+                                                            transform: translateY(0px);
+                                                        }
+
+                                                        25% {
+                                                            transform: translateY(2px);
+                                                        }
+
+                                                        33.33% {
+                                                            transform: translateY(0px);
+                                                        }
+
+                                                        55.55% {
+                                                            transform: translateY(1px);
+                                                        }
+
+                                                        91.66% {
+                                                            transform: translateY(0px);
+                                                        }
+
+                                                        100% {
+                                                            transform: translateY(0px);
+                                                        }
+                                                    }
+                                                </style>
+
+                                                <!-- Resume document (cute: rounder corners + little face) -->
+                                                <g id="paper" fill="none">
+                                                    <rect x="275" y="85" width="250" height="210" rx="28"
+                                                        stroke="var(--ink)" stroke-width="var(--sw)" />
+                                                    <!-- tiny “page fold” -->
+                                                    <path d="M485 85 L525 125" stroke="var(--muted)"
+                                                        stroke-width="var(--sw)" stroke-linecap="round" />
+
+                                                    <!-- Cute face + lines grouped under #paperLines -->
+                                                    <g id="paperLines" stroke="var(--muted)" stroke-width="var(--sw)"
+                                                        stroke-linecap="round" stroke-linejoin="round">
+                                                        <!-- eyes -->
+                                                        <circle cx="345" cy="145" r="6" fill="var(--ink)"
+                                                            stroke="none" />
+                                                        <circle cx="385" cy="145" r="6" fill="var(--ink)"
+                                                            stroke="none" />
+                                                        <!-- smile -->
+                                                        <path d="M350 165 Q365 180 380 165" stroke="var(--ink)"
+                                                            fill="none" />
+
+                                                        <!-- resume lines -->
+                                                        <line x1="310" y1="200" x2="495" y2="200" />
+                                                        <line x1="310" y1="225" x2="470" y2="225" />
+                                                        <line x1="310" y1="250" x2="490" y2="250" />
+                                                        <line x1="310" y1="275" x2="455" y2="275" />
+                                                        <line x1="310" y1="300" x2="480" y2="300" />
+                                                        <line x1="310" y1="325" x2="450" y2="325" />
+                                                    </g>
+
+                                                    <!-- PDF tag (a bit more playful) -->
+                                                    <g id="pdfTag">
+                                                        <rect x="448" y="106" width="62" height="32" rx="14"
+                                                            fill="var(--ink)" />
+                                                        <text x="479" y="128" text-anchor="middle"
+                                                            font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+                                                            font-size="16" font-weight="800" fill="#ffffff">PDF</text>
+                                                    </g>
+                                                </g>
+
+                                                <!-- Upload arrow (cute: chunkier chevron + little “spark” dots) -->
+                                                <g id="arrow" fill="none" stroke="var(--ink)" stroke-width="var(--sw)"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="400" y1="230" x2="400" y2="300" />
+                                                    <path d="M368 275 L400 307 L432 275" />
+                                                    <!-- tiny sparkles -->
+                                                    <circle cx="370" cy="235" r="4" fill="var(--muted)" stroke="none" />
+                                                    <circle cx="438" cy="245" r="3.5" fill="var(--muted)"
+                                                        stroke="none" />
+                                                </g>
+
+                                                <!-- Tray (cute: softer, bowl-like curve) -->
+                                                <g id="tray" fill="none" stroke="var(--ink)" stroke-width="var(--sw)"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M245 330 H555" />
+                                                    <path d="M285 330 V372 Q400 420 515 372 V330" />
+                                                    <path d="M332 372 Q400 400 468 372" stroke="var(--muted)" />
+                                                </g>
+
+                                                <!-- Progress bar (cute: pill + tiny heart at end) -->
+                                                <g id="progressTrack">
+                                                    <rect x="240" y="463" width="320" height="32" rx="16"
+                                                        fill="var(--track)" />
+                                                </g>
+                                                <g id="progressFill">
+                                                    <rect x="240" y="463" width="320" height="32" rx="16"
+                                                        fill="var(--success)" />
+                                                </g>
+
+                                                <!-- Success check (cute: slightly rounder check) -->
+                                                <g id="check" fill="none" stroke="var(--success)"
+                                                    stroke-width="var(--sw)" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <path d="M520 448 L545 474 L592 426" />
+                                                </g>
+                                            </svg>
                                         </div>
                                     </div>
                                     <div class="flex-1">
                                         <h3
                                             class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                                            Provide Your Resume
+                                            1. Provide Your Resume
                                         </h3>
                                         <p class="text-lg text-gray-600 leading-relaxed mb-4">
                                             Simply upload your resume file or paste the text content. Our system
@@ -4225,14 +4506,323 @@
                                     style="transition-delay: 400ms;">
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="w-16 h-16 bg-gradient-to-br from-secondary to-purple-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            <span class="text-2xl font-bold text-white">2</span>
+                                            class="w-[233px] h-[233px] md:w-[291px] md:h-[291px] bg-transparent rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                            <svg class="ai-enhance-icon w-full h-full"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img"
+                                                aria-label="AI enhances resume animation with a cute robot thinking">
+                                                <style>
+                                                    svg.ai-enhance-icon {
+                                                        --ink: #111827;
+                                                        --muted: #6B7280;
+                                                        --track: #E5E7EB;
+                                                        --success: #10B981;
+                                                        --sw: 6;
+                                                    }
+
+                                                    /* AI sparkles */
+                                                    svg.ai-enhance-icon #arrow {
+                                                        transform-origin: 400px 160px;
+                                                        animation: step2_sparkleFloat 1.2s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step2_sparkleFloat {
+
+                                                        0%,
+                                                        100% {
+                                                            transform: translateY(0px);
+                                                            opacity: 0.7;
+                                                        }
+
+                                                        50% {
+                                                            transform: translateY(-6px);
+                                                            opacity: 1;
+                                                        }
+                                                    }
+
+                                                    /* Resume upgrade pop */
+                                                    svg.ai-enhance-icon #paper {
+                                                        transform-origin: 400px 215px;
+                                                        animation: step2_upgradePop 3.6s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step2_upgradePop {
+
+                                                        0%,
+                                                        12% {
+                                                            transform: scale(1);
+                                                        }
+
+                                                        28% {
+                                                            transform: scale(1.02) translateY(-6px);
+                                                        }
+
+                                                        44%,
+                                                        100% {
+                                                            transform: scale(1);
+                                                        }
+                                                    }
+
+                                                    /* Progress fill */
+                                                    svg.ai-enhance-icon #progressFill {
+                                                        transform-origin: 240px 472px;
+                                                        transform: scaleX(0);
+                                                        animation: step2_enhanceFill 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step2_enhanceFill {
+
+                                                        0%,
+                                                        16% {
+                                                            transform: scaleX(0);
+                                                        }
+
+                                                        52%,
+                                                        91.66% {
+                                                            transform: scaleX(1);
+                                                        }
+
+                                                        91.67%,
+                                                        100% {
+                                                            transform: scaleX(0);
+                                                        }
+                                                    }
+
+                                                    /* Success check */
+                                                    svg.ai-enhance-icon #check {
+                                                        opacity: 0;
+                                                        transform-origin: 575px 445px;
+                                                        transform: scale(0.7);
+                                                        animation: step2_checkIn 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step2_checkIn {
+
+                                                        0%,
+                                                        61% {
+                                                            opacity: 0;
+                                                            transform: scale(0.7);
+                                                        }
+
+                                                        68%,
+                                                        91.66% {
+                                                            opacity: 1;
+                                                            transform: scale(1);
+                                                        }
+
+                                                        91.67%,
+                                                        100% {
+                                                            opacity: 0;
+                                                            transform: scale(0.7);
+                                                        }
+                                                    }
+
+                                                    /* Resume text improvement */
+                                                    svg.ai-enhance-icon #paperLines {
+                                                        animation: step2_fadeOut 3.6s linear infinite;
+                                                    }
+
+                                                    svg.ai-enhance-icon #paperLinesAfter {
+                                                        animation: step2_fadeIn 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step2_fadeOut {
+
+                                                        0%,
+                                                        22% {
+                                                            opacity: 1;
+                                                        }
+
+                                                        33%,
+                                                        100% {
+                                                            opacity: 0;
+                                                        }
+                                                    }
+
+                                                    @keyframes step2_fadeIn {
+
+                                                        0%,
+                                                        33% {
+                                                            opacity: 0;
+                                                        }
+
+                                                        44%,
+                                                        91.66% {
+                                                            opacity: 1;
+                                                        }
+
+                                                        100% {
+                                                            opacity: 0;
+                                                        }
+                                                    }
+
+                                                    /* AI badge pulse */
+                                                    svg.ai-enhance-icon #pdfTag {
+                                                        transform-origin: 487px 123px;
+                                                        animation: step2_badgePulse 1.6s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step2_badgePulse {
+
+                                                        0%,
+                                                        100% {
+                                                            transform: scale(1);
+                                                        }
+
+                                                        50% {
+                                                            transform: scale(1.06);
+                                                        }
+                                                    }
+
+                                                    /* Robot gentle bob */
+                                                    svg.ai-enhance-icon #robot {
+                                                        transform-origin: 615px 255px;
+                                                        animation: step2_robotBob 3.6s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step2_robotBob {
+
+                                                        0%,
+                                                        16% {
+                                                            transform: translateY(0);
+                                                        }
+
+                                                        28% {
+                                                            transform: translateY(-6px);
+                                                        }
+
+                                                        44%,
+                                                        100% {
+                                                            transform: translateY(0);
+                                                        }
+                                                    }
+
+                                                    /* Thinking dots animation */
+                                                    svg.ai-enhance-icon .think-dot {
+                                                        opacity: 0;
+                                                        animation: step2_thinkDots 1.4s ease-in-out infinite;
+                                                    }
+
+                                                    svg.ai-enhance-icon .think-dot:nth-child(1) {
+                                                        animation-delay: 0s;
+                                                    }
+
+                                                    svg.ai-enhance-icon .think-dot:nth-child(2) {
+                                                        animation-delay: 0.2s;
+                                                    }
+
+                                                    svg.ai-enhance-icon .think-dot:nth-child(3) {
+                                                        animation-delay: 0.4s;
+                                                    }
+
+                                                    @keyframes step2_thinkDots {
+                                                        0% {
+                                                            opacity: 0;
+                                                        }
+
+                                                        20% {
+                                                            opacity: 1;
+                                                        }
+
+                                                        80% {
+                                                            opacity: 1;
+                                                        }
+
+                                                        100% {
+                                                            opacity: 0;
+                                                        }
+                                                    }
+                                                </style>
+
+                                                <!-- Resume -->
+                                                <g id="paper" fill="none">
+                                                    <rect x="270" y="90" width="260" height="250" rx="28"
+                                                        stroke="var(--ink)" stroke-width="var(--sw)" />
+                                                    <path d="M480 90 L530 140" stroke="var(--muted)"
+                                                        stroke-width="var(--sw)" stroke-linecap="round" />
+
+                                                    <g id="pdfTag">
+                                                        <rect x="448" y="106" width="78" height="34" rx="16"
+                                                            fill="var(--ink)" />
+                                                        <text x="487" y="130" text-anchor="middle"
+                                                            font-family="system-ui, sans-serif" font-size="16"
+                                                            font-weight="800" fill="#fff">AI+</text>
+                                                    </g>
+
+                                                    <g id="paperLines" stroke="var(--muted)" stroke-width="var(--sw)"
+                                                        stroke-linecap="round">
+                                                        <line x1="305" y1="165" x2="500" y2="165" />
+                                                        <line x1="305" y1="195" x2="470" y2="195" />
+                                                        <line x1="305" y1="225" x2="490" y2="225" />
+                                                        <line x1="305" y1="255" x2="455" y2="255" />
+                                                        <line x1="305" y1="285" x2="480" y2="285" />
+                                                        <line x1="305" y1="315" x2="450" y2="315" />
+                                                    </g>
+
+                                                    <g id="paperLinesAfter" stroke="var(--ink)" stroke-width="var(--sw)"
+                                                        stroke-linecap="round">
+                                                        <line x1="305" y1="165" x2="510" y2="165" />
+                                                        <line x1="305" y1="195" x2="495" y2="195" />
+                                                        <line x1="305" y1="225" x2="505" y2="225" />
+                                                        <line x1="305" y1="255" x2="485" y2="255" />
+                                                        <line x1="305" y1="285" x2="500" y2="285" />
+                                                        <line x1="305" y1="315" x2="470" y2="315" />
+                                                    </g>
+                                                </g>
+
+                                                <!-- Robot -->
+                                                <g id="robot" fill="none" stroke="var(--ink)" stroke-width="var(--sw)"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="575" y="150" width="110" height="90" rx="24" />
+                                                    <line x1="630" y1="138" x2="630" y2="150" />
+                                                    <circle cx="630" cy="132" r="7" fill="var(--success)"
+                                                        stroke="none" />
+                                                    <circle cx="610" cy="190" r="6" fill="var(--ink)" stroke="none" />
+                                                    <circle cx="650" cy="190" r="6" fill="var(--ink)" stroke="none" />
+                                                    <path d="M612 210 Q630 226 648 210" stroke="var(--muted)" />
+                                                    <rect x="585" y="245" width="90" height="110" rx="22" />
+                                                </g>
+
+                                                <!-- Thinking dots -->
+                                                <g id="thinkingDots" fill="var(--muted)" stroke="none">
+                                                    <circle class="think-dot" cx="600" cy="118" r="4" />
+                                                    <circle class="think-dot" cx="620" cy="108" r="4" />
+                                                    <circle class="think-dot" cx="642" cy="102" r="4" />
+                                                </g>
+
+                                                <!-- AI sparkles -->
+                                                <g id="arrow" fill="none" stroke="var(--success)"
+                                                    stroke-width="var(--sw)" stroke-linecap="round">
+                                                    <path d="M400 150 L400 178" />
+                                                    <path d="M386 164 L414 164" />
+                                                    <path d="M390 154 L410 174" />
+                                                    <path d="M410 154 L390 174" />
+                                                </g>
+
+                                                <!-- Progress -->
+                                                <g id="progressTrack">
+                                                    <rect x="240" y="455" width="320" height="34" rx="17"
+                                                        fill="var(--track)" />
+                                                    <text x="240" y="435" font-family="system-ui, sans-serif"
+                                                        font-size="18" font-weight="700"
+                                                        fill="var(--muted)">Enhancing…</text>
+                                                </g>
+                                                <g id="progressFill">
+                                                    <rect x="240" y="455" width="320" height="34" rx="17"
+                                                        fill="var(--success)" />
+                                                </g>
+
+                                                <!-- Check -->
+                                                <g id="check" fill="none" stroke="var(--success)"
+                                                    stroke-width="var(--sw)" stroke-linecap="round">
+                                                    <path d="M560 440 L585 468 L635 418" />
+                                                </g>
+                                            </svg>
                                         </div>
                                     </div>
                                     <div class="flex-1">
                                         <h3
                                             class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-secondary transition-colors">
-                                            AI Enhancement
+                                            2. AI Enhancement
                                         </h3>
                                         <p class="text-lg text-gray-600 leading-relaxed mb-4">
                                             Our advanced AI analyzes your content, improves language, adds impactful
@@ -4260,14 +4850,325 @@
                                     style="transition-delay: 500ms;">
                                     <div class="flex-shrink-0">
                                         <div
-                                            class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                            <span class="text-2xl font-bold text-white">3</span>
+                                            class="w-[233px] h-[233px] md:w-[291px] md:h-[291px] bg-transparent rounded-3xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                            <svg class="resume-analysis-icon w-full h-full"
+                                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img"
+                                                aria-label="Resume with detailed analysis animation">
+                                                <style>
+                                                    svg.resume-analysis-icon {
+                                                        --ink: #111827;
+                                                        --muted: #6B7280;
+                                                        --track: #E5E7EB;
+                                                        --success: #10B981;
+                                                        --sw: 6;
+                                                    }
+
+                                                    /* Paper: subtle settle */
+                                                    svg.resume-analysis-icon #paper {
+                                                        transform-origin: 320px 170px;
+                                                        animation: step3_paperSettle 3.6s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step3_paperSettle {
+
+                                                        0%,
+                                                        100% {
+                                                            transform: translateY(0);
+                                                        }
+
+                                                        18% {
+                                                            transform: translateY(6px);
+                                                        }
+
+                                                        36% {
+                                                            transform: translateY(0);
+                                                        }
+                                                    }
+
+                                                    /* Scan line sweeps over the resume */
+                                                    svg.resume-analysis-icon #arrow {
+                                                        opacity: 0;
+                                                        transform-origin: 260px 110px;
+                                                        animation: step3_scanSweep 1.8s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step3_scanSweep {
+                                                        0% {
+                                                            opacity: 0;
+                                                            transform: translateY(0px);
+                                                        }
+
+                                                        10% {
+                                                            opacity: 1;
+                                                        }
+
+                                                        50% {
+                                                            opacity: 1;
+                                                            transform: translateY(220px);
+                                                        }
+
+                                                        80% {
+                                                            opacity: 0;
+                                                            transform: translateY(220px);
+                                                        }
+
+                                                        100% {
+                                                            opacity: 0;
+                                                            transform: translateY(0px);
+                                                        }
+                                                    }
+
+                                                    /* Progress bar fills to indicate analysis running */
+                                                    svg.resume-analysis-icon #progressFill {
+                                                        transform-origin: 240px 500px;
+                                                        transform: scaleX(0);
+                                                        animation: step3_analyzeFill 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step3_analyzeFill {
+
+                                                        0%,
+                                                        10% {
+                                                            transform: scaleX(0);
+                                                        }
+
+                                                        60% {
+                                                            transform: scaleX(1);
+                                                        }
+
+                                                        91.66% {
+                                                            transform: scaleX(1);
+                                                        }
+
+                                                        91.67%,
+                                                        100% {
+                                                            transform: scaleX(0);
+                                                        }
+                                                    }
+
+                                                    /* Check shows when analysis is done */
+                                                    svg.resume-analysis-icon #check {
+                                                        opacity: 0;
+                                                        transform-origin: 585px 486px;
+                                                        transform: scale(0.7);
+                                                        animation: step3_checkIn 3.6s linear infinite;
+                                                    }
+
+                                                    @keyframes step3_checkIn {
+
+                                                        0%,
+                                                        66% {
+                                                            opacity: 0;
+                                                            transform: scale(0.7);
+                                                        }
+
+                                                        72% {
+                                                            opacity: 1;
+                                                            transform: scale(1);
+                                                        }
+
+                                                        91.66% {
+                                                            opacity: 1;
+                                                            transform: scale(1);
+                                                        }
+
+                                                        91.67%,
+                                                        100% {
+                                                            opacity: 0;
+                                                            transform: scale(0.7);
+                                                        }
+                                                    }
+
+                                                    /* “Detailed analysis” panel appears */
+                                                    svg.resume-analysis-icon #analysisPanel {
+                                                        opacity: 0;
+                                                        transform-origin: 565px 205px;
+                                                        animation: step3_panelIn 3.6s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step3_panelIn {
+
+                                                        0%,
+                                                        20% {
+                                                            opacity: 0;
+                                                            transform: translateX(10px) scale(0.98);
+                                                        }
+
+                                                        35% {
+                                                            opacity: 1;
+                                                            transform: translateX(0px) scale(1);
+                                                        }
+
+                                                        91.66% {
+                                                            opacity: 1;
+                                                            transform: translateX(0px) scale(1);
+                                                        }
+
+                                                        100% {
+                                                            opacity: 0;
+                                                            transform: translateX(10px) scale(0.98);
+                                                        }
+                                                    }
+
+                                                    /* Tiny “bullet highlights” pulse in the panel */
+                                                    svg.resume-analysis-icon .metric {
+                                                        transform-origin: center;
+                                                        animation: step3_metricPulse 1.2s ease-in-out infinite;
+                                                    }
+
+                                                    svg.resume-analysis-icon .metric:nth-child(1) {
+                                                        animation-delay: 0s;
+                                                    }
+
+                                                    svg.resume-analysis-icon .metric:nth-child(2) {
+                                                        animation-delay: 0.2s;
+                                                    }
+
+                                                    svg.resume-analysis-icon .metric:nth-child(3) {
+                                                        animation-delay: 0.4s;
+                                                    }
+
+                                                    @keyframes step3_metricPulse {
+
+                                                        0%,
+                                                        100% {
+                                                            opacity: 0.55;
+                                                            transform: scale(1);
+                                                        }
+
+                                                        50% {
+                                                            opacity: 1;
+                                                            transform: scale(1.06);
+                                                        }
+                                                    }
+
+                                                    /* “PDF” tag as required #pdfTag (acts like an "ANALYZE" badge) */
+                                                    svg.resume-analysis-icon #pdfTag {
+                                                        transform-origin: 420px 120px;
+                                                        animation: step3_badgePulse 1.6s ease-in-out infinite;
+                                                    }
+
+                                                    @keyframes step3_badgePulse {
+
+                                                        0%,
+                                                        100% {
+                                                            transform: scale(1);
+                                                        }
+
+                                                        50% {
+                                                            transform: scale(1.06);
+                                                        }
+                                                    }
+                                                </style>
+
+                                                <!-- Resume document -->
+                                                <g id="paper" fill="none">
+                                                    <rect x="180" y="80" width="280" height="360" rx="28"
+                                                        stroke="var(--ink)" stroke-width="var(--sw)" />
+                                                    <path d="M410 80 L460 130" stroke="var(--muted)"
+                                                        stroke-width="var(--sw)" stroke-linecap="round" />
+
+                                                    <!-- Analyze badge (required ID #pdfTag) -->
+                                                    <g id="pdfTag">
+                                                        <rect x="360" y="98" width="88" height="34" rx="16"
+                                                            fill="var(--ink)" />
+                                                        <text x="404" y="122" text-anchor="middle"
+                                                            font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+                                                            font-size="14" font-weight="800"
+                                                            fill="#ffffff">ANALYZE</text>
+                                                    </g>
+
+                                                    <!-- Resume lines (required ID #paperLines) -->
+                                                    <g id="paperLines" stroke="var(--muted)" stroke-width="var(--sw)"
+                                                        stroke-linecap="round">
+                                                        <line x1="215" y1="160" x2="430" y2="160" />
+                                                        <line x1="215" y1="195" x2="405" y2="195" />
+                                                        <line x1="215" y1="230" x2="425" y2="230" />
+                                                        <line x1="215" y1="265" x2="395" y2="265" />
+                                                        <line x1="215" y1="300" x2="420" y2="300" />
+                                                        <line x1="215" y1="335" x2="385" y2="335" />
+                                                    </g>
+                                                </g>
+
+                                                <!-- Scan line (re-using required #arrow id as the scanner) -->
+                                                <g id="arrow" fill="none" stroke="var(--success)"
+                                                    stroke-width="var(--sw)" stroke-linecap="round">
+                                                    <line x1="205" y1="120" x2="445" y2="120" />
+                                                    <circle cx="205" cy="120" r="5" fill="var(--success)"
+                                                        stroke="none" />
+                                                    <circle cx="445" cy="120" r="5" fill="var(--success)"
+                                                        stroke="none" />
+                                                </g>
+
+                                                <!-- Detailed analysis panel -->
+                                                <g id="analysisPanel" fill="none">
+                                                    <rect x="510" y="120" width="240" height="260" rx="24"
+                                                        stroke="var(--ink)" stroke-width="var(--sw)" />
+                                                    <text x="530" y="160"
+                                                        font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+                                                        font-size="18" font-weight="800" fill="var(--ink)">Detailed
+                                                        analysis</text>
+
+                                                    <!-- 3 “metrics” -->
+                                                    <g class="metric">
+                                                        <circle cx="540" cy="200" r="6" fill="var(--success)"
+                                                            stroke="none" />
+                                                        <line x1="555" y1="200" x2="725" y2="200" stroke="var(--muted)"
+                                                            stroke-width="var(--sw)" stroke-linecap="round" />
+                                                    </g>
+                                                    <g class="metric">
+                                                        <circle cx="540" cy="240" r="6" fill="var(--success)"
+                                                            stroke="none" />
+                                                        <line x1="555" y1="240" x2="705" y2="240" stroke="var(--muted)"
+                                                            stroke-width="var(--sw)" stroke-linecap="round" />
+                                                    </g>
+                                                    <g class="metric">
+                                                        <circle cx="540" cy="280" r="6" fill="var(--success)"
+                                                            stroke="none" />
+                                                        <line x1="555" y1="280" x2="735" y2="280" stroke="var(--muted)"
+                                                            stroke-width="var(--sw)" stroke-linecap="round" />
+                                                    </g>
+
+                                                    <!-- A small mini chart -->
+                                                    <path d="M540 335 L575 315 L610 325 L650 295 L690 305 L725 285"
+                                                        stroke="var(--ink)" stroke-width="var(--sw)"
+                                                        stroke-linecap="round" stroke-linejoin="round" />
+                                                </g>
+
+                                                <!-- Progress (required IDs) -->
+                                                <g id="progressTrack">
+                                                    <rect x="240" y="485" width="320" height="34" rx="17"
+                                                        fill="var(--track)" />
+                                                    <text x="240" y="470"
+                                                        font-family="system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"
+                                                        font-size="18" font-weight="700"
+                                                        fill="var(--muted)">Analyzing…</text>
+                                                </g>
+                                                <g id="progressFill">
+                                                    <rect x="240" y="485" width="320" height="34" rx="17"
+                                                        fill="var(--success)" />
+                                                </g>
+
+                                                <!-- Tray (required ID) -->
+                                                <g id="tray" fill="none" stroke="var(--ink)" stroke-width="var(--sw)"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M210 455 H430" />
+                                                    <path d="M235 455 V470 H405 V455" />
+                                                </g>
+
+                                                <!-- Success check (required ID) -->
+                                                <g id="check" fill="none" stroke="var(--success)"
+                                                    stroke-width="var(--sw)" stroke-linecap="round"
+                                                    stroke-linejoin="round">
+                                                    <path d="M585 486 L605 508 L645 468" />
+                                                </g>
+                                            </svg>
                                         </div>
                                     </div>
                                     <div class="flex-1">
                                         <h3
                                             class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
-                                            Get Results
+                                            3. Get Results
                                         </h3>
                                         <p class="text-lg text-gray-600 leading-relaxed mb-4">
                                             Receive your enhanced resume with detailed analysis, improvement
@@ -5718,6 +6619,51 @@
                         setTimeout(() => startFinalRamp(), delay + 200);
                     });
                 }
+
+                // If the user hits Back and the page is restored from cache (bfcache),
+                // ensure we don't get stuck with the processing overlay visible.
+                function hideLoadingOverlay() {
+                    try {
+                        const overlay = document.getElementById('loadingOverlay');
+                        if (overlay) overlay.classList.add('hidden');
+                    } catch (e) { /* ignore */ }
+                }
+
+                function showFreeTierLimitAlertIfNeeded() {
+                    try {
+                        const flag = sessionStorage.getItem('freeTierLimitReached');
+                        if (!flag) return;
+                        const msg = sessionStorage.getItem('freeTierLimitMessage') || 'Free tier includes only 2 resume revisions.';
+                        sessionStorage.removeItem('freeTierLimitReached');
+                        sessionStorage.removeItem('freeTierLimitMessage');
+
+                        // If the page is restored from cache with a preserved scroll position (Back button),
+                        // ensure the user lands at the top (not down at the resume submission section).
+                        try {
+                            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+                            // Some browsers apply scroll restoration after pageshow; enforce again next tick.
+                            setTimeout(() => {
+                                try { window.scrollTo({ top: 0, left: 0, behavior: 'auto' }); } catch (e) { }
+                            }, 0);
+                        } catch (e) { /* ignore */ }
+
+                        const mount = document.getElementById('flash-messages') || document.body;
+                        const el = document.createElement('div');
+                        el.className = 'mb-4 p-4 rounded-lg bg-red-100 border border-red-400 text-red-700';
+                        el.innerHTML = '<div class="flex items-center justify-between gap-3">' +
+                            '<div class="flex items-center"><i class="fas fa-exclamation-circle mr-2"></i><span>' + msg + '</span></div>' +
+                            '<button type="button" class="text-red-700 hover:text-red-900 font-semibold" aria-label="Dismiss">×</button>' +
+                            '</div>';
+                        const btn = el.querySelector('button');
+                        if (btn) btn.addEventListener('click', function () { try { el.remove(); } catch (e) { } });
+                        mount.prepend(el);
+                    } catch (e) { /* ignore */ }
+                }
+
+                window.addEventListener('pageshow', function () {
+                    hideLoadingOverlay();
+                    showFreeTierLimitAlertIfNeeded();
+                });
             });
         </script>
 

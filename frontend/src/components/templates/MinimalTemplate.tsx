@@ -1,5 +1,6 @@
 import React from 'react';
 import { parseResumeContent } from '../../utils/resumeUtils';
+import { RenderMaybeBullets } from './RenderMaybeBullets';
 
 export default function MinimalTemplate({ content }) {
     const sections = parseResumeContent(content);
@@ -39,7 +40,11 @@ export default function MinimalTemplate({ content }) {
                                             <span className="font-light whitespace-nowrap">{exp.duration}</span>
                                         </div>
                                     </div>
-                                    <p className="text-slate-700 leading-snug font-light text-sm">{exp.description}</p>
+                                    <RenderMaybeBullets
+                                        text={exp.description}
+                                        forceBullets
+                                        className="text-slate-700 leading-snug font-light text-sm"
+                                    />
                                 </div>
                             ))}
                         </div>

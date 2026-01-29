@@ -1,4 +1,4 @@
-﻿from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify, Response
+﻿from flask import Flask, request, render_template, redirect, url_for, session, flash, send_file, jsonify, Response, make_response
 from io import BytesIO
 import PyPDF2
 import pdfplumber
@@ -27,15 +27,17 @@ import google.oauth2.id_token
 from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
 from flask_login import LoginManager, login_required, login_user, logout_user, UserMixin, current_user
 from dotenv import load_dotenv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 import openai
 import os
 import json
 from docx import Document
-from azure.data.tables import TableServiceClient
+import stripe
+from azure.data.tables import TableServiceClient, UpdateMode
 from azure.identity import DefaultAzureCredential
 from urllib.parse import urlparse, urljoin
+from urllib.parse import urlencode
 
 app = Flask(__name__)
 
@@ -75,33 +77,6 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY') or 'a-very-secret-random-key'
-
-# ---- Server-side sessions (prevents oversized cookie session issues) ----
-# Without this, Flask stores the entire `session` in a signed cookie (~4KB limit).
-# We now store larger structures (e.g., template_data.structured_resume), which can
-# cause session updates to silently fail and show stale data after submitting a new resume.
-try:
-    from flask_session import Session
-
-    app.config.setdefault("SESSION_TYPE", os.getenv("SESSION_TYPE", "filesystem"))
-    app.config.setdefault("SESSION_PERMANENT", False)
-    app.config.setdefault("SESSION_USE_SIGNER", True)
-    app.config.setdefault("SESSION_COOKIE_HTTPONLY", True)
-    app.config.setdefault("SESSION_COOKIE_SAMESITE", "Lax")
-    app.config.setdefault("SESSION_REFRESH_EACH_REQUEST", False)
-
-    if app.config["SESSION_TYPE"] == "filesystem":
-        session_dir = os.path.join(app.root_path, "flask_session")
-        os.makedirs(session_dir, exist_ok=True)
-        app.config.setdefault("SESSION_FILE_DIR", session_dir)
-
-    Session(app)
-    logger.info(f"Server-side sessions enabled (SESSION_TYPE={app.config['SESSION_TYPE']})")
-except Exception as e:
-    try:
-        logger.warning(f"Flask-Session not enabled; falling back to cookie sessions: {str(e)}")
-    except Exception:
-        pass
 
 
 def _is_safe_next_url(target: str) -> bool:
@@ -323,7 +298,7 @@ def save_users():
         users_data = {user_id: user.to_dict() for user_id, user in users.items()}
         with open(USERS_FILE, 'w', encoding='utf-8') as f:
             json.dump(users_data, f, indent=2, ensure_ascii=False)
-        print(f"Saved {len(users)} users to persistent storage")
+        print(f"✅ Saved {len(users)} users to persistent storage")
     except Exception as e:
         print(f"Error saving users: {e}")
 
@@ -333,11 +308,11 @@ def add_user(user):
     """Add a user and save to persistent storage"""
     users[user.id] = user
     save_users()
-    print(f"Added user: {user.name} ({user.email})")
+    print(f"✅ Added user: {user.name} ({user.email})")
 
 # Load existing users on startup
 users = load_users()
-print(f"Loaded {len(users)} users from persistent storage")
+print(f"📊 Loaded {len(users)} users from persistent storage")
 
 
 
@@ -384,13 +359,19 @@ def login():
                 pending = session.pop('pending_revision', None)
                 if pending:
                     import uuid
-                    save_resume_revision(
-                        user.id,
-                        str(uuid.uuid4()),
-                        pending['revised_resume'],
-                        feedback=pending.get('feedback'),
-                        original_resume=pending.get('original_resume')
-                    )
+                    try:
+                        save_resume_revision(
+                            user.id,
+                            str(uuid.uuid4()),
+                            pending['revised_resume'],
+                            feedback=pending.get('feedback'),
+                            original_resume=pending.get('original_resume'),
+                            job_description=pending.get('job_description')
+                        )
+                    except FreeTierLimitReached:
+                        flash("You've reached the free tier limit (2 revisions). Upgrade to save unlimited revisions.", "danger")
+                    except Exception:
+                        pass
                 flash('You have been successfully logged in!', 'success')
                 nxt = _pop_auth_next()
                 return redirect(nxt or url_for('my_revisions'))
@@ -443,13 +424,19 @@ def login():
             # Save pending revision if it exists
             pending = session.pop('pending_revision', None)
             if pending:
-                save_resume_revision(
-                    user.id,
-                    str(uuid.uuid4()),
-                    pending['revised_resume'],
-                    feedback=pending.get('feedback'),
-                    original_resume=pending.get('original_resume')
-                )
+                try:
+                    save_resume_revision(
+                        user.id,
+                        str(uuid.uuid4()),
+                        pending['revised_resume'],
+                        feedback=pending.get('feedback'),
+                        original_resume=pending.get('original_resume'),
+                        job_description=pending.get('job_description')
+                    )
+                except FreeTierLimitReached:
+                    flash("You've reached the free tier limit (2 revisions). Upgrade to save unlimited revisions.", "danger")
+                except Exception:
+                    pass
             
             nxt = _pop_auth_next()
             return redirect(nxt or url_for('my_revisions'))
@@ -806,13 +793,19 @@ def google_callback():
     pending = session.pop('pending_revision', None)
     if pending:
         import uuid
-        save_resume_revision(
-            user.id,
-            str(uuid.uuid4()),
-            pending['revised_resume'],
-            feedback=pending.get('feedback'),
-            original_resume=pending.get('original_resume')
-        )
+        try:
+            save_resume_revision(
+                user.id,
+                str(uuid.uuid4()),
+                pending['revised_resume'],
+                feedback=pending.get('feedback'),
+                original_resume=pending.get('original_resume'),
+                job_description=pending.get('job_description')
+            )
+        except FreeTierLimitReached:
+            flash("You've reached the free tier limit (2 revisions). Upgrade to save unlimited revisions.", "danger")
+        except Exception:
+            pass
     nxt = _pop_auth_next()
     return redirect(nxt or url_for('my_revisions'))
     
@@ -998,6 +991,901 @@ def start():
     current_year = datetime.now().year
     return render_template("start.html", year=current_year, user=current_user)
 
+@app.route("/plans")
+def plans():
+    current_year = datetime.now().year
+    return render_template("plans.html", year=current_year, user=current_user)
+
+
+def _get_plan_config(plan_id: str) -> Optional[dict]:
+    pid = (plan_id or '').strip()
+    if not pid:
+        return None
+    # Plan IDs must match templates/plans.html
+    if pid == 'trial_14d':
+        return {
+            'id': pid,
+            'label': '2-Week Trial',
+            'price': '$1.85',
+            'plan_status': 'trial',
+            'duration_days': 14,
+        }
+    if pid == 'monthly_10_95':
+        return {
+            'id': pid,
+            'label': 'Monthly',
+            'price': '$10.95 / month',
+            'plan_status': 'monthly',
+            'duration_days': 31,
+        }
+    if pid == 'annual_6_95':
+        return {
+            'id': pid,
+            'label': 'Annual',
+            'price': '$6.95 / month (billed annually)',
+            'plan_status': 'annual',
+            'duration_days': 365,
+        }
+    return None
+
+
+def _stripe_enabled() -> bool:
+    return bool((os.getenv('STRIPE_SECRET_KEY') or '').strip())
+
+
+def _get_stripe_customer_id_from_azure(user_id: str) -> str:
+    try:
+        table_client = get_users_table_client()
+        e = table_client.get_entity(partition_key=str(user_id), row_key='profile')
+        return str(e.get('stripe_customer_id') or '').strip()
+    except Exception:
+        return ''
+
+
+def _get_stripe_subscription_id_from_azure(user_id: str) -> str:
+    try:
+        table_client = get_users_table_client()
+        e = table_client.get_entity(partition_key=str(user_id), row_key='profile')
+        return str(e.get('stripe_subscription_id') or '').strip()
+    except Exception:
+        return ''
+
+
+def _find_stripe_customer_id_by_email(email: str) -> str:
+    """Best-effort lookup for Stripe customer id by email (helps when webhook/profile hasn't saved ids yet)."""
+    e = (email or '').strip()
+    if not e or not _stripe_enabled():
+        return ''
+    try:
+        stripe.api_key = (os.getenv("STRIPE_SECRET_KEY") or "").strip()
+        # Prefer search when available
+        try:
+            res = stripe.Customer.search(query=f"email:'{e}'", limit=1)
+            data = list(getattr(res, 'data', []) or [])
+            if data:
+                return str(getattr(data[0], 'id', '') or '').strip()
+        except Exception:
+            pass
+        # Fallback: list by email
+        res2 = stripe.Customer.list(email=e, limit=1)
+        data2 = list(getattr(res2, 'data', []) or [])
+        if data2:
+            return str(getattr(data2[0], 'id', '') or '').strip()
+    except Exception:
+        return ''
+    return ''
+
+
+def _find_trialing_subscription_for_customer(customer_id: str) -> Optional[dict]:
+    """Return a trialing subscription object (Stripe) for a customer, or None."""
+    cid = (customer_id or "").strip()
+    if not cid or not _stripe_enabled():
+        return None
+    try:
+        stripe.api_key = (os.getenv("STRIPE_SECRET_KEY") or "").strip()
+        res = stripe.Subscription.list(customer=cid, status="trialing", limit=1)
+        data = list(getattr(res, "data", []) or [])
+        if not data:
+            return None
+        sub = data[0]
+        try:
+            sub = stripe.Subscription.retrieve(sub.id, expand=["items.data"])
+        except Exception:
+            pass
+        return sub
+    except Exception:
+        return None
+
+def _get_paid_until_from_stripe(subscription_id: str) -> str:
+    """Return ISO timestamp (UTC) for next renewal/end using Stripe subscription, or '' if unknown."""
+    sid = (subscription_id or '').strip()
+    if not sid:
+        return ''
+    if not _stripe_enabled():
+        return ''
+    try:
+        stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+        sub = stripe.Subscription.retrieve(sid)
+        # Prefer current_period_end; for trialing subscriptions, trial_end can be useful too.
+        trial_end = getattr(sub, 'trial_end', None)
+        current_period_end = getattr(sub, 'current_period_end', None)
+        ts = current_period_end or trial_end
+        if ts:
+            return datetime.fromtimestamp(int(ts), tz=timezone.utc).isoformat()
+        return ''
+    except Exception:
+        return ''
+
+
+def _add_interval_approx(dt: datetime, interval: str, interval_count: int) -> datetime:
+    """Approximate interval math without extra deps (good enough for UI labels)."""
+    c = int(interval_count or 1)
+    if c < 1:
+        c = 1
+    interval = (interval or '').strip().lower()
+    if interval == 'year':
+        return dt + timedelta(days=365 * c)
+    if interval == 'month':
+        return dt + timedelta(days=30 * c)
+    if interval == 'week':
+        return dt + timedelta(days=7 * c)
+    if interval == 'day':
+        return dt + timedelta(days=1 * c)
+    return dt
+
+
+def _get_stripe_plan_dates_for_customer(customer_id: str) -> dict:
+    """Return best-effort plan date info from Stripe for a customer.
+
+    Output keys:
+      - subscription_id
+      - status
+      - interval_label (e.g. 'Annual'/'Monthly'/'' )
+      - next_billing_iso (trial_end if trialing else current_period_end)
+      - paid_through_est_iso (if trialing, trial_end + interval; else current_period_end)
+    """
+    cid = (customer_id or '').strip()
+    if not cid or not _stripe_enabled():
+        return {}
+    try:
+        stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+        subs = stripe.Subscription.list(customer=cid, status='all', limit=20)
+        data = list(getattr(subs, 'data', []) or [])
+        if not data:
+            return {}
+
+        def _rank(sub):
+            status = str(getattr(sub, 'status', '') or '').lower()
+            current_period_end = int(getattr(sub, 'current_period_end', 0) or 0)
+            # Prefer active > trialing > others; then later period end.
+            status_rank = 0
+            if status == 'active':
+                status_rank = 3
+            elif status == 'trialing':
+                status_rank = 2
+            elif status in ('past_due', 'unpaid'):
+                status_rank = 1
+            return (status_rank, current_period_end)
+
+        best = sorted(data, key=_rank, reverse=True)[0]
+        # Re-fetch with expanded price/recurring so interval math works reliably (Stripe list results can be "thin")
+        try:
+            best = stripe.Subscription.retrieve(best.id, expand=["items.data.price"])
+        except Exception:
+            pass
+        status = str(getattr(best, 'status', '') or '')
+        trial_end = getattr(best, 'trial_end', None)
+        current_period_end = getattr(best, 'current_period_end', None)
+
+        # Interval label (use first item). Stripe objects can sometimes deserialize into plain dicts,
+        # so handle both dict and StripeObject attribute access.
+        interval = ''
+        interval_count = 1
+        try:
+            items = getattr(best, 'items', None)
+            items_data = getattr(items, 'data', []) if items else []
+            if items_data:
+                price = getattr(items_data[0], 'price', None)
+                if isinstance(price, dict):
+                    recurring = price.get('recurring')
+                else:
+                    recurring = getattr(price, 'recurring', None) if price else None
+                if isinstance(recurring, dict):
+                    interval = str(recurring.get('interval') or '')
+                    interval_count = int(recurring.get('interval_count') or 1)
+                else:
+                    interval = str(getattr(recurring, 'interval', '') or '')
+                    interval_count = int(getattr(recurring, 'interval_count', 1) or 1)
+        except Exception:
+            interval = ''
+            interval_count = 1
+
+        interval_label = ''
+        if interval == 'year':
+            interval_label = 'Annual'
+        elif interval == 'month':
+            interval_label = 'Monthly'
+
+        next_ts = None
+        if str(status).lower() == 'trialing' and trial_end:
+            next_ts = int(trial_end)
+        elif current_period_end:
+            next_ts = int(current_period_end)
+
+        paid_through_est_ts = None
+        if str(status).lower() == 'trialing' and trial_end:
+            base = datetime.fromtimestamp(int(trial_end), tz=timezone.utc)
+            paid_through_est_ts = int(_add_interval_approx(base, interval, interval_count).timestamp())
+        elif current_period_end:
+            paid_through_est_ts = int(current_period_end)
+
+        def _ts_to_iso(ts: Optional[int]) -> str:
+            try:
+                if not ts:
+                    return ''
+                return datetime.fromtimestamp(int(ts), tz=timezone.utc).isoformat()
+            except Exception:
+                return ''
+
+        return {
+            'subscription_id': str(getattr(best, 'id', '') or ''),
+            'status': status,
+            'interval_label': interval_label,
+            'next_billing_iso': _ts_to_iso(next_ts),
+            'paid_through_est_iso': _ts_to_iso(paid_through_est_ts),
+        }
+    except Exception:
+        return {}
+
+
+def _get_stripe_plan_dates_for_subscription(subscription_id: str) -> dict:
+    """Fallback when we only have a subscription id (e.g., profile missing stripe_customer_id)."""
+    sid = (subscription_id or '').strip()
+    if not sid or not _stripe_enabled():
+        return {}
+    try:
+        stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+        sub = stripe.Subscription.retrieve(sid, expand=["items.data.price"])
+        status = str(getattr(sub, 'status', '') or '')
+        trial_end = getattr(sub, 'trial_end', None)
+        current_period_end = getattr(sub, 'current_period_end', None)
+
+        interval = ''
+        interval_count = 1
+        try:
+            items = getattr(sub, 'items', None)
+            items_data = getattr(items, 'data', []) if items else []
+            if items_data:
+                price = getattr(items_data[0], 'price', None)
+                if isinstance(price, dict):
+                    recurring = price.get('recurring')
+                else:
+                    recurring = getattr(price, 'recurring', None) if price else None
+                if isinstance(recurring, dict):
+                    interval = str(recurring.get('interval') or '')
+                    interval_count = int(recurring.get('interval_count') or 1)
+                else:
+                    interval = str(getattr(recurring, 'interval', '') or '')
+                    interval_count = int(getattr(recurring, 'interval_count', 1) or 1)
+        except Exception:
+            interval = ''
+            interval_count = 1
+
+        interval_label = ''
+        if interval == 'year':
+            interval_label = 'Annual'
+        elif interval == 'month':
+            interval_label = 'Monthly'
+
+        next_ts = None
+        if str(status).lower() == 'trialing' and trial_end:
+            next_ts = int(trial_end)
+        elif current_period_end:
+            next_ts = int(current_period_end)
+
+        paid_through_est_ts = None
+        if str(status).lower() == 'trialing' and trial_end:
+            base = datetime.fromtimestamp(int(trial_end), tz=timezone.utc)
+            paid_through_est_ts = int(_add_interval_approx(base, interval, interval_count).timestamp())
+        elif current_period_end:
+            paid_through_est_ts = int(current_period_end)
+
+        def _ts_to_iso(ts: Optional[int]) -> str:
+            try:
+                if not ts:
+                    return ''
+                return datetime.fromtimestamp(int(ts), tz=timezone.utc).isoformat()
+            except Exception:
+                return ''
+
+        return {
+            'subscription_id': str(getattr(sub, 'id', '') or ''),
+            'status': status,
+            'interval_label': interval_label,
+            'next_billing_iso': _ts_to_iso(next_ts),
+            'paid_through_est_iso': _ts_to_iso(paid_through_est_ts),
+        }
+    except Exception:
+        return {}
+
+def _get_subscription_price_id_and_recurring(sub_obj) -> tuple[str, str, int]:
+    """Return (price_id, interval, interval_count) from a subscription object; robust to dict/StripeObject."""
+    try:
+        items = getattr(sub_obj, 'items', None)
+        items_data = getattr(items, 'data', []) if items else []
+        first_item = items_data[0] if items_data else None
+        # items_data entries can be StripeObjects or dicts
+        if isinstance(first_item, dict):
+            price = first_item.get('price')
+        else:
+            price = getattr(first_item, 'price', None) if first_item else None
+        # Sometimes Stripe returns a bare price id string
+        if isinstance(price, str):
+            return (price.strip(), '', 1)
+        if isinstance(price, dict):
+            price_id = str(price.get('id') or '').strip()
+            recurring = price.get('recurring')
+        else:
+            price_id = str(getattr(price, 'id', '') or '').strip() if price else ''
+            recurring = getattr(price, 'recurring', None) if price else None
+
+        interval = ''
+        interval_count = 1
+        if isinstance(recurring, dict):
+            interval = str(recurring.get('interval') or '').strip()
+            interval_count = int(recurring.get('interval_count') or 1)
+        else:
+            interval = str(getattr(recurring, 'interval', '') or '').strip()
+            interval_count = int(getattr(recurring, 'interval_count', 1) or 1)
+        return (price_id, interval, interval_count)
+    except Exception:
+        return ('', '', 1)
+
+def _stripe_obj_get(obj, key: str, default=None):
+    """Safely read key from StripeObject or dict (some stripe versions return dict-like objects)."""
+    try:
+        if obj is None:
+            return default
+        if isinstance(obj, dict):
+            return obj.get(key, default)
+        # StripeObject supports .get in many versions
+        if hasattr(obj, "get"):
+            return obj.get(key, default)
+        return getattr(obj, key, default)
+    except Exception:
+        return default
+
+def _stripe_upcoming_invoice(customer_id: str, subscription_id: str):
+    """Get upcoming invoice using a method compatible with older stripe python versions."""
+    cid = (customer_id or "").strip()
+    sid = (subscription_id or "").strip()
+    if not cid or not sid:
+        return None
+    try:
+        # Newer stripe versions have stripe.Invoice.upcoming(...)
+        if hasattr(stripe, "Invoice") and hasattr(stripe.Invoice, "upcoming"):
+            return stripe.Invoice.upcoming(customer=cid, subscription=sid)
+    except Exception:
+        pass
+    # Fallback: call the endpoint directly
+    try:
+        return stripe.Invoice._static_request("get", "/v1/invoices/upcoming", params={"customer": cid, "subscription": sid})
+    except Exception:
+        return None
+
+def _stripe_subscription_raw(subscription_id: str):
+    """Fetch raw subscription JSON via low-level request (works across stripe library versions)."""
+    sid = (subscription_id or "").strip()
+    if not sid:
+        return None
+    try:
+        return stripe.Subscription._static_request("get", f"/v1/subscriptions/{sid}", params={})
+    except Exception:
+        return None
+
+def _stripe_latest_invoice_for_subscription(subscription_id: str):
+    """Fetch latest invoice for a subscription (best-effort across stripe versions)."""
+    sid = (subscription_id or "").strip()
+    if not sid:
+        return None
+    try:
+        if hasattr(stripe, "Invoice") and hasattr(stripe.Invoice, "list"):
+            invs = stripe.Invoice.list(subscription=sid, limit=1)
+            data = list(getattr(invs, "data", []) or [])
+            if data:
+                return data[0]
+    except Exception:
+        pass
+    try:
+        res = stripe.Invoice._static_request("get", "/v1/invoices", params={"subscription": sid, "limit": 1})
+        data = _stripe_obj_get(res, "data", []) or []
+        if data:
+            return data[0]
+    except Exception:
+        return None
+    return None
+
+def _get_stripe_price_id(plan_id: str) -> Optional[str]:
+    """Map internal plan IDs to Stripe Price IDs via env vars."""
+    if plan_id == 'trial_14d':
+        # Trial should be a subscription (auto-converts to monthly unless canceled).
+        # Use a recurring monthly price here (or a dedicated trial recurring price).
+        return (
+            (os.getenv('STRIPE_PRICE_TRIAL_RECURRING') or '').strip()
+            or (os.getenv('STRIPE_PRICE_MONTHLY_10_95') or '').strip()
+            or None
+        )
+    if plan_id == 'monthly_10_95':
+        return (os.getenv('STRIPE_PRICE_MONTHLY_10_95') or '').strip() or None
+    if plan_id == 'annual_6_95':
+        return (os.getenv('STRIPE_PRICE_ANNUAL_6_95') or '').strip() or None
+    return None
+
+
+def _get_stripe_trial_upfront_fee_price_id() -> Optional[str]:
+    """Optional one-time fee charged at checkout for the trial (e.g. $1.85).
+
+    Create a one-time Price in Stripe and set STRIPE_PRICE_TRIAL_FEE_1_85 to its price_ id.
+    """
+    return (os.getenv('STRIPE_PRICE_TRIAL_FEE_1_85') or '').strip() or None
+
+
+def _get_stripe_payment_link(plan_id: str) -> Optional[str]:
+    """Optional Stripe Payment Links (non-secret). If set, /checkout can redirect here directly."""
+    defaults = {
+        # Provided by user
+        'trial_14d': 'https://buy.stripe.com/cNi6oBeZ21gXfAu1cD7Vm02',
+        'monthly_10_95': 'https://buy.stripe.com/bJe7sFcQU4t93RM7B17Vm03',
+        'annual_6_95': 'https://buy.stripe.com/aFa9ANdUYgbR9c6bRh7Vm04',
+    }
+    if plan_id == 'trial_14d':
+        return (os.getenv('STRIPE_PAYMENTLINK_TRIAL_14D') or '').strip() or defaults['trial_14d']
+    if plan_id == 'monthly_10_95':
+        return (os.getenv('STRIPE_PAYMENTLINK_MONTHLY_10_95') or '').strip() or defaults['monthly_10_95']
+    if plan_id == 'annual_6_95':
+        return (os.getenv('STRIPE_PAYMENTLINK_ANNUAL_6_95') or '').strip() or defaults['annual_6_95']
+    return None
+
+
+def _redirect_to_stripe_payment_link(plan_id: str) -> Optional['Response']:
+    """Redirect to Stripe Payment Link with useful prefill params so webhook can map back to user."""
+    # Trial must be a subscription with a 14-day trial and auto-convert to monthly unless canceled.
+    # If Trial is a one-time Payment Link, it cannot auto-renew. So do NOT use a Payment Link for trial.
+    if plan_id == 'trial_14d':
+        return None
+    link = _get_stripe_payment_link(plan_id)
+    if not link:
+        return None
+    params = {}
+    try:
+        email = (getattr(current_user, 'email', '') or '').strip()
+        if email:
+            params['prefilled_email'] = email
+    except Exception:
+        pass
+    # This is the most reliable way for webhook to map checkout back to our user.
+    try:
+        params['client_reference_id'] = str(getattr(current_user, 'id', '') or '')
+    except Exception:
+        pass
+    # Helpful for debugging / analytics
+    params['metadata[plan_id]'] = plan_id
+
+    sep = '&' if ('?' in link) else '?'
+    url = link + (sep + urlencode(params)) if params else link
+    return redirect(url, code=303)
+
+
+@app.route("/checkout")
+def checkout():
+    """Checkout entrypoint.
+
+    If STRIPE_SECRET_KEY is configured, creates a Stripe Checkout Session and redirects to Stripe.
+    Otherwise falls back to the placeholder confirmation page.
+    """
+    plan_id = request.args.get('plan', '').strip()
+    plan = _get_plan_config(plan_id)
+    if not plan:
+        flash("Please select a valid plan.", "danger")
+        return redirect(url_for("plans"))
+
+    if not current_user.is_authenticated:
+        # Require login so we can unlock paid features for the correct user.
+        return redirect(url_for("login", next=request.full_path))
+
+    # Upgrade during trial:
+    # Charge the customer now (so they enter card + pay immediately), but keep the trial time.
+    # We do this by charging a one-time amount now and then applying it as a customer-balance credit,
+    # while updating the existing trial subscription to the target plan (annual/monthly).
+    if _stripe_enabled() and plan_id in ("monthly_10_95", "annual_6_95"):
+        try:
+            prof = get_user_profile_azure(getattr(current_user, "id", "")) or {}
+            customer_id = str(prof.get("stripe_customer_id") or "").strip()
+            if not customer_id:
+                customer_id = _find_stripe_customer_id_by_email((getattr(current_user, "email", "") or "").strip())
+            if customer_id:
+                trial_sub = _find_trialing_subscription_for_customer(customer_id)
+                if trial_sub:
+                    price_id = _get_stripe_price_id(plan_id)
+                    if not price_id:
+                        flash("Checkout is not configured. Please contact support.", "danger")
+                        return redirect(url_for("plans"))
+                    stripe.api_key = (os.getenv("STRIPE_SECRET_KEY") or "").strip()
+                    price = stripe.Price.retrieve(price_id)
+                    unit_amount = int(getattr(price, "unit_amount", 0) or 0)
+                    currency = str(getattr(price, "currency", "usd") or "usd")
+                    if unit_amount <= 0:
+                        flash("Checkout is not configured. Please contact support.", "danger")
+                        return redirect(url_for("plans"))
+
+                    success_url = url_for('my_revisions', _external=True, _scheme=request.scheme) + "?checkout=success"
+                    cancel_url = url_for('plans', _external=True, _scheme=request.scheme)
+                    session_obj = stripe.checkout.Session.create(
+                        mode="payment",
+                        customer=customer_id,
+                        line_items=[
+                            {
+                                "price_data": {
+                                    "currency": currency,
+                                    "unit_amount": unit_amount,
+                                    "product_data": {"name": f"{plan.get('label')} (starts after trial)"},
+                                },
+                                "quantity": 1,
+                            }
+                        ],
+                        client_reference_id=str(current_user.id),
+                        metadata={
+                            "upgrade_from_trial": "1",
+                            "plan_id": plan_id,
+                            "trial_subscription_id": str(getattr(trial_sub, "id", "") or ""),
+                        },
+                        success_url=success_url,
+                        cancel_url=cancel_url,
+                    )
+                    return redirect(session_obj.url, code=303)
+        except Exception:
+            pass
+
+    # Preferred: Stripe Payment Links (fastest, no API calls required here).
+    pl_redirect = _redirect_to_stripe_payment_link(plan_id)
+    if pl_redirect:
+        return pl_redirect
+
+    # Alternative: Real Stripe Checkout flow via API (requires secret key + price ids).
+    if _stripe_enabled():
+        price_id = _get_stripe_price_id(plan_id)
+        if not price_id:
+            flash("Checkout is not configured. Please contact support.", "danger")
+            return redirect(url_for("plans"))
+
+        stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+
+        # Build absolute URLs
+        success_url = url_for('my_revisions', _external=True, _scheme=request.scheme) + "?checkout=success"
+        cancel_url = url_for('plans', _external=True, _scheme=request.scheme)
+        try:
+            subscription_data = None
+            line_items = [{"price": price_id, "quantity": 1}]
+            if plan_id == 'trial_14d':
+                # 14-day trial that converts into the recurring monthly subscription unless canceled
+                subscription_data = {"trial_period_days": 14}
+                # Optional one-time upfront trial fee (e.g. $1.85)
+                fee_price = _get_stripe_trial_upfront_fee_price_id()
+                if fee_price:
+                    line_items.append({"price": fee_price, "quantity": 1})
+
+            session_obj = stripe.checkout.Session.create(
+                mode="subscription",
+                line_items=line_items,
+                customer_email=(getattr(current_user, 'email', '') or None),
+                client_reference_id=str(current_user.id),
+                metadata={"plan_id": plan_id},
+                subscription_data=subscription_data,
+                success_url=success_url,
+                cancel_url=cancel_url,
+                allow_promotion_codes=True,
+            )
+            return redirect(session_obj.url, code=303)
+        except Exception as e:
+            logger.error(f"Stripe checkout session create failed: {str(e)}")
+            flash("Checkout is temporarily unavailable. Please try again.", "danger")
+            return redirect(url_for("plans"))
+
+    # Fallback placeholder confirmation page (no Stripe configured)
+    current_year = datetime.now().year
+    return render_template("checkout.html", year=current_year, user=current_user, plan=plan)
+
+
+@app.route("/checkout/complete", methods=["POST"])
+@login_required
+def checkout_complete():
+    """Simulate purchase completion by updating the Azure Users profile.
+
+    This makes plan links functional without integrating a payment processor yet.
+    """
+    plan_id = request.form.get('plan', '').strip()
+    plan = _get_plan_config(plan_id)
+    if not plan:
+        flash("Invalid plan selection.", "danger")
+        return redirect(url_for("plans"))
+
+    try:
+        paid_until = (datetime.now(timezone.utc) + timedelta(days=int(plan.get('duration_days') or 0))).isoformat()
+        table_client = get_users_table_client()
+        entity = {
+            'PartitionKey': str(current_user.id),
+            'RowKey': 'profile',
+            'is_paid': True,
+            'plan_status': plan.get('plan_status') or 'paid',
+            'paid_until': paid_until,
+        }
+        table_client.upsert_entity(entity, mode=UpdateMode.MERGE)
+        flash(f"You're all set! {plan.get('label')} activated.", "success")
+        return redirect(url_for("my_revisions"))
+    except Exception as e:
+        logger.error(f"checkout_complete error: {str(e)}")
+        flash("We couldn't activate your plan. Please try again.", "danger")
+        return redirect(url_for("plans"))
+
+
+@app.route("/stripe/webhook", methods=["POST"])
+def stripe_webhook():
+    """Stripe webhook handler.
+
+    Required env vars:
+    - STRIPE_SECRET_KEY
+    - STRIPE_WEBHOOK_SECRET
+    - STRIPE_PRICE_MONTHLY_10_95 / STRIPE_PRICE_ANNUAL_6_95
+
+    Trial setup (to auto-convert to monthly unless canceled):
+    - STRIPE_PRICE_TRIAL_RECURRING (optional, otherwise uses STRIPE_PRICE_MONTHLY_10_95)
+    - STRIPE_PRICE_TRIAL_FEE_1_85 (optional one-time fee price)
+    """
+    payload = request.data
+    sig_header = request.headers.get("Stripe-Signature", "")
+    webhook_secret = (os.getenv("STRIPE_WEBHOOK_SECRET") or "").strip()
+    if not webhook_secret:
+        return ("Webhook not configured", 400)
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except Exception as e:
+        logger.error(f"stripe_webhook signature error: {str(e)}")
+        return ("Invalid signature", 400)
+
+    try:
+        etype = event.get("type")
+        data = (event.get("data") or {}).get("object") or {}
+
+        # We primarily rely on checkout.session.completed to map the customer to our user_id.
+        if etype == "checkout.session.completed":
+            client_ref = data.get("client_reference_id")
+            customer_id = data.get("customer")
+            subscription_id = data.get("subscription")
+            plan_id = (data.get("metadata") or {}).get("plan_id", "")
+            upgrade_from_trial = str((data.get("metadata") or {}).get("upgrade_from_trial") or "").strip()
+            trial_subscription_id = str((data.get("metadata") or {}).get("trial_subscription_id") or "").strip()
+            mode = str(data.get("mode") or "").strip().lower()
+
+            # Fallback mapping: if client_reference_id wasn't present, try to find user by email.
+            if not client_ref:
+                try:
+                    email = (
+                        (data.get("customer_details") or {}).get("email")
+                        or data.get("customer_email")
+                        or ""
+                    )
+                    email = str(email).strip().lower()
+                    if email:
+                        for uid, u in users.items():
+                            if (getattr(u, "email", "") or "").strip().lower() == email:
+                                client_ref = uid
+                                break
+                except Exception:
+                    pass
+
+            if not client_ref:
+                return ("No client_reference_id", 200)
+
+            # Special case: trial upgrade where we charged up-front (payment mode) and need to:
+            # 1) credit the customer balance so the first subscription invoice at trial end is covered
+            # 2) update the existing trial subscription to the selected plan (annual/monthly)
+            if upgrade_from_trial == "1" and mode == "payment" and customer_id and trial_subscription_id and plan_id in ("monthly_10_95", "annual_6_95"):
+                stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+                try:
+                    amount_total = int(data.get("amount_total") or 0)
+                    currency = str(data.get("currency") or "usd")
+                except Exception:
+                    amount_total = 0
+                    currency = "usd"
+
+                # Apply customer balance credit equal to the amount paid now.
+                # This will be applied automatically to the subscription invoice at trial end.
+                try:
+                    if amount_total > 0:
+                        stripe.Customer.create_balance_transaction(
+                            customer_id,
+                            amount=-amount_total,
+                            currency=currency,
+                            description=f"Prepayment credit for {plan_id} (paid during trial)",
+                        )
+                except Exception:
+                    pass
+
+                # Update the existing trial subscription to the target plan (keeps the same trial_end).
+                try:
+                    price_id = _get_stripe_price_id(plan_id)
+                    if price_id:
+                        sub = stripe.Subscription.retrieve(trial_subscription_id, expand=["items.data"])
+                        items = getattr(sub, "items", None)
+                        items_data = getattr(items, "data", []) if items else []
+                        item_id = str(getattr(items_data[0], "id", "") or "") if items_data else ""
+                        if not item_id:
+                            try:
+                                si = stripe.SubscriptionItem.list(subscription=trial_subscription_id, limit=1)
+                                si_data = list(getattr(si, "data", []) or [])
+                                if si_data:
+                                    item_id = str(getattr(si_data[0], "id", "") or "").strip()
+                            except Exception:
+                                item_id = ""
+                        if item_id:
+                            stripe.Subscription.modify(
+                                trial_subscription_id,
+                                items=[{"id": item_id, "price": price_id}],
+                                proration_behavior="none",
+                                metadata={"plan_id": plan_id},
+                            )
+                        # Update Azure profile (paid_until stays at trial end until renewal)
+                        paid_until = ""
+                        try:
+                            current_period_end = getattr(sub, "current_period_end", None)
+                            if current_period_end:
+                                paid_until = datetime.fromtimestamp(int(current_period_end), tz=timezone.utc).isoformat()
+                        except Exception:
+                            paid_until = ""
+                        try:
+                            table_client = get_users_table_client()
+                            entity = {
+                                "PartitionKey": str(client_ref),
+                                "RowKey": "profile",
+                                "is_paid": True,
+                                "plan_status": plan_id,
+                                "stripe_customer_id": str(customer_id),
+                                "stripe_subscription_id": str(trial_subscription_id),
+                            }
+                            if paid_until:
+                                entity["paid_until"] = paid_until
+                            table_client.upsert_entity(entity, mode=UpdateMode.MERGE)
+                        except Exception:
+                            pass
+                except Exception:
+                    pass
+
+                return ("OK", 200)
+
+            # Fetch subscription to compute paid_until
+            stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+            paid_until = ""
+            plan_status = ""
+            try:
+                if subscription_id and stripe.api_key:
+                    sub = stripe.Subscription.retrieve(subscription_id)
+                    plan_status = str(getattr(sub, "status", "") or "")
+                    current_period_end = getattr(sub, "current_period_end", None)
+                    if current_period_end:
+                        paid_until = datetime.fromtimestamp(int(current_period_end), tz=timezone.utc).isoformat()
+            except Exception:
+                pass
+
+            try:
+                table_client = get_users_table_client()
+                entity = {
+                    "PartitionKey": str(client_ref),
+                    "RowKey": "profile",
+                    "is_paid": True,
+                    "plan_status": (plan_id or plan_status or "paid"),
+                }
+                if paid_until:
+                    entity["paid_until"] = paid_until
+                if customer_id:
+                    entity["stripe_customer_id"] = str(customer_id)
+                if subscription_id:
+                    entity["stripe_subscription_id"] = str(subscription_id)
+                table_client.upsert_entity(entity, mode=UpdateMode.MERGE)
+            except Exception as e:
+                logger.error(f"stripe_webhook upsert error: {str(e)}")
+                return ("Error", 500)
+
+            # If the customer previously started a trial subscription, and then purchased a paid plan,
+            # Stripe Payment Links/Checkout can result in multiple subscriptions. To avoid double-billing,
+            # cancel any other *trialing* subscriptions for this customer (keep the newly purchased one).
+            try:
+                if customer_id and stripe.api_key:
+                    subs_trialing = stripe.Subscription.list(customer=customer_id, status="trialing", limit=20)
+                    tdata = list(getattr(subs_trialing, "data", []) or [])
+                    for s in tdata:
+                        sid = str(getattr(s, "id", "") or "")
+                        if sid and subscription_id and sid == str(subscription_id):
+                            continue
+                        if sid:
+                            try:
+                                stripe.Subscription.delete(sid)
+                            except Exception:
+                                pass
+            except Exception:
+                pass
+
+        # Keep subscription status in sync (cancel/expire)
+        if etype in ("customer.subscription.updated", "customer.subscription.deleted"):
+            stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+            sub = data
+            customer_id = sub.get("customer")
+            subscription_id = sub.get("id")
+            status = sub.get("status")
+            current_period_end = sub.get("current_period_end")
+            paid_until = ""
+            if current_period_end:
+                try:
+                    paid_until = datetime.fromtimestamp(int(current_period_end), tz=timezone.utc).isoformat()
+                except Exception:
+                    paid_until = ""
+
+            # Find user by stripe_customer_id in Azure Users table
+            if customer_id:
+                try:
+                    table_client = get_users_table_client()
+                    # scan profiles (small scale). For large scale, add an index.
+                    for e in table_client.list_entities():
+                        if e.get("RowKey") != "profile":
+                            continue
+                        if str(e.get("stripe_customer_id") or "") == str(customer_id):
+                            uid = str(e.get("PartitionKey"))
+                            entity = {"PartitionKey": uid, "RowKey": "profile"}
+                            entity["plan_status"] = str(status or "")
+                            if paid_until:
+                                entity["paid_until"] = paid_until
+                            # Consider user paid only if active/trialing
+                            entity["is_paid"] = str(status or "").lower() in ("active", "trialing")
+                            if subscription_id:
+                                entity["stripe_subscription_id"] = str(subscription_id)
+                            table_client.upsert_entity(entity, mode=UpdateMode.MERGE)
+                            break
+                except Exception as e:
+                    logger.error(f"stripe_webhook subscription sync error: {str(e)}")
+                    # do not fail webhook
+
+        return ("OK", 200)
+    except Exception as e:
+        logger.error(f"stripe_webhook error: {str(e)}")
+        return ("Error", 500)
+
+
+@app.route("/billing/portal")
+@login_required
+def billing_portal():
+    """Send the logged-in user to Stripe Customer Portal so they can cancel/manage their plan."""
+    if not _stripe_enabled():
+        flash("Billing portal is not configured.", "danger")
+        return redirect(url_for("plans"))
+
+    stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+    customer_id = _get_stripe_customer_id_from_azure(getattr(current_user, 'id', ''))
+    if not customer_id:
+        flash("We couldn't find your billing profile yet. If you just purchased, refresh and try again.", "danger")
+        return redirect(url_for("my_revisions"))
+
+    try:
+        return_url = url_for("my_revisions", _external=True, _scheme=request.scheme)
+        session_obj = stripe.billing_portal.Session.create(
+            customer=customer_id,
+            return_url=return_url,
+        )
+        return redirect(session_obj.url, code=303)
+    except Exception as e:
+        logger.error(f"billing_portal error: {str(e)}")
+        flash("Unable to open billing portal. Please try again.", "danger")
+        return redirect(url_for("my_revisions"))
+
 
 
 @app.route("/results", methods=["POST"])
@@ -1006,6 +1894,17 @@ def results_route():
     print("=== results_route called ===")
     try:
         resume_text = ""
+        
+        # Enforce free tier revision limit (2) for authenticated non-paid users.
+        if current_user.is_authenticated and (not is_paid_user(current_user)):
+            try:
+                used = len(get_user_revisions(current_user.id))
+                if used >= FREE_REVISION_LIMIT:
+                    flash("Free tier includes 2 resume revisions. Upgrade to unlock unlimited revisions and PDF downloads.", "danger")
+                    return redirect(url_for("plans", limit="1"))
+            except Exception:
+                # If counting fails, do not block.
+                pass
         
         # Check if file was uploaded
         if 'resumeFile' in request.files:
@@ -1044,30 +1943,30 @@ def results_route():
         print(f"Feedback type: {type(feedback)}")
         print(json.dumps(feedback, indent=2))
         
-        # Create downloadable document
-        os.makedirs("static/resumes", exist_ok=True)
-        docx_path = os.path.join("static", "resumes", "revised_resume.docx")
-        doc = Document()
-        for line in revised_resume.splitlines():
-            doc.add_paragraph(line)
-        doc.save(docx_path)
-        
         # Save to user account if authenticated
         if current_user.is_authenticated:
             import uuid
-            save_resume_revision(
-                current_user.id,
-                str(uuid.uuid4()),
-                revised_resume,
-                feedback=feedback,
-                original_resume=resume_text
-            )
+            try:
+                save_resume_revision(
+                    current_user.id,
+                    str(uuid.uuid4()),
+                    revised_resume,
+                    feedback=feedback,
+                    original_resume=resume_text,
+                    job_description=job_description
+                )
+            except FreeTierLimitReached:
+                # Still show results, but do not persist a new revision.
+                flash("You've reached the free tier limit (2 revisions). Upgrade to save unlimited revisions.", "danger")
+            except Exception:
+                pass
         else:
             # Store revision in session for post-signup saving
             session['pending_revision'] = {
                 'revised_resume': revised_resume,
                 'feedback': feedback,
-                'original_resume': resume_text
+                'original_resume': resume_text,
+                'job_description': job_description
             }
         
         # Track conversion (resume submission)
@@ -1076,16 +1975,18 @@ def results_route():
         print(f"Conversion info: {conversion_info}")
         
         # Store data in session and redirect (Post/Redirect/Get) to prevent resubmission on back
-        # IMPORTANT: clear template_data so the template viewer/PDF uses the new submission
-        session.pop('template_data', None)
         session['results_data'] = {
             'original_resume': resume_text,
             'revised_resume': revised_resume,
             'feedback': feedback,
             'job_description': job_description,
         }
+        # Ensure session persistence + clear stale template data (prevents old template snapshot confusion)
+        session.pop('template_data', None)
         session.modified = True
-        return redirect(url_for('results_get'))
+        # Bust caches (browser/service worker) for /results
+        import time
+        return redirect(url_for('results_get', ts=int(time.time())))
     except Exception as e:
         import traceback
         print("=== ERROR IN revise_resume_route ===")
@@ -1103,49 +2004,12 @@ def results_route():
 def results_get():
     data = session.get('results_data', None)
     if not data:
-        # Fallbacks so "Back to Results" from the template viewer doesn't dump users on the homepage.
-        # 1) If we still have template_data (set when a template is selected), render results from it.
-        td = session.get('template_data') or {}
-        if isinstance(td, dict) and td.get('revised_resume'):
-            data = {
-                'original_resume': td.get('original_resume', ''),
-                'revised_resume': td.get('revised_resume', ''),
-                'feedback': td.get('feedback', {}) or {},
-                'job_description': td.get('job_description', '') or '',
-            }
-        else:
-            # 2) Anonymous users: pending_revision holds the revised resume + feedback
-            pending = session.get('pending_revision') or {}
-            if isinstance(pending, dict) and pending.get('revised_resume'):
-                data = {
-                    'original_resume': pending.get('original_resume', ''),
-                    'revised_resume': pending.get('revised_resume', ''),
-                    'feedback': pending.get('feedback', {}) or {},
-                    'job_description': '',
-                }
-            else:
-                # 3) Logged-in users: fall back to latest saved revision
-                try:
-                    if current_user.is_authenticated:
-                        revs = get_user_revisions(current_user.id)
-                        if revs and isinstance(revs, list):
-                            rev0 = revs[0]
-                            data = {
-                                'original_resume': rev0.get('original_resume', ''),
-                                'revised_resume': rev0.get('resume_content', ''),
-                                'feedback': rev0.get('feedback', {}) or {},
-                                'job_description': '',
-                            }
-                except Exception:
-                    data = None
-
-        if not data:
-            # No data to show; notify and send the user to the homepage
-            flash("Your file could not be processed (possibly due to formatting). Please copy the resume text and paste it into the provided text area.", 'danger')
-            return redirect(url_for('index'))
+        # No data to show; notify and send the user to the homepage
+        flash("⚠️ Your file could not be processed possibly due to its formatting. Please attempt to copy the resume text and paste it in the provided text area.", 'danger')
+        return redirect(url_for('index'))
     # Keep data in session for template selection
     # session.pop would remove it, so we use session.get and keep it available
-    resp = app.make_response(render_template(
+    resp = make_response(render_template(
         "result.html",
         original_resume=data.get('original_resume', ''),
         revised_resume=data.get('revised_resume', ''),
@@ -1153,10 +2017,11 @@ def results_get():
         job_description=data.get('job_description', ''),
         error=None
     ))
-    # Prevent the browser from caching a previous results page
-    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
-    resp.headers["Pragma"] = "no-cache"
-    resp.headers["Expires"] = "0"
+    # Transactional page: never cache (prevents showing a previous resume after a new submission)
+    resp.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    resp.headers['Pragma'] = 'no-cache'
+    resp.headers['Expires'] = '0'
+    resp.headers['Vary'] = 'Cookie'
     return resp
 
 @app.route("/api/parse-resume-for-template", methods=["POST"])
@@ -1167,48 +2032,44 @@ def parse_resume_for_template():
         template_name = data.get('template', 'modern')
         
         # Validate template name
-        valid_templates = ['modern', 'professional', 'minimal', 'creative']
+        valid_templates = [
+            'modern',
+            'professional',
+            'minimal',
+            'creative',
+            'classicSidebar',
+            'classic-sidebar',
+            'classic_sidebar',
+            'classicPortrait',
+            'classic-portrait',
+            'classic_portrait',
+            'darkSidebar',
+            'dark-sidebar',
+            'dark_sidebar',
+            'darkSidebarProgress',
+            'dark-sidebar-progress',
+            'dark_sidebar_progress',
+            'navyHeader',
+            'navy-header',
+            'navy_header',
+            'timelineBlue',
+            'timeline-blue',
+            'timeline_blue',
+            'oliveClassic',
+            'olive-classic',
+            'olive_classic',
+        ]
         if template_name not in valid_templates:
             return jsonify({"success": False, "error": "Invalid template name"}), 400
         
-        revised_resume = ""
-        original_resume = ""
-        feedback = {}
-        job_description = ""
-
-        # 1) Preferred: results_data from the immediate /results flow
-        results_data = session.get('results_data') or {}
-        if isinstance(results_data, dict):
-            revised_resume = (results_data.get('revised_resume') or "").strip()
-            original_resume = (results_data.get('original_resume') or "").strip()
-            feedback = results_data.get('feedback', {}) or {}
-            job_description = (results_data.get('job_description') or "").strip()
-
-        # 2) Fallback: pending_revision (for anonymous users, stored at submission time)
+        # Get revised resume from session
+        results_data = session.get('results_data')
+        if not results_data:
+            return jsonify({"success": False, "error": "Resume data not found"}), 404
+        
+        revised_resume = results_data.get('revised_resume', '')
         if not revised_resume:
-            pending = session.get('pending_revision') or {}
-            if isinstance(pending, dict):
-                revised_resume = (pending.get('revised_resume') or "").strip()
-                original_resume = (pending.get('original_resume') or "").strip()
-                feedback = pending.get('feedback', {}) or {}
-
-        # 3) Fallback: logged-in user’s latest saved revision
-        if not revised_resume:
-            try:
-                if current_user.is_authenticated:
-                    revs = get_user_revisions(current_user.id)
-                    if revs and isinstance(revs, list):
-                        revised_resume = (revs[0].get('resume_content') or "").strip()
-                        original_resume = (revs[0].get('original_resume') or "").strip()
-                        feedback = revs[0].get('feedback', {}) or {}
-            except Exception:
-                revised_resume = ""
-
-        if not revised_resume:
-            return jsonify({
-                "success": False,
-                "error": "Resume data not found. Please generate a resume (or open a saved revision) before viewing templates."
-            }), 404
+            return jsonify({"success": False, "error": "Revised resume not found"}), 404
         
         # Parse resume to get structured data
         parsed_result = parse_resume(revised_resume)
@@ -1218,11 +2079,7 @@ def parse_resume_for_template():
         session['template_data'] = {
             'structured_resume': structured_resume,
             'template_name': template_name,
-            # Keep text for navigation back to /results (comparison view)
-            'original_resume': original_resume,
-            'revised_resume': revised_resume,
-            'feedback': feedback,
-            'job_description': job_description,
+            'revised_resume': revised_resume  # Keep original text as fallback
         }
         
         return jsonify({
@@ -1239,69 +2096,9 @@ def parse_resume_for_template():
 @app.route("/api/template-data", methods=["GET"])
 def get_template_data():
     """Get structured resume data for template viewer"""
-    requested_template = (request.args.get("template") or "").strip() or None
-
-    def _get_revised_resume_from_anywhere() -> str:
-        # 1) Immediate /results flow
-        rd = session.get("results_data") or {}
-        if isinstance(rd, dict):
-            rr = (rd.get("revised_resume") or "").strip()
-            if rr:
-                return rr
-
-        # 2) Anonymous flow stored at submission
-        pr = session.get("pending_revision") or {}
-        if isinstance(pr, dict):
-            rr = (pr.get("revised_resume") or "").strip()
-            if rr:
-                return rr
-
-        # 3) Logged-in user’s latest saved revision
-        try:
-            if current_user.is_authenticated:
-                revs = get_user_revisions(current_user.id)
-                if revs and isinstance(revs, list):
-                    rr = (revs[0].get("resume_content") or "").strip()
-                    if rr:
-                        return rr
-        except Exception:
-            pass
-
-        return ""
-
-    def _ensure_template_data(template_name: str) -> dict | None:
-        td = session.get("template_data")
-        if isinstance(td, dict) and td.get("structured_resume"):
-            # If caller asked for a different template name, update it.
-            if template_name and td.get("template_name") != template_name:
-                td["template_name"] = template_name
-                session["template_data"] = td
-            return td
-
-        revised_resume = _get_revised_resume_from_anywhere()
-        if not revised_resume:
-            return None
-
-        parsed_result = parse_resume(revised_resume)
-        structured_resume = parsed_result.get("resume", {}) if isinstance(parsed_result, dict) else {}
-        if not structured_resume:
-            return None
-
-        td = {
-            "structured_resume": structured_resume,
-            "template_name": template_name,
-            "revised_resume": revised_resume,
-        }
-        session["template_data"] = td
-        return td
-
     template_data = session.get('template_data')
     if not template_data:
-        template_data = _ensure_template_data(requested_template or "modern")
-        if not template_data:
-            return jsonify({
-                "error": "Template data not found. Please generate a resume (or open a saved revision) before viewing templates."
-            }), 404
+        return jsonify({"error": "Template data not found"}), 404
     
     return jsonify({
         "success": True,
@@ -1311,565 +2108,28 @@ def get_template_data():
     })
 
 
-def _get_template_pdf_response(template_name_override=None):
-    """
-    Build and return an inline PDF response for the current session's template resume.
-    Shared by the /api/template-pdf routes.
-    """
-    # Ensure template_data exists even on refresh/deep-link (avoid relying on prior /api/template-data call)
-    template_data = session.get("template_data")
-    if not template_data:
-        # Reuse the same logic as /api/template-data by calling it internally.
-        # (Avoid duplicating parsing logic here.)
-        try:
-            # best-effort: try to populate template_data
-            requested = (template_name_override or "modern").strip()
-            # Inline reconstruction similar to get_template_data()
-            rd = session.get("results_data") or {}
-            pr = session.get("pending_revision") or {}
-            revised_resume = ""
-            if isinstance(rd, dict):
-                revised_resume = (rd.get("revised_resume") or "").strip()
-            if not revised_resume and isinstance(pr, dict):
-                revised_resume = (pr.get("revised_resume") or "").strip()
-            if not revised_resume:
-                if current_user.is_authenticated:
-                    revs = get_user_revisions(current_user.id)
-                    if revs and isinstance(revs, list):
-                        revised_resume = (revs[0].get("resume_content") or "").strip()
-            if not revised_resume:
-                return "Template data not found. Please generate a resume first.", 404
-
-            parsed_result = parse_resume(revised_resume)
-            structured_resume = parsed_result.get("resume", {}) if isinstance(parsed_result, dict) else {}
-            if not structured_resume:
-                return "Template data not found. Please generate a resume first.", 404
-
-            template_data = {
-                "structured_resume": structured_resume,
-                "template_name": requested,
-                "revised_resume": revised_resume,
-            }
-            session["template_data"] = template_data
-        except Exception:
-            return "Template data not found. Please generate a resume first.", 404
-
-    structured = template_data.get("structured_resume") or {}
-    template_name = (template_name_override or template_data.get("template_name") or "resume").strip()
-
-    # Prefer: render the actual React resume and print it to PDF using headless Chromium.
-    # This preserves colors, fonts, and layout (print_background=True) and matches the site.
-    #
-    # We also auto-fit to ONE Letter page by applying print-only "compaction" + zoom scaling.
-    # Use:
-    # - ?simple=1  => force the legacy ReportLab output
-    # - ?onepage=0 => allow natural pagination
-    if (request.args.get("simple") or "").strip().lower() not in ("1", "true", "yes"):
-        try:
-            from urllib.parse import urljoin
-            from playwright.sync_api import sync_playwright
-
-            host = request.host.split(":")[0]
-            base_url = request.host_url  # includes trailing slash
-            # Standalone view is white background + just the resume content.
-            resume_url = urljoin(
-                base_url,
-                f"/react/template-viewer/{template_name}?standalone=1"
-            )
-
-            # Forward cookies (critical: template data is session-backed)
-            cookie_list = []
-            for k, v in (request.cookies or {}).items():
-                cookie_list.append({
-                    "name": k,
-                    "value": v,
-                    "domain": host,
-                    "path": "/",
-                })
-
-            # CSS px are 96 per inch. Letter = 8.5x11 => 816x1056 CSS px.
-            page_w_px = 816
-            page_h_px = 1056
-
-            # Print margins for the resume content (do NOT use padding).
-            # These margins apply to the resume root container so the content isn't flush to the page edge.
-            margin_top_in = 0.25
-            margin_side_in = 0.25
-            mt_px = int(round(margin_top_in * 96))
-            mx_px = int(round(margin_side_in * 96))
-
-            avail_w = page_w_px - (2 * mx_px)
-            avail_h = page_h_px - mt_px
-
-            one_page = (request.args.get("onepage") or "").strip().lower() not in ("0", "false", "no")
-
-            fit_css = f"""
-              /* Force a deterministic print canvas */
-              @page {{ size: letter; margin: 0 !important; }}
-              html, body {{
-                width: {page_w_px}px !important;
-                height: {page_h_px}px !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #fff !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                overflow: hidden !important;
-              }}
-              #templatePrintRoot {{
-                box-sizing: border-box !important;
-                width: {avail_w}px !important;
-                max-width: {avail_w}px !important;
-                margin: {mt_px}px {mx_px}px 0 {mx_px}px !important;
-                padding: 0 !important;
-              }}
-              /* Templates often center/limit width. Remove those constraints for PDF. */
-              #templatePrintRoot .mx-auto {{ margin-left: 0 !important; margin-right: 0 !important; }}
-              #templatePrintRoot .max-w-3xl,
-              #templatePrintRoot .max-w-4xl,
-              #templatePrintRoot .max-w-5xl,
-              #templatePrintRoot .max-w-6xl,
-              #templatePrintRoot .max-w-7xl {{ max-width: none !important; width: 100% !important; }}
-              /* Remove visual-only chrome that wastes space */
-              #templatePrintRoot * {{
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-              }}
-              #templatePrintRoot .shadow,
-              #templatePrintRoot .shadow-sm,
-              #templatePrintRoot .shadow-md,
-              #templatePrintRoot .shadow-lg,
-              #templatePrintRoot .shadow-xl {{
-                box-shadow: none !important;
-              }}
-              /* Many templates use rounded corners; flatten for print to maximize usable area */
-              #templatePrintRoot .rounded,
-              #templatePrintRoot .rounded-lg,
-              #templatePrintRoot .rounded-xl,
-              #templatePrintRoot .rounded-2xl {{
-                border-radius: 0 !important;
-              }}
-
-              /* Compaction presets: progressively reduce padding/spacing/font sizes */
-              :root[data-pdf-compact="1"] #templatePrintRoot .p-12 {{ padding: 32px !important; }}
-              :root[data-pdf-compact="1"] #templatePrintRoot .p-8 {{ padding: 22px !important; }}
-              :root[data-pdf-compact="1"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 22px !important; }}
-              :root[data-pdf-compact="1"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 16px !important; }}
-              :root[data-pdf-compact="1"] #templatePrintRoot .mb-8 {{ margin-bottom: 18px !important; }}
-
-              :root[data-pdf-compact="2"] #templatePrintRoot .p-12 {{ padding: 26px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .p-8 {{ padding: 18px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .p-5 {{ padding: 14px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .p-4 {{ padding: 12px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 18px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 12px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .mb-8 {{ margin-bottom: 14px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .mb-6 {{ margin-bottom: 12px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .text-5xl {{ font-size: 40px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .text-4xl {{ font-size: 32px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .text-xl {{ font-size: 18px !important; }}
-              :root[data-pdf-compact="2"] #templatePrintRoot .text-lg {{ font-size: 16px !important; }}
-
-              :root[data-pdf-compact="3"] #templatePrintRoot .p-12 {{ padding: 20px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .p-8 {{ padding: 14px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .p-5 {{ padding: 12px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .p-4 {{ padding: 10px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 12px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 10px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 8px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .mb-8 {{ margin-bottom: 10px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .mb-6 {{ margin-bottom: 9px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .mb-5 {{ margin-bottom: 8px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .text-5xl {{ font-size: 34px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .text-4xl {{ font-size: 28px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .text-2xl {{ font-size: 20px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .text-xl {{ font-size: 16px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .text-lg {{ font-size: 15px !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .leading-loose {{ line-height: 1.35 !important; }}
-              :root[data-pdf-compact="3"] #templatePrintRoot .leading-relaxed {{ line-height: 1.30 !important; }}
-
-              :root[data-pdf-compact="4"] #templatePrintRoot .p-12 {{ padding: 16px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .p-8 {{ padding: 12px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .p-5 {{ padding: 10px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .p-4 {{ padding: 8px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 10px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 8px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 7px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .mb-8 {{ margin-bottom: 8px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .mb-6 {{ margin-bottom: 7px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .mb-5 {{ margin-bottom: 6px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .text-5xl {{ font-size: 30px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .text-4xl {{ font-size: 24px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .text-2xl {{ font-size: 18px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .text-xl {{ font-size: 15px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .text-lg {{ font-size: 14px !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .leading-loose {{ line-height: 1.25 !important; }}
-              :root[data-pdf-compact="4"] #templatePrintRoot .leading-relaxed {{ line-height: 1.22 !important; }}
-
-              /* Level 5: very aggressive (still tries to preserve look) */
-              :root[data-pdf-compact="5"] #templatePrintRoot .p-12 {{ padding: 12px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .p-8 {{ padding: 10px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .p-5 {{ padding: 8px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .p-4 {{ padding: 6px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 8px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 7px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 6px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .mb-8 {{ margin-bottom: 6px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .mb-6 {{ margin-bottom: 6px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .mb-5 {{ margin-bottom: 5px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .text-5xl {{ font-size: 26px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .text-4xl {{ font-size: 22px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .text-2xl {{ font-size: 16px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .text-xl {{ font-size: 14px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .text-lg {{ font-size: 13px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .text-base {{ font-size: 12.5px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .text-sm {{ font-size: 11.5px !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .leading-loose {{ line-height: 1.18 !important; }}
-              :root[data-pdf-compact="5"] #templatePrintRoot .leading-relaxed {{ line-height: 1.16 !important; }}
-
-              /* Level 6: last resort before vertical squeeze */
-              :root[data-pdf-compact="6"] #templatePrintRoot .p-12 {{ padding: 10px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .p-8 {{ padding: 8px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .p-5 {{ padding: 7px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .p-4 {{ padding: 5px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .space-y-10 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 6px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .space-y-8 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 6px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .space-y-6 > :not([hidden]) ~ :not([hidden]) {{ margin-top: 5px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .mb-8 {{ margin-bottom: 5px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .mb-6 {{ margin-bottom: 5px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .mb-5 {{ margin-bottom: 4px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .text-5xl {{ font-size: 24px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .text-4xl {{ font-size: 20px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .text-2xl {{ font-size: 15px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .text-xl {{ font-size: 13px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .text-lg {{ font-size: 12.5px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .text-base {{ font-size: 12px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .text-sm {{ font-size: 11px !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .leading-loose {{ line-height: 1.12 !important; }}
-              :root[data-pdf-compact="6"] #templatePrintRoot .leading-relaxed {{ line-height: 1.12 !important; }}
-            """
-
-            with sync_playwright() as p:
-                browser = p.chromium.launch()
-                ctx = browser.new_context(viewport={"width": page_w_px, "height": page_h_px})
-                if cookie_list:
-                    ctx.add_cookies(cookie_list)
-                page = ctx.new_page()
-                page.goto(resume_url, wait_until="networkidle", timeout=60_000)
-                page.wait_for_selector("#templatePrintRoot", timeout=60_000)
-                page.emulate_media(media="print")
-                page.add_style_tag(content=fit_css)
-
-                if one_page:
-                    fit_result = page.evaluate(
-                        """({availW, availH}) => {
-                          const rootWrap = document.getElementById('templatePrintRoot');
-                          const root = rootWrap?.firstElementChild;
-                          if (!rootWrap || !root) return null;
-
-                          // Ensure stable layout
-                          rootWrap.style.overflow = 'hidden';
-                          root.style.zoom = '1';
-                          root.style.transform = '';
-                          root.style.transformOrigin = 'top left';
-                          document.documentElement.dataset.pdfCompact = '0';
-
-                          const levels = ['0','1','2','3','4','5','6'];
-                          // Prefer: minimal distortion. We choose the level that yields the highest required sy (closest to 1).
-                          let best = { level: '0', zoom: 1, sy: 1, reqSy: 1, w: 0, h: 0, fits: false };
-
-                          for (const level of levels) {
-                            document.documentElement.dataset.pdfCompact = level;
-                            root.style.zoom = '1';
-                            root.style.transform = '';
-                            // force reflow
-                            root.getBoundingClientRect();
-
-                            let rect = root.getBoundingClientRect();
-                            const w0 = Math.max(1, rect.width);
-                            const h0 = Math.max(1, rect.height);
-                            // Always fill width (avoid left/right whitespace).
-                            let zoom = Math.min(1, (availW / w0) * 0.999);
-                            zoom = Math.max(0.45, zoom);
-                            root.style.zoom = String(zoom);
-
-                            rect = root.getBoundingClientRect();
-                            const reqSy = Math.min(1, (availH / Math.max(1, rect.height)) * 0.999);
-                            const sy = reqSy; // Always fit (may be < 1 for very long resumes)
-                            if (sy < 1) {
-                              root.style.transform = `scale(1, ${sy})`;
-                              rect = root.getBoundingClientRect();
-                            }
-
-                            const fits = rect.width <= availW + 1 && rect.height <= availH + 1;
-                            // Prefer: higher reqSy (less squeeze), then higher zoom (bigger).
-                            const better =
-                              (reqSy > best.reqSy + 1e-6) ||
-                              (Math.abs(reqSy - best.reqSy) < 1e-6 && zoom > best.zoom + 1e-6);
-                            if (better) best = { level, zoom, sy, reqSy, w: rect.width, h: rect.height, fits };
-                            // If we reach a "good enough" fit with minimal squeeze, stop early.
-                            if (fits && reqSy >= 0.92) return best;
-                          }
-
-                          // Use best attempt if nothing fit perfectly (should be rare)
-                          document.documentElement.dataset.pdfCompact = best.level;
-                          root.style.zoom = String(best.zoom);
-                          root.style.transform = best.sy !== 1 ? `scale(1, ${best.sy})` : '';
-                          const rect2 = root.getBoundingClientRect();
-                          const fits2 = rect2.width <= availW + 1 && rect2.height <= availH + 1;
-                          return { ...best, w: rect2.width, h: rect2.height, fits: fits2 };
-                        }""",
-                        {"availW": avail_w, "availH": avail_h},
-                    )
-                    # Always force a 1-page fit by construction (zoom + sy). If the browser still reports overflow
-                    # due to rounding, reduce sy slightly.
-                    if isinstance(fit_result, dict) and not fit_result.get("fits"):
-                        page.evaluate(
-                            """() => {
-                              const rootWrap = document.getElementById('templatePrintRoot');
-                              const root = rootWrap?.firstElementChild;
-                              if (!root) return;
-                              const cur = (root.style.transform || '').match(/scale\\(1,\\s*([0-9.]+)\\)/);
-                              if (!cur) return;
-                              const sy = Math.max(0.5, parseFloat(cur[1]) * 0.995);
-                              root.style.transform = `scale(1, ${sy})`;
-                            }"""
-                        )
-
-                pdf_bytes = page.pdf(
-                    format="Letter",
-                    print_background=True,
-                    margin={"top": "0", "right": "0", "bottom": "0", "left": "0"},
-                    prefer_css_page_size=True,
-                )
-                browser.close()
-
-            buf = BytesIO(pdf_bytes)
-            buf.seek(0)
-            filename = f"{template_name or 'resume'}.pdf"
-            resp = send_file(buf, mimetype="application/pdf", as_attachment=False, download_name=filename)
-            resp.headers["Content-Disposition"] = f'inline; filename="{filename}"'
-            resp.headers["X-Content-Type-Options"] = "nosniff"
-            resp.headers["X-PDF-Engine"] = "playwright-chromium"
-            return resp
-        except Exception as e:
-            try:
-                logger.error(f"Playwright PDF render failed: {str(e)}")
-            except Exception:
-                pass
-            return (
-                "High-fidelity PDF rendering failed. "
-                f"Details: {str(e)}\n\n"
-                "If you want the basic black-and-white PDF, open this URL with '?simple=1'.",
-                500,
-            )
-
-    # Try to generate a proper PDF with ReportLab.
+@app.route("/api/template-data", methods=["POST"])
+def update_template_data():
+    """Update structured resume data for template viewer (stored in session)."""
     try:
-        from reportlab.lib.pagesizes import letter
-        from reportlab.lib.units import inch
-        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-        from reportlab.lib.enums import TA_CENTER
-        from reportlab.lib import colors
-        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, ListFlowable, ListItem
-    except Exception:
-        return (
-            "PDF export is not available because the server PDF dependency is missing. "
-            "Install 'reportlab' and restart the server.",
-            500,
-        )
+        template_data = session.get('template_data')
+        if not template_data:
+            return jsonify({"success": False, "error": "Template data not found"}), 404
 
-    def s(v):
-        return (v or "").strip() if isinstance(v, str) else (str(v).strip() if v is not None else "")
+        data = request.get_json(force=True, silent=True) or {}
+        resume = data.get("resume")
+        if not isinstance(resume, dict):
+            return jsonify({"success": False, "error": "Invalid resume payload"}), 400
 
-    name = s(structured.get("name"))
-    email = s(structured.get("email"))
-    phone = s(structured.get("phone"))
-    location = s(structured.get("location"))
-    summary = s(structured.get("summary"))
+        # Update only the structured resume. Keep template_name and revised_resume intact.
+        template_data["structured_resume"] = resume
+        session["template_data"] = template_data
+        session.modified = True
 
-    experience = structured.get("experience") or []
-    education = structured.get("education") or []
-    projects = structured.get("projects") or []
-    certifications = structured.get("certifications") or []
-    skills = structured.get("skills") or []
-    custom_sections = structured.get("custom_sections") or []
-
-    buf = BytesIO()
-    doc = SimpleDocTemplate(
-        buf,
-        pagesize=letter,
-        leftMargin=0.65 * inch,
-        rightMargin=0.65 * inch,
-        topMargin=0.6 * inch,
-        bottomMargin=0.6 * inch,
-        title=(name or "Resume"),
-        author=(name or ""),
-    )
-
-    styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name="HeaderName", parent=styles["Title"], alignment=TA_CENTER, spaceAfter=6))
-    styles.add(ParagraphStyle(name="HeaderMeta", parent=styles["Normal"], alignment=TA_CENTER, textColor=colors.grey))
-    styles.add(ParagraphStyle(name="SectionHeading", parent=styles["Heading2"], spaceBefore=14, spaceAfter=6))
-    styles.add(ParagraphStyle(name="ItemTitle", parent=styles["Heading4"], spaceBefore=4, spaceAfter=2))
-    styles.add(ParagraphStyle(name="Small", parent=styles["Normal"], fontSize=9, leading=11))
-
-    def join_meta(parts):
-        parts = [p for p in parts if p]
-        return "  •  ".join(parts)
-
-    story = []
-
-    # Header
-    story.append(Paragraph(name or "Resume", styles["HeaderName"]))
-    meta = join_meta([email, phone, location])
-    if meta:
-        story.append(Paragraph(meta, styles["HeaderMeta"]))
-    story.append(Spacer(1, 10))
-
-    # Summary
-    if summary:
-        story.append(Paragraph("Summary", styles["SectionHeading"]))
-        story.append(Paragraph(summary.replace("\n", "<br/>"), styles["Normal"]))
-
-    # Experience
-    if isinstance(experience, list) and experience:
-        story.append(Paragraph("Experience", styles["SectionHeading"]))
-        for item in experience:
-            if not isinstance(item, dict):
-                continue
-            title = s(item.get("title"))
-            company = s(item.get("company"))
-            duration = s(item.get("duration"))
-            heading = " — ".join([p for p in [title, company] if p])
-            if duration:
-                heading = f"{heading} ({duration})" if heading else duration
-            if heading:
-                story.append(Paragraph(heading, styles["ItemTitle"]))
-
-            desc = s(item.get("description"))
-            if desc:
-                bullets = [b.strip("• \t") for b in desc.splitlines() if b.strip()]
-                if len(bullets) > 1:
-                    story.append(
-                        ListFlowable(
-                            [ListItem(Paragraph(b, styles["Normal"]), leftIndent=12) for b in bullets],
-                            bulletType="bullet",
-                            leftIndent=14,
-                            bulletFontName="Helvetica",
-                            bulletFontSize=9,
-                        )
-                    )
-                else:
-                    story.append(Paragraph(desc.replace("\n", "<br/>"), styles["Normal"]))
-
-    # Education
-    if isinstance(education, list) and education:
-        story.append(Paragraph("Education", styles["SectionHeading"]))
-        for item in education:
-            if not isinstance(item, dict):
-                continue
-            degree = s(item.get("degree"))
-            inst = s(item.get("institution"))
-            year = s(item.get("year"))
-            details = s(item.get("details"))
-
-            heading = " — ".join([p for p in [degree, inst] if p])
-            if year:
-                heading = f"{heading} ({year})" if heading else year
-            if heading:
-                story.append(Paragraph(heading, styles["ItemTitle"]))
-            if details:
-                story.append(Paragraph(details.replace("\n", "<br/>"), styles["Normal"]))
-
-    # Projects
-    if isinstance(projects, list) and projects:
-        story.append(Paragraph("Projects", styles["SectionHeading"]))
-        for item in projects:
-            if not isinstance(item, dict):
-                continue
-            title = s(item.get("title"))
-            desc = s(item.get("description"))
-            if title:
-                story.append(Paragraph(title, styles["ItemTitle"]))
-            if desc:
-                story.append(Paragraph(desc.replace("\n", "<br/>"), styles["Normal"]))
-
-    # Skills
-    if isinstance(skills, list) and skills:
-        story.append(Paragraph("Skills", styles["SectionHeading"]))
-        story.append(Paragraph(", ".join([s(x) for x in skills if s(x)]), styles["Normal"]))
-
-    # Certifications
-    if isinstance(certifications, list) and certifications:
-        story.append(Paragraph("Certifications", styles["SectionHeading"]))
-        story.append(
-            ListFlowable(
-                [ListItem(Paragraph(s(c), styles["Normal"]), leftIndent=12) for c in certifications if s(c)],
-                bulletType="bullet",
-                leftIndent=14,
-                bulletFontName="Helvetica",
-                bulletFontSize=9,
-            )
-        )
-
-    # Custom sections
-    if isinstance(custom_sections, list) and custom_sections:
-        for sec in custom_sections:
-            if not isinstance(sec, dict):
-                continue
-            heading = s(sec.get("heading"))
-            if not heading:
-                continue
-            story.append(Paragraph(heading, styles["SectionHeading"]))
-            items = sec.get("items") or []
-            for it in items:
-                if not isinstance(it, dict):
-                    continue
-                t = s(it.get("title"))
-                sub = s(it.get("subtitle"))
-                date = s(it.get("date"))
-                content = s(it.get("content"))
-                line = " — ".join([p for p in [t, sub] if p])
-                if date:
-                    line = f"{line} ({date})" if line else date
-                if line:
-                    story.append(Paragraph(line, styles["ItemTitle"]))
-                if content:
-                    story.append(Paragraph(content.replace("\n", "<br/>"), styles["Normal"]))
-
-    # Always build at least something
-    if not story:
-        story = [Paragraph("No resume content found.", styles["Normal"])]
-
-    doc.build(story)
-    buf.seek(0)
-
-    filename = f"{template_name or 'resume'}.pdf"
-    resp = send_file(buf, mimetype="application/pdf", as_attachment=False, download_name=filename)
-    resp.headers["Content-Disposition"] = f'inline; filename="{filename}"'
-    resp.headers["X-Content-Type-Options"] = "nosniff"
-    resp.headers["X-PDF-Engine"] = "reportlab"
-    return resp
-
-
-@app.get("/api/template-pdf")
-def get_template_pdf():
-    """
-    Return an inline PDF for the currently-viewed template resume.
-
-    This is intentionally server-generated (real application/pdf) so the user can open it
-    in a new tab without relying on the client-side "Save as PDF"/print-dialog flow.
-    """
-    return _get_template_pdf_response(request.args.get("template"))
-
-
-@app.get("/api/template-pdf/<template_name>.pdf")
-def get_template_pdf_named(template_name):
-    """
-    Same as /api/template-pdf, but with a .pdf URL for maximum compatibility.
-    """
-    return _get_template_pdf_response(template_name)
+        return jsonify({"success": True})
+    except Exception as e:
+        logger.error(f"Error updating template data: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/termsprivacy")
 def termsprivacy():
@@ -2399,34 +2659,6 @@ def sitemap():
     return response
 
 
-@app.route("/download_resume_docx", methods=["POST"])
-#@login_required
-def download_resume_docx():
-    # If not authenticated, redirect to login to ensure gated downloads
-    try:
-        if not current_user.is_authenticated:
-            return redirect(url_for('login'))
-    except Exception:
-        # In case flask-login context isn't available, fall back to login route
-        return redirect(url_for('login'))
-    revised_resume = request.form.get('resume')
-    if not revised_resume:
-        flash("No revised resume found for download.", 'danger')
-        return redirect(url_for('index'))
-    doc = Document()
-    for line in revised_resume.splitlines():
-        doc.add_paragraph(line)
-    file_stream = BytesIO()
-    doc.save(file_stream)
-    file_stream.seek(0)
-    return send_file(
-        file_stream,
-        as_attachment=True,
-        download_name="revised_resume.docx",
-        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
-
-
 @app.route('/api/feedback/download', methods=['POST'])
 @login_required
 def feedback_download_api():
@@ -2482,6 +2714,94 @@ AZURE_USERS_TABLE = os.getenv('AZURE_USERS_TABLE', 'Users')
 def get_users_table_client():
     return get_table_client(AZURE_USERS_TABLE)
 
+FREE_REVISION_LIMIT = int(os.getenv('FREE_REVISION_LIMIT', '2'))
+PAID_EMAILS = set([e.strip().lower() for e in (os.getenv('PAID_EMAILS', '') or '').split(',') if e.strip()])
+
+class FreeTierLimitReached(Exception):
+    pass
+
+def _parse_iso_dt(s: str):
+    if not s:
+        return None
+    try:
+        dt = datetime.fromisoformat(s)
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except Exception:
+        return None
+
+def get_user_profile_azure(user_id: str) -> Optional[dict]:
+    try:
+        table_client = get_users_table_client()
+        return table_client.get_entity(partition_key=str(user_id), row_key='profile')
+    except Exception:
+        return None
+
+
+def _format_paid_until(paid_until_str: str) -> str:
+    """Best-effort formatting for paid_until ISO string."""
+    s = (paid_until_str or "").strip()
+    if not s:
+        return ""
+    try:
+        dt = datetime.fromisoformat(s.replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        # Show local-ish friendly date; keep time out for simplicity
+        return dt.astimezone(timezone.utc).strftime("%b %d, %Y")
+    except Exception:
+        return s
+
+def is_paid_user(user_obj: Optional['User']) -> bool:
+    try:
+        if not user_obj or not getattr(user_obj, 'is_authenticated', False):
+            return False
+        if bool(getattr(user_obj, 'is_admin', False)):
+            return True
+        email = (getattr(user_obj, 'email', '') or '').strip().lower()
+        if email and email in PAID_EMAILS:
+            return True
+        prof = get_user_profile_azure(getattr(user_obj, 'id', ''))
+        if not prof:
+            return False
+        # Supported fields (manual or future Stripe webhook):
+        # - is_paid: boolean
+        # - plan_status: free|trial|paid|active|canceled
+        # - paid_until: ISO timestamp (optional)
+        if bool(prof.get('is_paid', False)):
+            return True
+        plan_status = str(prof.get('plan_status') or '').strip().lower()
+        if plan_status in ('paid', 'active', 'trial', 'monthly', 'annual'):
+            paid_until = _parse_iso_dt(str(prof.get('paid_until') or '').strip())
+            if paid_until is None:
+                return True
+            return paid_until >= datetime.now(timezone.utc)
+        return False
+    except Exception:
+        return False
+
+def is_paid_user_id(user_id: str) -> bool:
+    try:
+        u = users.get(str(user_id))
+        if u:
+            return is_paid_user(u)
+        prof = get_user_profile_azure(str(user_id))
+        if not prof:
+            return False
+        if bool(prof.get('is_paid', False)):
+            return True
+        plan_status = str(prof.get('plan_status') or '').strip().lower()
+        if plan_status in ('paid', 'active', 'trial', 'monthly', 'annual'):
+            paid_until = _parse_iso_dt(str(prof.get('paid_until') or '').strip())
+            if paid_until is None:
+                return True
+            return paid_until >= datetime.now(timezone.utc)
+        email = str(prof.get('email') or '').strip().lower()
+        return bool(email and email in PAID_EMAILS)
+    except Exception:
+        return False
+
 def upsert_user_profile_azure(user_obj: 'User') -> None:
     try:
         table_client = get_users_table_client()
@@ -2500,8 +2820,20 @@ def upsert_user_profile_azure(user_obj: 'User') -> None:
         logger.error(f"Failed to upsert user profile to Azure: {str(e)}")
 
 # Save a revision to Azure Table Storage
-def save_resume_revision(user_id, revision_id, resume_content, feedback=None, original_resume=None, notes=None):
+def save_resume_revision(user_id, revision_id, resume_content, feedback=None, original_resume=None, notes=None, job_description=None):
     from datetime import datetime, timezone
+    # Enforce free tier cap (2 revisions) for non-paid users.
+    # Note: We enforce here as a safety net; primary gating happens earlier in /results.
+    if not is_paid_user_id(user_id):
+        try:
+            existing = get_user_revisions(user_id)
+            if len(existing) >= FREE_REVISION_LIMIT:
+                raise FreeTierLimitReached("Free tier revision limit reached")
+        except FreeTierLimitReached:
+            raise
+        except Exception:
+            # If counting fails, do not block saves.
+            pass
     table_client = get_table_client()
     entity = {
         'PartitionKey': user_id,
@@ -2510,9 +2842,39 @@ def save_resume_revision(user_id, revision_id, resume_content, feedback=None, or
         'resume_content': resume_content,
         'feedback': json.dumps(feedback) if feedback else '',
         'original_resume': original_resume or '',
-        'notes': notes or ''
+        'notes': notes or '',
+        'job_description': job_description or '',
+        # Structured application tracking (list of {company, role, date_applied, status, link})
+        'applications': '[]',
     }
     table_client.upsert_entity(entity)
+
+def _parse_applications(raw):
+    """Parse stored applications JSON safely into a list of dicts."""
+    if not raw:
+        return []
+    if isinstance(raw, list):
+        apps = raw
+    else:
+        s = str(raw)
+        try:
+            apps = json.loads(s) if s.strip() else []
+        except Exception:
+            apps = []
+    if not isinstance(apps, list):
+        return []
+    cleaned = []
+    for item in apps:
+        if not isinstance(item, dict):
+            continue
+        cleaned.append({
+            'company': str(item.get('company', '') or '')[:120],
+            'role': str(item.get('role', '') or '')[:120],
+            'date_applied': str(item.get('date_applied', '') or '')[:32],
+            'status': str(item.get('status', '') or '')[:40],
+            'link': str(item.get('link', '') or '')[:500],
+        })
+    return cleaned
 
 # Get all revisions for a user
 def get_user_revisions(user_id):
@@ -2541,10 +2903,18 @@ def get_user_revisions(user_id):
             'resume_content': e.get('resume_content', ''),
             'feedback': feedback,
             'original_resume': e.get('original_resume', ''),
-            'notes': e.get('notes', '')
+            'notes': e.get('notes', ''),
+            'job_description': e.get('job_description', ''),
+            'applications': _parse_applications(e.get('applications', '')),
         })
     utc_min = datetime.min.replace(tzinfo=timezone.utc)
     revisions.sort(key=lambda x: x['timestamp'] or utc_min, reverse=True)
+    for r in revisions:
+        apps = r.get('applications') or []
+        has_apps = bool(apps)
+        has_notes = bool((r.get('notes') or '').strip())
+        r['has_applications'] = bool(has_apps or has_notes)
+        r['applications_count'] = len(apps)
     return revisions
 
 # Route: My Revisions
@@ -2552,30 +2922,353 @@ def get_user_revisions(user_id):
 @login_required
 def my_revisions():
     revisions = get_user_revisions(current_user.id)
-    return render_template('my_revisions.html', revisions=revisions, user=current_user)
+    return render_template('my_revisions.html', revisions=revisions, user=current_user, is_paid=is_paid_user(current_user))
 
-@app.route('/download_revision/<revision_id>')
+
+@app.route('/settings')
 @login_required
-def download_revision(revision_id):
-    revisions = get_user_revisions(current_user.id)
-    rev = next((r for r in revisions if r['revision_id'] == revision_id), None)
-    if not rev:
-        flash('Revision not found.', 'danger')
-        return redirect(url_for('my_revisions'))
-    from io import BytesIO
-    from docx import Document
-    doc = Document()
-    for line in rev['resume_content'].splitlines():
-        doc.add_paragraph(line)
-    file_stream = BytesIO()
-    doc.save(file_stream)
-    file_stream.seek(0)
-    return send_file(
-        file_stream,
-        as_attachment=True,
-        download_name=f"resume_revision_{revision_id}.docx",
-        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+def settings_page():
+    prof = get_user_profile_azure(getattr(current_user, 'id', '')) or {}
+    paid_until_raw = str(prof.get('paid_until') or '').strip()
+    customer_id = str(prof.get('stripe_customer_id') or '').strip()
+    subscription_id = str(prof.get('stripe_subscription_id') or '').strip()
+    plan_status_raw = str(prof.get('plan_status') or '').strip()
+    debug = str(request.args.get('debug') or '').strip() == '1'
+    debug_info = None
+
+    paid_flag = bool(is_paid_user(current_user))
+
+    # If webhook hasn't populated Stripe ids yet (or paid flag is stale), recover them via email lookup.
+    # This allows newly-purchased users to see accurate plan dates immediately.
+    if _stripe_enabled():
+        try:
+            if not customer_id:
+                customer_id = _find_stripe_customer_id_by_email((getattr(current_user, 'email', '') or '').strip())
+            if customer_id and not subscription_id:
+                stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+                subs = stripe.Subscription.list(customer=customer_id, status='all', limit=10)
+                sdata = list(getattr(subs, 'data', []) or [])
+                # Prefer active > trialing > others; then later period end
+                def _rank(sub):
+                    status = str(getattr(sub, 'status', '') or '').lower()
+                    cpe = int(getattr(sub, 'current_period_end', 0) or 0)
+                    sr = 0
+                    if status == 'active':
+                        sr = 3
+                    elif status == 'trialing':
+                        sr = 2
+                    elif status in ('past_due', 'unpaid'):
+                        sr = 1
+                    return (sr, cpe)
+                if sdata:
+                    best = sorted(sdata, key=_rank, reverse=True)[0]
+                    subscription_id = str(getattr(best, 'id', '') or '').strip() or subscription_id
+                    best_status = str(getattr(best, 'status', '') or '').strip().lower()
+                    if best_status in ('active', 'trialing'):
+                        paid_flag = True
+
+            # Backfill ids to Azure so future loads are fast/stable.
+            if customer_id or subscription_id:
+                try:
+                    table_client = get_users_table_client()
+                    entity = {"PartitionKey": str(current_user.id), "RowKey": "profile"}
+                    if customer_id:
+                        entity["stripe_customer_id"] = str(customer_id)
+                    if subscription_id:
+                        entity["stripe_subscription_id"] = str(subscription_id)
+                    # If Stripe indicates an active/trialing sub, reflect that.
+                    if paid_flag:
+                        entity["is_paid"] = True
+                    table_client.upsert_entity(entity, mode=UpdateMode.MERGE)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    # Stripe-derived dates (handles upgrades where Azure still reflects the trial subscription)
+    stripe_dates = _get_stripe_plan_dates_for_customer(customer_id) if paid_flag else {}
+    if paid_flag and not stripe_dates and subscription_id:
+        stripe_dates = _get_stripe_plan_dates_for_subscription(subscription_id)
+    next_billing_iso = str(stripe_dates.get('next_billing_iso') or '').strip()
+    paid_through_est_iso = str(stripe_dates.get('paid_through_est_iso') or '').strip()
+    interval_label = str(stripe_dates.get('interval_label') or '').strip()
+
+    # Strongest source of truth: compute directly from the stored Stripe subscription_id.
+    # This avoids cases where precomputed stripe_dates degrade to "trial end" due to missing interval info.
+    try:
+        if paid_flag and subscription_id and _stripe_enabled():
+            stripe.api_key = (os.getenv('STRIPE_SECRET_KEY') or '').strip()
+            sub_obj = stripe.Subscription.retrieve(subscription_id, expand=["items.data.price"])
+            # Always try SubscriptionItem.list to reliably get price/recurring
+            # (some Stripe responses omit items.data even with expand).
+            si_err = ""
+            si_count = 0
+            si_price_id = ""
+            try:
+                si = stripe.SubscriptionItem.list(subscription=subscription_id, limit=10, expand=["data.price"])
+                si_data = list(getattr(si, "data", []) or [])
+                si_count = len(si_data)
+                if si_data:
+                    p = getattr(si_data[0], "price", None)
+                    if isinstance(p, str):
+                        si_price_id = p.strip()
+                    elif isinstance(p, dict):
+                        si_price_id = str(p.get("id") or "").strip()
+                    else:
+                        si_price_id = str(getattr(p, "id", "") or "").strip() if p else ""
+            except Exception as e:
+                si_err = f"{type(e).__name__}: {str(e)}"
+
+            # Stripe can sometimes return plain dicts; handle both dict and StripeObject.
+            status = str(_stripe_obj_get(sub_obj, "status", "") or "").strip().lower()
+            trial_end = _stripe_obj_get(sub_obj, "trial_end", None)
+            current_period_end = _stripe_obj_get(sub_obj, "current_period_end", None)
+
+            # Some Stripe setups can surface an "active" subscription where current_period_end is not populated
+            # in our retrieved object. Fallback to upcoming invoice period_end for accurate renewal timing.
+            inv_err = ""
+            inv_period_end = None
+            inv_next_payment_attempt = None
+            raw_sub_cpe = None
+            raw_sub_billing_anchor = None
+            raw_sub_current_period_start = None
+            raw_sub_err = ""
+            latest_inv_period_end = None
+            latest_inv_err = ""
+            sanity_applied = False
+            sanity_prev_cpe = None
+            sanity_new_cpe = None
+            if not current_period_end and status in ("active", "trialing"):
+                try:
+                    inv = _stripe_upcoming_invoice(customer_id, subscription_id)
+                    inv_period_end = _stripe_obj_get(inv, "period_end", None)
+                    inv_next_payment_attempt = _stripe_obj_get(inv, "next_payment_attempt", None)
+                    if inv_period_end:
+                        current_period_end = inv_period_end
+                except Exception as e:
+                    inv_err = f"{type(e).__name__}: {str(e)}"
+            # Final fallback: fetch raw subscription JSON and read current_period_end directly.
+            if not current_period_end:
+                try:
+                    raw_sub = _stripe_subscription_raw(subscription_id)
+                    raw_sub_cpe = _stripe_obj_get(raw_sub, "current_period_end", None)
+                    raw_sub_billing_anchor = _stripe_obj_get(raw_sub, "billing_cycle_anchor", None)
+                    raw_sub_current_period_start = _stripe_obj_get(raw_sub, "current_period_start", None)
+                    if raw_sub_cpe:
+                        current_period_end = raw_sub_cpe
+                except Exception:
+                    raw_sub_err = "raw_subscription_fetch_failed"
+
+            # Fallback: use latest invoice period_end if available
+            if not current_period_end:
+                try:
+                    latest_inv = _stripe_latest_invoice_for_subscription(subscription_id)
+                    latest_inv_period_end = _stripe_obj_get(latest_inv, "period_end", None)
+                    if not latest_inv_period_end:
+                        # Sometimes invoice line has period.end
+                        lines = _stripe_obj_get(latest_inv, "lines", None)
+                        ldata = _stripe_obj_get(lines, "data", []) if lines else []
+                        if ldata:
+                            period = _stripe_obj_get(ldata[0], "period", None)
+                            latest_inv_period_end = _stripe_obj_get(period, "end", None) if period else None
+                    if latest_inv_period_end:
+                        current_period_end = latest_inv_period_end
+                except Exception as e:
+                    latest_inv_err = f"{type(e).__name__}: {str(e)}"
+
+            # Final fallback: approximate from billing_cycle_anchor/current_period_start + interval.
+            if not current_period_end:
+                try:
+                    base_ts = None
+                    if raw_sub_billing_anchor:
+                        base_ts = int(raw_sub_billing_anchor)
+                    elif raw_sub_current_period_start:
+                        base_ts = int(raw_sub_current_period_start)
+                    if base_ts:
+                        base_dt = datetime.fromtimestamp(base_ts, tz=timezone.utc)
+                        if interval:
+                            current_period_end = int(_add_interval_approx(base_dt, interval, interval_count).timestamp())
+                except Exception:
+                    pass
+
+            # Sanity check: sometimes we end up with a "period end" equal to the billing anchor (or not in the future),
+            # which makes the UI show today's date. For active subscriptions, ensure period_end is in the future.
+            try:
+                if status == "active" and interval and current_period_end:
+                    now_ts = int(datetime.now(timezone.utc).timestamp())
+                    cpe = int(current_period_end)
+                    sanity_prev_cpe = cpe
+                    anchor_ts = None
+                    try:
+                        if raw_sub_billing_anchor:
+                            anchor_ts = int(raw_sub_billing_anchor)
+                        elif raw_sub_current_period_start:
+                            anchor_ts = int(raw_sub_current_period_start)
+                    except Exception:
+                        anchor_ts = None
+                    # If cpe is not meaningfully after anchor, or it's already due/expired, recompute.
+                    if (anchor_ts is not None and cpe <= (anchor_ts + 60)) or (cpe <= (now_ts + 300)):
+                        base_for_calc = anchor_ts if anchor_ts is not None else now_ts
+                        base_dt = datetime.fromtimestamp(int(base_for_calc), tz=timezone.utc)
+                        current_period_end = int(_add_interval_approx(base_dt, interval, interval_count).timestamp())
+                        sanity_applied = True
+                        sanity_new_cpe = int(current_period_end)
+            except Exception:
+                pass
+
+            price_id, interval, interval_count = _get_subscription_price_id_and_recurring(sub_obj)
+            if not price_id and si_price_id:
+                price_id = si_price_id
+
+            annual_pid = _get_stripe_price_id('annual_6_95') or ''
+            monthly_pid = _get_stripe_price_id('monthly_10_95') or ''
+            # Infer interval if Stripe didn't provide recurring info
+            if not interval and price_id and annual_pid and price_id == annual_pid:
+                interval, interval_count = 'year', 1
+            if not interval and price_id and monthly_pid and price_id == monthly_pid:
+                interval, interval_count = 'month', 1
+
+            # Compute next_billing / paid_through from subscription directly.
+            next_ts = None
+            if status == "trialing" and trial_end:
+                next_ts = int(trial_end)
+            elif current_period_end:
+                next_ts = int(current_period_end)
+
+            if next_ts:
+                next_billing_iso = datetime.fromtimestamp(int(next_ts), tz=timezone.utc).isoformat()
+
+            if status == "trialing" and trial_end:
+                base = datetime.fromtimestamp(int(trial_end), tz=timezone.utc)
+                if interval:
+                    paid_through_est_iso = _add_interval_approx(base, interval, interval_count).isoformat()
+                else:
+                    # Worst-case fallback: show trial end (better than blank)
+                    paid_through_est_iso = base.isoformat()
+            elif current_period_end:
+                paid_through_est_iso = datetime.fromtimestamp(int(current_period_end), tz=timezone.utc).isoformat()
+
+            if interval == 'year':
+                interval_label = interval_label or 'Annual'
+                plan_status_raw = plan_status_raw or 'annual_6_95'
+            elif interval == 'month':
+                interval_label = interval_label or 'Monthly'
+                plan_status_raw = plan_status_raw or 'monthly_10_95'
+
+            if debug:
+                # also show what Stripe returned around items
+                sub_items_len = 0
+                try:
+                    sub_items_len = len(list(getattr(getattr(sub_obj, "items", None), "data", []) or []))
+                except Exception:
+                    sub_items_len = 0
+                debug_info = {
+                    "settings_debug_version": "sanitycheck_v2",
+                    "azure_plan_status": str(prof.get("plan_status") or ""),
+                    "azure_paid_until": str(prof.get("paid_until") or ""),
+                    "stripe_customer_id": customer_id,
+                    "stripe_subscription_id": subscription_id,
+                    "stripe_status": status,
+                    "stripe_trial_end": str(trial_end or ""),
+                    "stripe_current_period_end": str(current_period_end or ""),
+                    "stripe_upcoming_invoice_period_end": str(inv_period_end or ""),
+                    "stripe_upcoming_invoice_next_payment_attempt": str(inv_next_payment_attempt or ""),
+                    "stripe_upcoming_invoice_error": inv_err,
+                    "stripe_raw_subscription_current_period_end": str(raw_sub_cpe or ""),
+                    "stripe_raw_subscription_billing_cycle_anchor": str(raw_sub_billing_anchor or ""),
+                    "stripe_raw_subscription_current_period_start": str(raw_sub_current_period_start or ""),
+                    "stripe_raw_subscription_error": raw_sub_err,
+                    "stripe_latest_invoice_period_end": str(latest_inv_period_end or ""),
+                    "stripe_latest_invoice_error": latest_inv_err,
+                    "stripe_sanity_applied": str(sanity_applied),
+                    "stripe_sanity_prev_cpe": str(sanity_prev_cpe or ""),
+                    "stripe_sanity_new_cpe": str(sanity_new_cpe or ""),
+                    "stripe_item_price_id": price_id,
+                    "stripe_subscription_items_len": str(sub_items_len),
+                    "stripe_subscriptionitem_list_count": str(si_count),
+                    "stripe_subscriptionitem_list_error": si_err,
+                    "stripe_subscriptionitem_price_id": si_price_id,
+                    "env_annual_price_id": annual_pid,
+                    "env_monthly_price_id": monthly_pid,
+                    "computed_interval": interval,
+                    "computed_interval_count": str(interval_count),
+                    "computed_next_billing_iso": next_billing_iso,
+                    "computed_paid_through_iso": paid_through_est_iso,
+                }
+    except Exception:
+        pass
+
+    # If Stripe didn't provide recurring interval details (common with some setups),
+    # paid_through_est_iso can end up equal to trial_end. In that case, infer based on our plan_id.
+    try:
+        if (
+            is_paid_user(current_user)
+            and next_billing_iso
+            and paid_through_est_iso
+            and paid_through_est_iso == next_billing_iso
+            and plan_status_raw in ('annual_6_95', 'monthly_10_95')
+        ):
+            trial_end_dt = _parse_iso_dt(next_billing_iso.replace('Z', '+00:00'))
+            if trial_end_dt is not None:
+                if plan_status_raw == 'annual_6_95':
+                    paid_through_est_iso = _add_interval_approx(trial_end_dt, 'year', 1).isoformat()
+                    interval_label = interval_label or 'Annual'
+                elif plan_status_raw == 'monthly_10_95':
+                    paid_through_est_iso = _add_interval_approx(trial_end_dt, 'month', 1).isoformat()
+                    interval_label = interval_label or 'Monthly'
+    except Exception:
+        pass
+
+    # Back-compat: keep paid_until_display populated (prefer Stripe paid-through estimate if it exists)
+    if paid_flag:
+        paid_until_raw = paid_through_est_iso or paid_until_raw
+        if not paid_until_raw:
+            # Older fallback: if we only have subscription_id stored, try it.
+            sub_id = _get_stripe_subscription_id_from_azure(getattr(current_user, 'id', ''))
+            paid_until_raw = _get_paid_until_from_stripe(sub_id) or paid_until_raw
+    return render_template(
+        'settings.html',
+        user=current_user,
+        email=(getattr(current_user, 'email', '') or '').strip(),
+        name=(getattr(current_user, 'name', '') or '').strip(),
+        is_paid=paid_flag,
+        plan_status=plan_status_raw,
+        interval_label=interval_label,
+        next_billing_display=_format_paid_until(next_billing_iso),
+        paid_through_display=_format_paid_until(paid_until_raw),
+        debug_info=debug_info,
     )
+
+@app.route('/api/me')
+def api_me():
+    """Lightweight user info for the React frontend (plan gating, limits)."""
+    try:
+        if not current_user.is_authenticated:
+            return jsonify({
+                "is_authenticated": False,
+                "is_paid": False,
+                "free_revision_limit": FREE_REVISION_LIMIT,
+                "revisions_used": 0,
+            })
+        paid = is_paid_user(current_user)
+        used = 0
+        try:
+            used = len(get_user_revisions(current_user.id))
+        except Exception:
+            used = 0
+        return jsonify({
+            "is_authenticated": True,
+            "is_paid": bool(paid),
+            "free_revision_limit": FREE_REVISION_LIMIT,
+            "revisions_used": used,
+        })
+    except Exception:
+        return jsonify({
+            "is_authenticated": False,
+            "is_paid": False,
+            "free_revision_limit": FREE_REVISION_LIMIT,
+            "revisions_used": 0,
+        })
 
 @app.route('/view_revision/<revision_id>')
 @login_required
@@ -2585,6 +3278,22 @@ def view_revision(revision_id):
     if not rev:
         flash('Revision not found.', 'danger')
         return redirect(url_for('my_revisions'))
+
+    # Ensure template selection works for saved revisions.
+    # The template flow (/api/parse-resume-for-template) reads from session['results_data'].
+    # When a user logs out/in, the session is fresh, so we must seed it from the revision
+    # being viewed (otherwise template selection fails with "Resume data not found").
+    session['results_data'] = {
+        'original_resume': rev.get('original_resume', '') or '',
+        'revised_resume': rev.get('resume_content', '') or '',
+        'feedback': rev.get('feedback', {}) or {},
+        'job_description': rev.get('job_description', '') or '',
+        'source_revision_id': revision_id,
+    }
+    # Prevent confusion from a previous template snapshot
+    session.pop('template_data', None)
+    session.modified = True
+
     return render_template(
         'result.html',
         revised_resume=rev['resume_content'],
@@ -2611,6 +3320,57 @@ def update_notes(revision_id):
     except Exception as e:
         flash('Error updating notes. Please try again.', 'danger')
         
+    return redirect(url_for('my_revisions'))
+
+@app.route('/application/add/<revision_id>', methods=['POST'])
+@login_required
+def add_application(revision_id):
+    try:
+        company = (request.form.get('company') or '').strip()
+        role = (request.form.get('role') or '').strip()
+        date_applied = (request.form.get('date_applied') or '').strip()
+        status = (request.form.get('status') or '').strip()
+        link = (request.form.get('link') or '').strip()
+
+        if not any([company, role, date_applied, status, link]):
+            flash('Please fill at least one field before adding an application.', 'danger')
+            return redirect(url_for('my_revisions'))
+
+        table_client = get_table_client()
+        entity = table_client.get_entity(partition_key=current_user.id, row_key=revision_id)
+        apps = _parse_applications(entity.get('applications', ''))
+        apps.append({
+            'company': company,
+            'role': role,
+            'date_applied': date_applied,
+            'status': status,
+            'link': link,
+        })
+        # Prevent unbounded growth
+        apps = apps[-200:]
+        entity['applications'] = json.dumps(apps)
+        table_client.update_entity(entity, mode=UpdateMode.MERGE)
+        flash('Application added!', 'success')
+    except Exception:
+        flash('Error adding application. Please try again.', 'danger')
+    return redirect(url_for('my_revisions'))
+
+@app.route('/application/delete/<revision_id>/<int:idx>', methods=['POST'])
+@login_required
+def delete_application(revision_id, idx: int):
+    try:
+        table_client = get_table_client()
+        entity = table_client.get_entity(partition_key=current_user.id, row_key=revision_id)
+        apps = _parse_applications(entity.get('applications', ''))
+        if idx < 0 or idx >= len(apps):
+            flash('Application not found.', 'danger')
+            return redirect(url_for('my_revisions'))
+        apps.pop(idx)
+        entity['applications'] = json.dumps(apps)
+        table_client.update_entity(entity, mode=UpdateMode.MERGE)
+        flash('Application removed.', 'success')
+    except Exception:
+        flash('Error removing application. Please try again.', 'danger')
     return redirect(url_for('my_revisions'))
 
 #############################################
@@ -2805,6 +3565,39 @@ def users_azure_csv():
         })
     except Exception as e:
         logger.error(f"users_azure_csv error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+
+# Admin: set plan/subscription fields on Azure Users profile (manual override until Stripe is integrated)
+@app.route('/admin/set_user_plan', methods=['POST'])
+@login_required
+def admin_set_user_plan():
+    if not getattr(current_user, "is_admin", False):
+        return jsonify({"error": "Forbidden"}), 403
+    data = request.get_json(silent=True) or {}
+    user_id = str((data.get('user_id') or '')).strip()
+    if not user_id:
+        return jsonify({"error": "Missing user_id"}), 400
+    # Supported fields
+    plan_status = str((data.get('plan_status') or '')).strip().lower()  # free|trial|paid|active|canceled
+    paid_until = str((data.get('paid_until') or '')).strip()  # ISO timestamp optional
+    is_paid_flag = data.get('is_paid', None)  # boolean optional
+    try:
+        table_client = get_users_table_client()
+        # MERGE upsert: do not clobber existing profile fields
+        entity = {
+            'PartitionKey': user_id,
+            'RowKey': 'profile',
+        }
+        if plan_status:
+            entity['plan_status'] = plan_status
+        if paid_until:
+            entity['paid_until'] = paid_until
+        if isinstance(is_paid_flag, bool):
+            entity['is_paid'] = bool(is_paid_flag)
+        table_client.upsert_entity(entity)
+        return jsonify({"status": "ok"}), 200
+    except Exception as e:
+        logger.error(f"admin_set_user_plan error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
 
 def extract_text_from_file(file):

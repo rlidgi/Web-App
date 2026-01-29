@@ -1,5 +1,6 @@
 import React from 'react';
 import { parseResumeContent } from '../../utils/resumeUtils';
+import { RenderMaybeBullets } from './RenderMaybeBullets';
 
 export default function ProfessionalTemplate({ content }) {
     const sections = parseResumeContent(content);
@@ -38,7 +39,11 @@ export default function ProfessionalTemplate({ content }) {
                                     </div>
                                     <span className="text-xs text-slate-600 font-medium whitespace-nowrap">{exp.duration}</span>
                                 </div>
-                                <p className="text-slate-700 leading-snug text-sm">{exp.description}</p>
+                                <RenderMaybeBullets
+                                    text={exp.description}
+                                    forceBullets
+                                    className="text-slate-700 leading-snug text-sm"
+                                />
                             </div>
                         ))}
                     </Section>

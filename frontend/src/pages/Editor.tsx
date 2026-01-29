@@ -159,6 +159,12 @@ export default function Editor() {
                             >
                                 <option value="modern">Modern</option>
                                 <option value="classic">Classic</option>
+                                <option value="classicSidebar">Classic Sidebar</option>
+                                <option value="classicPortrait">Classic Portrait</option>
+                                <option value="darkSidebar">Dark Sidebar</option>
+                                <option value="navyHeader">Navy Header</option>
+                                <option value="timelineBlue">Timeline Blue</option>
+                                <option value="oliveClassic">Olive Classic</option>
                                 <option value="minimal">Minimal</option>
                                 <option value="professional">Professional</option>
                                 <option value="creative">Creative</option>

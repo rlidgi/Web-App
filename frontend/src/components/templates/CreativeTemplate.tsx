@@ -1,6 +1,7 @@
 import React from 'react';
 import { Briefcase, GraduationCap, Sparkles, Code, Award, Layers } from 'lucide-react';
 import { parseResumeContent } from '../../utils/resumeUtils';
+import { RenderMaybeBullets } from './RenderMaybeBullets';
 
 export default function CreativeTemplate({ content }) {
     const sections = parseResumeContent(content);
@@ -62,7 +63,13 @@ export default function CreativeTemplate({ content }) {
                                     <div key={idx} className="bg-white rounded-xl p-4 border-l-4 border-purple-500 shadow-sm">
                                         <h4 className="font-bold text-slate-900 text-base">{exp.title}</h4>
                                         <p className="text-purple-600 font-medium text-xs">{exp.company} • {exp.duration}</p>
-                                        <p className="text-slate-700 mt-1.5 leading-snug text-sm">{exp.description}</p>
+                                        <div className="mt-1.5">
+                                            <RenderMaybeBullets
+                                                text={exp.description}
+                                                forceBullets
+                                                className="text-slate-700 leading-snug text-sm"
+                                            />
+                                        </div>
                                     </div>
                                 ))}
                             </div>

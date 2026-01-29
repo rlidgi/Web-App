@@ -27,22 +27,25 @@ export function parseResumeContent(content: string | any): any {
         resumeData = content;
     }
     
-    // Normalize the data structure - handle both direct structure and nested 'resume' key
+    // Normalize the data structure - handle both direct structure and nested 'resume' key.
+    // IMPORTANT: many templates rely on additional keys that may exist on the parsed resume
+    // (e.g., links, references, languages). Preserve unknown keys via a shallow spread.
     const data = resumeData.resume || resumeData;
-    
+
     return {
-        name: data.name || '',
-        title: data.title || '',
-        email: data.email || '',
-        phone: data.phone || '',
-        location: data.location || '',
-        summary: data.summary || '',
-        experience: Array.isArray(data.experience) ? data.experience : [],
-        education: Array.isArray(data.education) ? data.education : [],
-        projects: Array.isArray(data.projects) ? data.projects : [],
-        skills: Array.isArray(data.skills) ? data.skills : [],
-        certifications: Array.isArray(data.certifications) ? data.certifications : [],
-        custom_sections: Array.isArray(data.custom_sections) ? data.custom_sections : []
+        ...(data || {}),
+        name: data?.name || '',
+        title: data?.title || '',
+        email: data?.email || '',
+        phone: data?.phone || '',
+        location: data?.location || '',
+        summary: data?.summary || '',
+        experience: Array.isArray(data?.experience) ? data.experience : [],
+        education: Array.isArray(data?.education) ? data.education : [],
+        projects: Array.isArray(data?.projects) ? data.projects : [],
+        skills: Array.isArray(data?.skills) ? data.skills : [],
+        certifications: Array.isArray(data?.certifications) ? data.certifications : [],
+        custom_sections: Array.isArray(data?.custom_sections) ? data.custom_sections : [],
     };
 }
 
