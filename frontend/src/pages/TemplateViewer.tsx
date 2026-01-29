@@ -4,13 +4,8 @@ import ModernTemplate from '../components/templates/ModernTemplate';
 import ProfessionalTemplate from '../components/templates/ProfessionalTemplate';
 import MinimalTemplate from '../components/templates/MinimalTemplate';
 import CreativeTemplate from '../components/templates/CreativeTemplate';
-import ClassicSidebarTemplate from '../components/templates/ClassicSidebarTemplate';
-import ClassicPortraitSidebarTemplate from '../components/templates/ClassicPortraitSidebarTemplate';
 import DarkSidebarProgressTemplate from '../components/templates/DarkSidebarProgressTemplate';
-import DarkSidebarTemplate from '../components/templates/DarkSidebarTemplate';
-import NavyHeaderSidebarTemplate from '../components/templates/NavyHeaderSidebarTemplate';
 import TimelineBlueTemplate from '../components/templates/TimelineBlueTemplate';
-import OliveClassicTemplate from '../components/templates/OliveClassicTemplate';
 import { UniversalEditableWrapper } from '../components/templates/UniversalEditableWrapper';
 import { Type, AlignLeft, Rows, RotateCcw, Lightbulb, Edit3 } from 'lucide-react';
 
@@ -525,40 +520,15 @@ export default function TemplateViewer() {
         case 'creative':
             TemplateComponent = CreativeTemplate;
             break;
-        case 'classicSidebar':
-        case 'classic-sidebar':
-        case 'classic_sidebar':
-            TemplateComponent = ClassicSidebarTemplate;
-            break;
-        case 'classicPortrait':
-        case 'classic-portrait':
-        case 'classic_portrait':
-            TemplateComponent = ClassicPortraitSidebarTemplate;
-            break;
-        case 'darkSidebar':
-        case 'dark-sidebar':
-        case 'dark_sidebar':
-            TemplateComponent = DarkSidebarTemplate;
-            break;
         case 'darkSidebarProgress':
         case 'dark-sidebar-progress':
         case 'dark_sidebar_progress':
             TemplateComponent = DarkSidebarProgressTemplate;
             break;
-        case 'navyHeader':
-        case 'navy-header':
-        case 'navy_header':
-            TemplateComponent = NavyHeaderSidebarTemplate;
-            break;
         case 'timelineBlue':
         case 'timeline-blue':
         case 'timeline_blue':
             TemplateComponent = TimelineBlueTemplate;
-            break;
-        case 'oliveClassic':
-        case 'olive-classic':
-        case 'olive_classic':
-            TemplateComponent = OliveClassicTemplate;
             break;
         default:
             return (

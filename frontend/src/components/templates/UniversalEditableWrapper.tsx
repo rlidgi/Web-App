@@ -28,9 +28,18 @@ export function UniversalEditableWrapper({
 
         const container = containerRef.current;
 
+        // Remove any legacy "click to edit" hint badges if they exist
+        const hintCandidates = container.querySelectorAll('div, span');
+        hintCandidates.forEach((el) => {
+            const text = el.textContent || '';
+            if (text.includes('Click to edit') || text.includes('✏️')) {
+                (el as HTMLElement).style.display = 'none';
+            }
+        });
+
         // Find all text-bearing elements, including nested ones
         const textElements = container.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, div, li, td, th');
-        
+
         let editableCount = 0;
 
         textElements.forEach((el) => {
@@ -38,16 +47,16 @@ export function UniversalEditableWrapper({
 
             // Skip if already has contentEditable set
             if (element.getAttribute('contenteditable') !== null) return;
-            
+
             // Skip if it has no text at all
             if (!element.textContent?.trim().length) return;
-            
+
             // Skip pure structural containers (elements that only contain other elements, no direct text)
             const hasDirectText = Array.from(element.childNodes).some(
                 node => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()
             );
             const isLeafElement = element.children.length === 0;
-            
+
             // Only make editable if it's a leaf (no children) OR has direct text content
             if (!hasDirectText && !isLeafElement) return;
 
@@ -103,7 +112,7 @@ export function UniversalEditableWrapper({
                 }
             });
         });
-        
+
         console.log(`✅ Made ${editableCount} elements editable in edit mode`);
 
         // Cleanup

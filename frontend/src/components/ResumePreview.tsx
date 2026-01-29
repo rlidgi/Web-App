@@ -1,12 +1,7 @@
 import React from 'react';
 // NOTE: This is an on-screen preview component. We keep the resume shape permissive because
 // resumes can come from multiple sources/versions and the UI tolerates missing fields.
-import ClassicSidebarTemplate from './templates/ClassicSidebarTemplate';
-import ClassicPortraitSidebarTemplate from './templates/ClassicPortraitSidebarTemplate';
-import DarkSidebarTemplate from './templates/DarkSidebarTemplate';
-import NavyHeaderSidebarTemplate from './templates/NavyHeaderSidebarTemplate';
 import TimelineBlueTemplate from './templates/TimelineBlueTemplate';
-import OliveClassicTemplate from './templates/OliveClassicTemplate';
 
 interface ResumePreviewProps {
     resume: any;
@@ -534,30 +529,15 @@ export default function ResumePreview({ resume }: ResumePreviewProps) {
                 ? 'modern'
                 : resume.template;
 
-    const supported = new Set(['modern', 'classic', 'classicSidebar', 'classicPortrait', 'darkSidebar', 'navyHeader', 'timelineBlue', 'oliveClassic', 'minimal', 'professional', 'creative']);
+    const supported = new Set(['modern', 'classic', 'timelineBlue', 'minimal', 'professional', 'creative']);
     const normalizedTemplate = supported.has(template) ? template : 'modern';
 
     return (
         <div id="resume-preview" className="bg-white rounded-lg shadow-lg overflow-hidden">
             {normalizedTemplate === 'modern' && <ModernTemplate resume={resume} />}
             {normalizedTemplate === 'classic' && <ClassicTemplate resume={resume} />}
-            {normalizedTemplate === 'classicSidebar' && (
-                <ClassicSidebarTemplate content={JSON.stringify(resume)} />
-            )}
-            {normalizedTemplate === 'classicPortrait' && (
-                <ClassicPortraitSidebarTemplate content={JSON.stringify(resume)} />
-            )}
-            {normalizedTemplate === 'darkSidebar' && (
-                <DarkSidebarTemplate content={JSON.stringify(resume)} />
-            )}
-            {normalizedTemplate === 'navyHeader' && (
-                <NavyHeaderSidebarTemplate content={JSON.stringify(resume)} />
-            )}
             {normalizedTemplate === 'timelineBlue' && (
                 <TimelineBlueTemplate content={JSON.stringify(resume)} />
-            )}
-            {normalizedTemplate === 'oliveClassic' && (
-                <OliveClassicTemplate content={JSON.stringify(resume)} />
             )}
             {normalizedTemplate === 'minimal' && <MinimalTemplate resume={resume} />}
             {normalizedTemplate === 'professional' && <ProfessionalTemplate resume={resume} />}

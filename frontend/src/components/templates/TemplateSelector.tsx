@@ -82,70 +82,6 @@ export default function TemplateSelector({ selectedTemplate, onSelect }) {
             )
         },
         {
-            id: 'classicSidebar',
-            name: 'Classic Sidebar',
-            description: 'Sidebar layout with dark header band (like the example)',
-            preview: (
-                <div className="bg-white p-4 rounded-lg border border-slate-200 h-32 overflow-hidden">
-                    <div className="grid grid-cols-12 gap-2 h-full">
-                        <div className="col-span-4 bg-[#e6d8cf] rounded" />
-                        <div className="col-span-8 rounded border border-slate-200 overflow-hidden">
-                            <div className="h-6 bg-[#2f3133]" />
-                            <div className="p-2 space-y-2">
-                                <div className="h-1.5 bg-slate-300 rounded w-3/4" />
-                                <div className="h-1.5 bg-slate-200 rounded w-full" />
-                                <div className="h-1.5 bg-slate-200 rounded w-5/6" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: 'darkSidebar',
-            name: 'Dark Sidebar',
-            description: 'Dark left sidebar with skill bars and compact sections',
-            preview: (
-                <div className="bg-white p-4 rounded-lg border border-slate-200 h-32 overflow-hidden">
-                    <div className="grid grid-cols-12 gap-2 h-full">
-                        <div className="col-span-4 bg-[#3f3f3f] rounded" />
-                        <div className="col-span-8 rounded border border-slate-200 overflow-hidden bg-white">
-                            <div className="p-2">
-                                <div className="h-2 bg-slate-800 rounded w-2/3" />
-                                <div className="h-1.5 bg-slate-400 rounded w-1/2 mt-1" />
-                            </div>
-                            <div className="px-2 space-y-1.5">
-                                <div className="h-1.5 bg-slate-200 rounded w-full" />
-                                <div className="h-1.5 bg-slate-200 rounded w-5/6" />
-                                <div className="h-1.5 bg-slate-200 rounded w-3/4" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
-            id: 'navyHeader',
-            name: 'Navy Header',
-            description: 'Navy top band with gold accents and progress bars',
-            preview: (
-                <div className="bg-white p-4 rounded-lg border border-slate-200 h-32 overflow-hidden">
-                    <div className="h-5 bg-[#253040] rounded" />
-                    <div className="h-1 bg-[#c6b37b] w-2/3 mt-1 rounded" />
-                    <div className="mt-2 grid grid-cols-12 gap-2 h-[74px]">
-                        <div className="col-span-4 bg-[#f3f3f3] rounded" />
-                        <div className="col-span-8 bg-white rounded border border-slate-200 overflow-hidden">
-                            <div className="p-2 space-y-1.5">
-                                <div className="h-1.5 bg-slate-200 rounded w-full" />
-                                <div className="h-1.5 bg-slate-200 rounded w-5/6" />
-                                <div className="h-1.5 bg-[#c6b37b] rounded w-1/2" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        },
-        {
             id: 'timelineBlue',
             name: 'Timeline Blue',
             description: 'Blue header with vertical timeline and section labels',
@@ -176,37 +112,10 @@ export default function TemplateSelector({ selectedTemplate, onSelect }) {
                 </div>
             )
         },
-        {
-            id: 'oliveClassic',
-            name: 'Olive Classic',
-            description: 'Olive accents with boxed skills and clean two-column layout',
-            preview: (
-                <div className="bg-white p-4 rounded-lg border border-slate-200 h-32 overflow-hidden">
-                    <div className="flex items-center justify-between">
-                        <div className="h-4 w-10 rounded-full border border-lime-700/40" />
-                        <div className="h-2.5 bg-lime-600/60 rounded w-20" />
-                        <div className="w-4" />
-                    </div>
-                    <div className="mt-2 h-0.5 bg-lime-600/40" />
-                    <div className="mt-2 grid grid-cols-12 gap-2 h-[78px]">
-                        <div className="col-span-7 space-y-2">
-                            <div className="h-1.5 bg-lime-200 rounded w-16" />
-                            <div className="h-1.5 bg-slate-200 rounded w-full" />
-                            <div className="h-1.5 bg-slate-200 rounded w-5/6" />
-                        </div>
-                        <div className="col-span-5 space-y-2">
-                            <div className="h-1.5 bg-lime-200 rounded w-10" />
-                            <div className="h-4 border border-lime-600/30 rounded" />
-                            <div className="h-4 border border-lime-600/30 rounded" />
-                        </div>
-                    </div>
-                </div>
-            )
-        }
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {templates.map((template) => (
                 <div
                     key={template.id}

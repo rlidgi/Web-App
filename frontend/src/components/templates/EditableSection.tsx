@@ -106,15 +106,8 @@ export function EditableText({
     }
 
     return React.createElement('div', {
-        className: 'relative group',
+        className: 'relative',
         children: [
-            // Editable hint badge
-            !isFocused && React.createElement('div', {
-                key: 'hint',
-                className: 'absolute -top-6 left-0 opacity-0 group-hover:opacity-100 transition-opacity bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded pointer-events-none z-20',
-                children: '✏️ Click to edit'
-            }),
-            // Editable field
             React.createElement(Component, {
                 key: 'field',
                 contentEditable: true,
